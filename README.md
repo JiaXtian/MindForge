@@ -16,6 +16,7 @@ MindForge is a personal, bilingual learning space for documenting ideas, notes, 
 - Long-form article layout with a sticky table of contents and reading progress
 - MathJax rendering for rigorous mathematical notation
 - Zero-build static architecture: no package installation or framework lock-in
+- Automated parity checks keep the long-form English and Chinese editions structurally synchronized
 - Automatic deployment to GitHub Pages on every push to `main`
 
 ## Pages
@@ -59,6 +60,8 @@ MindForge/
 │       └── deploy-pages.yml
 ├── assets/
 │   └── favicon.svg
+├── scripts/
+│   └── check-content-parity.mjs
 ├── index.html
 ├── linear-algebra.html
 ├── styles.css
@@ -82,6 +85,13 @@ Then visit [http://localhost:8000](http://localhost:8000).
 
 Opening the HTML files directly also works, but a local server better matches GitHub Pages behavior.
 
+Before publishing article changes, verify that both language editions still contain matching sections,
+subsections, paragraphs, tables, and equations:
+
+```bash
+node scripts/check-content-parity.mjs
+```
+
 ## Add a New Article
 
 1. Duplicate `linear-algebra.html` and rename it with a concise URL-safe filename.
@@ -93,7 +103,7 @@ Opening the HTML files directly also works, but a local server better matches Gi
 
 ## Deployment
 
-The workflow in `.github/workflows/deploy-pages.yml` uploads the repository as a static Pages artifact and deploys it to the `github-pages` environment. It runs automatically on pushes to `main` and can also be started manually from the Actions tab.
+The workflow in `.github/workflows/deploy-pages.yml` first checks bilingual article parity, then uploads the repository as a static Pages artifact and deploys it to the `github-pages` environment. It runs automatically on pushes to `main` and can also be started manually from the Actions tab.
 
 Repository Pages settings must use **GitHub Actions** as the publishing source. Once enabled, successful deployments are available at:
 

@@ -143,326 +143,1230 @@
 
             <section class="article-section" id="en-1">
               <span class="section-number">01 / FOUNDATIONS</span>
-              <h2>The language of data: scalars, vectors, and spaces</h2>
+              <h2>From scalars and vectors to vector spaces: making data computable</h2>
               <p>
-                A <strong>scalar</strong> is a single magnitude, such as a temperature, probability, learning
-                rate, or loss. A <strong>vector</strong> is an ordered collection of scalars. The order is part
-                of the meaning: \(x=(x_1,x_2,\ldots,x_n)^\top\) may represent one observation with \(n\)
-                features, one point in an \(n\)-dimensional space, one direction, or one model state.
+                Linear algebra begins with a practical question: how can one mathematical language represent
+                information from many different systems? A temperature, probability, learning rate, or loss can
+                be represented by one number, called a <strong>scalar</strong>. When an object requires several
+                attributes, we place those numbers in a fixed order to form
+                \(x=(x_1,x_2,\ldots,x_n)^\top\). Order is part of the representation:
+                \((height,weight,age)\) and \((age,height,weight)\) contain the same values but mean different
+                things.
               </p>
               <p>
-                In machine learning we deliberately turn objects into vectors. A 28-by-28 grayscale image
-                becomes a vector in \(\mathbb{R}^{784}\); a customer becomes a row of measured attributes; a
-                word becomes a learned coordinate in an embedding space. Vectorization does not claim that the
-                object “is” a list of numbers. It chooses measurable coordinates through which an algorithm can
-                compare and transform that object.
+                A vector admits several compatible interpretations. Algebraically it is an ordered collection
+                that supports addition and scalar multiplication. Geometrically it may be a point or a
+                displacement from the origin. Physically it may represent velocity, force, a field, or the state
+                of a system. In machine learning it may be an observation, a parameter vector, a gradient, a
+                hidden state, or an embedding. Vectorizing an object does not claim that an image or sentence
+                “is” a list of numbers; it chooses measurable coordinates through which an algorithm can compare
+                and transform it.
               </p>
               <div class="equation">\[\mathbf{x}=\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix}\in\mathbb{R}^n,\qquad \alpha\mathbf{x}+\beta\mathbf{y}\in\mathbb{R}^n\]<span class="equation-number">(1)</span></div>
-              <h3>Vector spaces and basis</h3>
               <p>
-                A vector space is a set closed under vector addition and scalar multiplication. This closure is
-                what allows interpolation, superposition, and optimization. A set of vectors
-                \(\{b_1,\ldots,b_k\}\) spans a space if every vector in that space can be written as
-                \(x=\sum_i c_i b_i\). If the spanning vectors are linearly independent, they form a
-                <strong>basis</strong>, and the coefficients \(c_i\) are coordinates in that basis.
+                A 28-by-28 grayscale image can be flattened into a vector in \(\mathbb{R}^{784}\), with one
+                coordinate per pixel. A sound can be represented by amplitudes sampled over time. A word can be
+                represented by a learned vector with hundreds of coordinates. The ambient dimension \(n\)
+                counts the coordinates used by the representation, but it need not equal the true number of
+                degrees of freedom. Image pixels are strongly correlated, so high-dimensional images may lie
+                near a much lower-dimensional structure. That observation is what makes useful compression and
+                dimensionality reduction possible.
+              </p>
+              <h3>Scalar fields, row vectors, column vectors, and data matrices</h3>
+              <p>
+                Most machine-learning data and parameters use real scalars from \(\mathbb{R}\). Complex scalars
+                from \(\mathbb{C}\) are useful for frequency-domain signals, waves, and quantum systems. A field
+                is, roughly, a collection of scalars on which addition, subtraction, multiplication, and
+                division behave consistently. The distinction matters because a complex inner product uses the
+                conjugate transpose \(x^*y\), not the ordinary transpose used for real vectors.
+              </p>
+              <p>
+                This chapter writes an individual vector as a column. With \(n\) observations and \(d\)
+                features, a common convention places observations in the rows of
+                \(X\in\mathbb{R}^{n\times d}\). Row \(x_i^\top\) is observation \(i\), while column \(X_{:j}\)
+                records feature \(j\) across the dataset. Some texts put observations in columns instead. Either
+                convention is valid; the dangerous choice is to change conventions silently halfway through a
+                derivation or implementation.
+              </p>
+              <div class="equation">\[X=\begin{bmatrix}x_1^\top\\x_2^\top\\\vdots\\x_n^\top\end{bmatrix}\in\mathbb{R}^{n\times d},\qquad XW\in\mathbb{R}^{n\times k}\]<span class="equation-number">(10)</span></div>
+              <p>
+                If \(W\in\mathbb{R}^{d\times k}\) maps one \(d\)-dimensional observation to a
+                \(k\)-dimensional representation, then \(XW\) applies that same map to all \(n\) observations at
+                once. Matrix multiplication is therefore both function composition and a batch-computation
+                pattern. CPUs, GPUs, and tensor libraries are designed around such regular operations, so the
+                linear-algebra notation corresponds directly to efficient parallel execution.
+              </p>
+              <h3>What vector operations actually mean</h3>
+              <p>
+                Vector addition expresses superposition. Two sequential displacements add to a total
+                displacement; simultaneous signals add to a combined signal; several feature directions combine
+                into a new representation. Scalar multiplication \(\alpha x\) changes magnitude along the same
+                direction: \(\alpha>1\) enlarges, \(0<\alpha<1\) shrinks, and \(\alpha<0\) also reverses
+                direction. A linear combination \(\sum_i\alpha_i v_i\) is therefore a precise language for
+                synthesizing a new object from elementary patterns.
+              </p>
+              <p>
+                A vector space is more than a container. It is closed under vector addition and scalar
+                multiplication and satisfies rules for associativity, commutativity, zero, and additive
+                inverses. These rules make superposition, interpolation, direction, and coordinates coherent.
+                Functions can form a vector space as well: sums and scalar multiples of functions are still
+                functions. Describing a signal as a combination of sines and cosines is the same structural idea
+                as describing a point with horizontal and vertical coordinates.
+              </p>
+              <h3>Span, linear independence, and basis</h3>
+              <p>
+                The <strong>span</strong> of \(\{v_1,\ldots,v_k\}\) is the set of all their linear
+                combinations. Two non-collinear vectors span a plane, while two collinear vectors can reach only
+                one line. Vectors are linearly independent when
+                \(c_1v_1+\cdots+c_kv_k=0\) implies \(c_1=\cdots=c_k=0\). Independence means no vector in the
+                collection can be reconstructed from the others.
+              </p>
+              <p>
+                A linearly independent collection that spans the whole space is a <strong>basis</strong>. A
+                basis is a coordinate system, not the space itself. The same geometric vector receives
+                different coordinates under different bases while the represented object remains unchanged.
+                Standard bases are convenient for storage, Fourier bases expose frequency, PCA bases expose
+                high-variance directions, and neural networks learn successive representations that make a
+                task easier.
+              </p>
+              <h3>Coordinate changes and feature representations</h3>
+              <p>
+                Let \(B=[b_1,\ldots,b_n]\) be a basis matrix and let \(c=[x]_B\) denote the coordinates of
+                \(x\) in that basis. Then \(x=Bc\) and \(c=B^{-1}x\). It is useful to distinguish an active
+                transformation from a passive coordinate change. An active transformation moves the object,
+                such as rotating an image. A passive change of basis changes only the axes used to describe the
+                same object. Both use matrices, but they answer different geometric questions.
+              </p>
+              <p>
+                Feature engineering is the deliberate choice of coordinates. A location may be represented by
+                latitude and longitude or by distances to landmarks. A sound may be represented as a waveform,
+                Fourier coefficients, or wavelet coefficients. Standardization
+                \(z_j=(x_j-\mu_j)/s_j\) translates the origin and rescales each axis. It creates no new
+                information, but it changes distances, regularization, conditioning, and gradient geometry, so
+                it directly affects methods such as KNN, SVM, PCA, linear models, and neural networks.
+              </p>
+              <p>
+                One-hot encoding represents category \(i\) by the standard basis vector \(e_i\). All distinct
+                categories are equally far apart, so one-hot coordinates contain no notion of similarity. An
+                embedding layer learns a matrix \(E\) and returns \(E^\top e_i\), usually implemented as a row
+                lookup. An embedding is therefore a move from a fixed standard basis to a learned coordinate
+                system whose geometry is shaped by the training objective.
               </p>
               <div class="insight-box">
-                <span class="box-label">Geometric intuition</span>
+                <span class="box-label">Core intuition</span>
                 <p>
-                  A basis is a coordinate system, not the space itself. Rotating the axes changes the numbers
-                  used to describe a point but does not move the point. Many machine-learning methods are best
-                  understood as searching for a basis in which the data becomes simpler.
+                  Representation learning often means finding better coordinates. Data that is tangled in the
+                  original basis may become sparse, separated, or almost linear in another. The change of basis
+                  creates no information; it changes how clearly the existing structure can be seen.
                 </p>
               </div>
             </section>
 
             <section class="article-section" id="en-2">
               <span class="section-number">02 / TRANSFORMATIONS</span>
-              <h2>A matrix is an action on space</h2>
+              <h2>A matrix is not just a table: it is an action on space</h2>
               <p>
-                A matrix \(A\in\mathbb{R}^{m\times n}\) is a rectangular array of numbers, but its deeper
-                meaning is a linear map from \(\mathbb{R}^n\) to \(\mathbb{R}^m\). Linearity means
-                \(A(\alpha x+\beta y)=\alpha Ax+\beta Ay\). The map preserves addition and scalar multiplication,
-                so grid lines remain straight and parallel lines remain parallel, although lengths, angles,
-                orientation, and dimension may change.
+                A matrix \(A\in\mathbb{R}^{m\times n}\) has \(m\) rows and \(n\) columns, but its deeper
+                meaning is a function from \(\mathbb{R}^n\) to \(\mathbb{R}^m\). A linear transformation
+                satisfies \(A(\alpha x+\beta y)=\alpha Ax+\beta Ay\): transforming a combination is equivalent
+                to combining the transformed parts. It preserves the origin and straightness, and it maps
+                parallel lines to parallel lines, while lengths, angles, orientation, and even dimension may
+                change.
               </p>
               <div class="equation">\[A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n\]<span class="equation-number">(2)</span></div>
               <p>
-                Equation (2) gives the most useful interpretation of matrix-vector multiplication: the output
-                is a weighted combination of the columns of \(A\). Equivalently, the columns tell us where the
-                input basis vectors land. Once the images of the basis are known, linearity determines the image
-                of every vector.
+                Equation (2) is the most useful interpretation of matrix-vector multiplication. Column \(a_j\)
+                is where the \(j\)-th standard basis vector lands, and input coordinate \(x_j\) is its weight.
+                Thus \(Ax\) is a weighted combination of the columns. From the row perspective, output
+                coordinate \(i\) is the inner product between row \(i\) and \(x\). Columns describe how outputs
+                are synthesized; rows describe how each output feature reads the input.
               </p>
               <p>
-                Matrix multiplication \(BA\) means composition: apply \(A\) first, then \(B\). Order matters
-                because transformations generally do not commute. The transpose \(A^\top\) swaps rows and
-                columns and reverses the direction of the associated map under the Euclidean inner product:
-                \(\langle Ax,y\rangle=\langle x,A^\top y\rangle\). This identity is central to backpropagation.
+                Matrix multiplication \(BA\) means composition: apply \(A\) first and \(B\) second. Order
+                generally matters. Stretching along a fixed horizontal axis and then rotating is not the same as
+                rotating first and then stretching along that axis. Shape rules follow from compatible function
+                interfaces: if \(A:\mathbb{R}^n\to\mathbb{R}^m\) and
+                \(B:\mathbb{R}^m\to\mathbb{R}^p\), then \(BA:\mathbb{R}^n\to\mathbb{R}^p\).
+              </p>
+              <h3>Reading rotation, scaling, and shear from a 2D matrix</h3>
+              <p>
+                Two-dimensional matrices make transformation geometry visible. Uniform scaling is
+                \(\begin{bmatrix}s&0\\0&s\end{bmatrix}\); unequal diagonal entries scale the two axes
+                differently. Counterclockwise rotation by \(\theta\) uses
+                \(\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}\), while a horizontal
+                shear may use \(\begin{bmatrix}1&k\\0&1\end{bmatrix}\). Reading the two columns reveals where the
+                original horizontal and vertical axes move.
+              </p>
+              <div class="equation">\[R(\theta)=\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix},\qquad R^\top R=I,\quad \det R=1\]<span class="equation-number">(11)</span></div>
+              <p>
+                The columns of a rotation matrix are orthonormal, so rotation preserves lengths and angles. Its
+                determinant is one, so area and orientation are preserved. A reflection also preserves length
+                but has negative determinant. A projection erases directions, so its determinant is zero and it
+                is not invertible. The quantities \(A^\top A\), \(\det A\), and \(\operatorname{rank}(A)\)
+                answer whether a map preserves metric structure, flips orientation, or loses dimensions.
+              </p>
+              <h3>Affine transformations and homogeneous coordinates</h3>
+              <p>
+                A strictly linear map must send the origin to the origin. Translation
+                \(x\mapsto x+b\) is therefore affine rather than linear. The common neural layer \(Wx+b\) is an
+                affine layer. By appending a coordinate equal to one,
+                \(\tilde x=[x^\top,1]^\top\), translation can be incorporated into the block matrix
+                \(\begin{bmatrix}W&b\\0&1\end{bmatrix}\). Computer graphics uses homogeneous coordinates to
+                compose rotation, scaling, translation, and perspective in one matrix framework; neural bias
+                terms have the same algebraic interpretation.
+              </p>
+              <h3>Transpose, inverse, and determinant</h3>
+              <p>
+                The transpose \(A^\top\) exchanges rows and columns. More importantly, it is the adjoint of the
+                map under the Euclidean inner product:
+                \(\langle Ax,y\rangle=\langle x,A^\top y\rangle\). If \(A\) carries influence forward from
+                input to output, \(A^\top\) carries output sensitivity backward to the input. This is why
+                transposes appear throughout backpropagation: they express reverse attribution, not a cosmetic
+                rearrangement.
+              </p>
+              <p>
+                The inverse \(A^{-1}\) undoes a square transformation. It exists only if no nonzero direction
+                is collapsed and no distinct inputs are merged. The determinant \(\det(A)\) is the signed volume
+                scale factor. Magnitude greater than one expands volume, magnitude below one contracts it, zero
+                means at least one dimension has been flattened, and a negative sign records an orientation
+                reversal.
+              </p>
+              <h3>Trace, matrix norms, and useful identities</h3>
+              <p>
+                The trace \(\operatorname{tr}(A)=\sum_iA_{ii}\) is both the sum of diagonal entries and the sum
+                of eigenvalues. It is cyclic:
+                \(\operatorname{tr}(ABC)=\operatorname{tr}(BCA)\), although arbitrary reordering is not
+                allowed. Trace turns matrix expressions into scalars. For example,
+                \(\|A\|_F^2=\operatorname{tr}(A^\top A)\), and
+                \(\operatorname{tr}(\Sigma)\) is the total variance of a covariance matrix.
+              </p>
+              <p>
+                The Frobenius norm \(\|A\|_F=\sqrt{\sum_{ij}A_{ij}^2}\) treats all entries as one long vector.
+                The spectral norm \(\|A\|_2=\sigma_{\max}(A)\) measures the largest amplification of a unit
+                input. Frobenius norm describes total parameter energy, while spectral norm controls the
+                worst-case direction and is closely related to Lipschitz behavior and gradient propagation.
+              </p>
+              <p>
+                Identities such as \((AB)^\top=B^\top A^\top\),
+                \((AB)^{-1}=B^{-1}A^{-1}\), and
+                \(\det(AB)=\det(A)\det(B)\) follow naturally from composition. Transposition and inversion
+                reverse order because undoing “\(A\), then \(B\)” requires undoing \(B\) first.
               </p>
               <div class="example-box">
-                <span class="box-label">Example · a neural layer</span>
+                <span class="box-label">Neural-network correspondence</span>
                 <p>
-                  In \(h=\sigma(Wx+b)\), the matrix \(W\) rotates, stretches, reflects, or projects the input;
-                  \(b\) translates it; and the nonlinear activation \(\sigma\) bends the result. Deep networks
-                  alternate learned linear geometry with nonlinear folding.
+                  In \(h=\sigma(Wx+b)\), \(W\) rotates, stretches, mixes, or projects the input, \(b\)
+                  translates the space, and \(\sigma\) bends it. Deep networks alternate learned affine
+                  reorganization with nonlinear folding until distinctions that were difficult in the original
+                  space become simple in the new representation.
                 </p>
               </div>
             </section>
 
             <section class="article-section" id="en-3">
               <span class="section-number">03 / STRUCTURE</span>
-              <h2>Linear systems, span, independence, and rank</h2>
+              <h2>Linear systems, column space, null space, and rank</h2>
               <p>
-                The system \(Ax=b\) asks whether \(b\) can be expressed as a combination of the columns of
-                \(A\). Therefore a solution exists exactly when \(b\) lies in the column space
-                \(\operatorname{Col}(A)\). The null space \(\operatorname{Null}(A)=\{x:Ax=0\}\) contains input
-                directions erased by the transformation.
+                The system \(Ax=b\) appears to ask for unknown numbers, but geometrically it asks whether
+                \(b\) lies in the span of the columns of \(A\). Since every \(Ax\) is a column combination, an
+                exact solution exists precisely when \(b\in\operatorname{Col}(A)\). If the column space is a
+                plane through the origin and \(b\) lies outside it, no exact solution exists; least squares then
+                finds the nearest point in that plane.
+              </p>
+              <p>
+                The null space \(\operatorname{Null}(A)=\{x:Ax=0\}\) contains input directions erased by the
+                transformation. If \(z\) is in the null space, then \(A(x+z)=Ax\), so the output cannot
+                distinguish \(x\) from \(x+z\). This is the linear-algebraic source of non-identifiable
+                parameters. More observations of the same dependent type need not fix the problem; only new
+                independent measurement directions raise identifiability.
               </p>
               <div class="equation">\[\operatorname{rank}(A)+\operatorname{nullity}(A)=n\]<span class="equation-number">(3)</span></div>
               <p>
-                Rank is the number of independent output directions. It measures effective dimensionality,
-                not merely matrix size. A low-rank data matrix says that many observed features are generated
-                from fewer latent directions. Rank deficiency creates non-unique parameters: if \(z\) is in the
-                null space, then \(A(x+z)=Ax\), so the data cannot distinguish \(x\) from \(x+z\).
+                Rank is the dimension of the column space and also of the row space. It counts independent
+                output directions rather than rows or columns in the array. The rank-nullity theorem divides the
+                \(n\) input degrees of freedom into directions that survive as observable outputs and directions
+                that vanish into the null space. A large matrix may still have low effective rank.
+              </p>
+              <h3>A concrete system: pivots and free variables</h3>
+              <p>
+                Consider \(x+y+z=2\), \(2x+2y+2z=4\), and \(x-y+z=0\). The second equation is twice the first,
+                so it contributes no new constraint. Elimination gives two pivots and one free variable. With
+                \(z=t\), the solutions are \(x=1-t,\ y=1\). Geometrically, two independent planes in
+                three-dimensional space meet along a line, and \(t\) is the coordinate along that line.
               </p>
               <p>
-                An inverse \(A^{-1}\) exists for a square matrix only when the map loses no direction:
-                \(\operatorname{rank}(A)=n\), the null space contains only zero, and the determinant is nonzero.
-                In data problems, however, matrices are often rectangular or singular. The Moore–Penrose
-                pseudoinverse \(A^+\) then selects the minimum-norm least-squares solution.
+                If the second right-hand side is changed from \(4\) to \(5\), elimination produces a row
+                \([0\ 0\ 0\mid1]\), or “zero equals one,” so the system is inconsistent. The three possibilities
+                are systematic: one pivot per unknown and no contradiction gives a unique solution; free
+                variables give infinitely many solutions; a contradictory row gives no solution. Overdetermined,
+                square, and underdetermined learning systems extend this same classification.
+              </p>
+              <h3>The four fundamental subspaces</h3>
+              <p>
+                For \(A\in\mathbb{R}^{m\times n}\), the column space
+                \(\operatorname{Col}(A)\subseteq\mathbb{R}^m\) contains attainable outputs. The null space
+                \(\operatorname{Null}(A)\subseteq\mathbb{R}^n\) contains invisible input directions. The row
+                space \(\operatorname{Col}(A^\top)\subseteq\mathbb{R}^n\) contains the directions that are
+                actually measured, and the left null space
+                \(\operatorname{Null}(A^\top)\subseteq\mathbb{R}^m\) contains directions orthogonal to every
+                attainable output.
+              </p>
+              <p>
+                The column space and left null space are orthogonal complements; so are the row space and null
+                space. In regression, predictions \(Xw\) lie in the column space and the optimal residual lies in
+                the left null space. Components of \(w\) in \(\operatorname{Null}(X)\) have no effect on the
+                prediction. These spaces separate what the model can explain, what remains unexplained, and
+                which parameter changes the data cannot identify.
+              </p>
+              <h3>The geometric meaning of elimination</h3>
+              <p>
+                Gaussian elimination converts a system to row-echelon form using operations that preserve the
+                solution set. Swapping rows reorders equations; multiplying a row by a nonzero scalar rescales
+                one constraint; adding a multiple of one row to another rewrites the same constraints. The
+                number of pivots is the rank, and the number of free variables is the nullity. Elimination
+                exposes which constraints are genuinely independent.
+              </p>
+              <p>
+                For a square matrix, the following conditions are equivalent: the determinant is nonzero; the
+                columns are independent; the column space is all of \(\mathbb{R}^n\); the null space contains
+                only zero; rank is \(n\); and zero is not an eigenvalue. Every version says the same thing: the
+                transformation neither loses nor duplicates a direction.
+              </p>
+              <h3>LU decomposition: preserving the elimination process</h3>
+              <p>
+                Gaussian elimination can be stored as \(PA=LU\). The permutation matrix \(P\) records pivot
+                swaps, the unit lower-triangular matrix \(L\) records elimination multipliers, and the
+                upper-triangular matrix \(U\) is the reduced system. Solving \(Ax=b\) becomes forward
+                substitution in \(Ly=Pb\), followed by back substitution in \(Ux=y\). If many right-hand sides
+                share the same \(A\), the expensive factorization is reused.
+              </p>
+              <p>
+                Pivoting matters numerically. Dividing by a tiny pivot can magnify rounding error, so partial
+                pivoting chooses a larger entry from the current column. LU illustrates a central computational
+                principle: do not form an inverse when a structured factorization can solve the system more
+                stably. Cholesky is an even more efficient specialization for symmetric positive-definite
+                matrices.
+              </p>
+              <h3>Least squares and the pseudoinverse</h3>
+              <p>
+                Noisy data commonly makes \(Ax=b\) inconsistent. Least squares chooses \(x\) that minimizes the
+                residual length \(\|b-Ax\|_2\). At the optimum, the residual is orthogonal to the entire column
+                space, so \(A^\top(b-A\hat x)=0\), giving the normal equations
+                \(A^\top A\hat x=A^\top b\). If \(A\) has full column rank,
+                \(\hat x=(A^\top A)^{-1}A^\top b\).
+              </p>
+              <p>
+                More generally, the Moore–Penrose pseudoinverse gives \(\hat x=A^+b\). It returns the
+                least-squares solution and, when several solutions fit equally well, chooses the one with
+                minimum Euclidean norm. Overdetermined systems \(m>n\) usually require approximation.
+                Underdetermined systems \(m<n\) often have many solutions. In overparameterized learning,
+                explicit regularization and the optimizer's implicit bias jointly decide which solution is
+                selected.
               </p>
               <div class="warning-box">
-                <span class="box-label">Important practice</span>
+                <span class="box-label">Numerical warning</span>
                 <p>
-                  Numerical software should almost never compute an explicit inverse to solve a system.
-                  Factorizations such as QR or Cholesky are faster and more stable. “Divide by a matrix” is a
-                  symbolic idea; solving the system is the computational operation.
+                  An explicit inverse is convenient in symbolic derivations but is rarely the correct numerical
+                  operation. QR, Cholesky, LU, or SVD are usually faster and more stable. The normal equations
+                  square the condition number, so severely ill-conditioned least-squares problems should use QR
+                  or SVD. In software, “divide by a matrix” should mean “solve a system.”
                 </p>
               </div>
             </section>
 
             <section class="article-section" id="en-4">
               <span class="section-number">04 / GEOMETRY</span>
-              <h2>Length, angle, projection, and similarity</h2>
+              <h2>Inner products turn numbers into length, angle, projection, and similarity</h2>
               <p>
-                The inner product \(x^\top y\) connects algebra to geometry. It determines the Euclidean norm
-                \(\|x\|_2=\sqrt{x^\top x}\), and the angle through
-                \(\cos\theta=x^\top y/(\|x\|_2\|y\|_2)\). A zero inner product means orthogonality: one direction
-                contains no component of the other.
+                The Euclidean inner product is \(x^\top y=\sum_i x_i y_i\). Geometrically,
+                \(x^\top y=\|x\|_2\|y\|_2\cos\theta\), so it contains both length and angle information. A
+                positive inner product indicates broadly aligned directions, a negative value indicates
+                opposition, and zero indicates orthogonality. In physics, force dotted with displacement is
+                work because only the force component along the displacement contributes. In signal processing,
+                the inner product with a basis function measures how much of that pattern is present.
+              </p>
+              <p>
+                A norm measures magnitude. The \(L_2\) norm
+                \(\|x\|_2=\sqrt{x^\top x}\) is ordinary straight-line distance; the \(L_1\) norm sums absolute
+                coordinates; the \(L_\infty\) norm records the largest coordinate magnitude. Their level sets
+                are circles, diamonds, and squares in two dimensions. These shapes explain why \(L_1\)
+                constraints meet loss contours on coordinate axes and therefore encourage sparse solutions.
               </p>
               <div class="equation">\[\operatorname{proj}_{u}(x)=\frac{u^\top x}{u^\top u}u,\qquad P_U=U(U^\top U)^{-1}U^\top\]<span class="equation-number">(4)</span></div>
+              <h3>Projection means retaining the explainable component</h3>
               <p>
-                Projection is the nearest-point operation. Least squares, PCA, Fourier approximation, and many
-                estimators all ask for a projection onto a chosen subspace. If the columns of \(Q\) are
-                orthonormal, the projector simplifies to \(QQ^\top\), and coordinates are recovered by
-                \(Q^\top x\) without geometric distortion.
+                Projecting \(x\) onto direction \(u\) finds the nearest point on the line through \(u\). The
+                coefficient \(u^\top x/(u^\top u)\) is the component of \(x\) along that direction, and the
+                residual is orthogonal to \(u\). For a subspace, the best residual is orthogonal to every
+                direction in the subspace. Least squares projects a target onto a feature column space; PCA
+                projects data onto a principal subspace; Fourier approximation projects a signal onto frequency
+                basis functions.
               </p>
               <p>
-                Different norms express different beliefs. The \(L_2\) norm measures ordinary distance and
-                yields smooth spherical level sets. The \(L_1\) norm has diamond-shaped level sets and promotes
-                sparse solutions. The \(L_\infty\) norm records the largest coordinate deviation. Choosing a
-                norm is choosing which errors count as similar.
+                If the columns of \(Q\) are orthonormal, then \(Q^\top Q=I\). Coordinates in that basis are
+                simply \(Q^\top x\), and projection becomes \(QQ^\top x\). Orthogonal transformations preserve
+                lengths, angles, and inner products, which is why stable numerical algorithms prefer them: they
+                do not unnecessarily amplify roundoff or squeeze independent directions together.
+              </p>
+              <h3>Cauchy–Schwarz, inequalities, and orthogonal complements</h3>
+              <p>
+                The Cauchy–Schwarz inequality
+                \(|x^\top y|\le\|x\|_2\|y\|_2\) guarantees that cosine similarity lies in \([-1,1]\), with
+                equality only when the vectors are linearly dependent. The triangle inequality
+                \(\|x+y\|\le\|x\|+\|y\|\) formalizes the idea that a detour cannot be shorter than the direct
+                route. Similarity bounds, maximum directional derivatives, optimization proofs, and
+                generalization bounds repeatedly use these basic inequalities.
+              </p>
+              <p>
+                The orthogonal complement \(U^\perp\) contains all vectors orthogonal to every vector in
+                \(U\). Every \(x\in\mathbb{R}^n\) has a unique decomposition \(x=u+u_\perp\), with
+                \(u\in U\) and \(u_\perp\in U^\perp\). Projection keeps \(u\) and discards \(u_\perp\).
+                Dimensionality reduction should therefore be understood as choosing a meaningful subspace and
+                treating variation in its orthogonal complement as irrelevant, noisy, or unexplained.
+              </p>
+              <h3>Gram–Schmidt and QR decomposition</h3>
+              <p>
+                Gram–Schmidt converts independent vectors into an orthonormal basis for the same span. At step
+                \(k\), subtract every projection onto the previously constructed basis vectors, then normalize
+                the remainder. Placing the results in \(Q\) gives \(A=QR\), where \(Q^\top Q=I\) and \(R\) is
+                upper triangular. The factorization separates the geometry of the column space from the
+                coordinate relationships among the original columns.
+              </p>
+              <div class="equation">\[v_k=a_k-\sum_{j=1}^{k-1}(q_j^\top a_k)q_j,\qquad q_k=\frac{v_k}{\|v_k\|_2},\qquad A=QR\]<span class="equation-number">(12)</span></div>
+              <p>
+                In least squares, \(\|Ax-b\|=\|QRx-b\|\). Decomposing \(b\) into a component in
+                \(\operatorname{Col}(Q)\) and an orthogonal residual reduces the problem to the triangular
+                system \(Rx=Q^\top b\). Practical libraries generally use numerically stronger Householder
+                reflections rather than classical Gram–Schmidt, but the geometry is the same: use
+                length-preserving transformations to reveal a simple triangular structure.
+              </p>
+              <h3>Distance and similarity must match the task</h3>
+              <p>
+                Euclidean distance compares absolute position. Cosine similarity
+                \(x^\top y/(\|x\|\|y\|)\) ignores magnitude and compares direction. Direction is often useful
+                for text embeddings, while length may encode confidence, frequency, or other information. If
+                length matters, normalization removes useful signal. Mahalanobis distance
+                \(\sqrt{(x-y)^\top\Sigma^{-1}(x-y)}\) rescales directions according to covariance: deviations
+                along naturally variable directions count less than equal deviations along tightly
+                concentrated directions.
               </p>
               <div class="insight-box">
-                <span class="box-label">Machine-learning connection</span>
+                <span class="box-label">Choosing a metric expresses a belief</span>
                 <p>
-                  Cosine similarity ignores magnitude and compares direction. That is often appropriate for
-                  text embeddings, where vector length may reflect confidence or frequency while direction
-                  carries semantic identity. Euclidean distance and cosine similarity answer different
-                  questions; neither is universally correct.
+                  Whether two observations are “close” is not a task-free fact. A norm, inner product, or
+                  distance specifies which changes matter and which may be ignored. Feature scaling changes this
+                  geometry, so standardization is not superficial preprocessing for distance-, inner-product-,
+                  or gradient-based methods; it redefines the scale of the space.
                 </p>
               </div>
             </section>
 
             <section class="article-section" id="en-5">
               <span class="section-number">05 / INVARIANTS</span>
-              <h2>Eigenvalues reveal a transformation's natural directions</h2>
+              <h2>Eigenvalues and eigenvectors reveal a transformation's preferred axes</h2>
               <p>
-                An eigenvector \(v\neq0\) satisfies \(Av=\lambda v\). The transformation may stretch, shrink, or
-                reverse this direction, but it does not rotate it away from itself. Eigenvectors are therefore
-                the natural axes of a linear system, and eigenvalues are the gains along those axes.
+                For a square matrix \(A\), a nonzero vector \(v\) satisfying \(Av=\lambda v\) is an
+                eigenvector, and \(\lambda\) is its eigenvalue. Most directions change orientation under a
+                matrix, but an eigenvector remains on its own line. It may be enlarged, contracted, reversed, or
+                collapsed: \(|\lambda|>1\) grows, \(0<|\lambda|<1\) decays, \(\lambda<0\) reverses direction,
+                and \(\lambda=0\) is sent to the origin. Eigenvectors are the transformation's natural axes.
               </p>
               <div class="equation">\[Av=\lambda v,\qquad \det(A-\lambda I)=0,\qquad A=V\Lambda V^{-1}\]<span class="equation-number">(5)</span></div>
               <p>
-                If a matrix is diagonalizable, repeated application becomes transparent:
-                \(A^k=V\Lambda^kV^{-1}\). Components with \(|\lambda|>1\) grow, those with \(|\lambda|<1\)
-                decay, \(\lambda<0\) alternates sign, and complex eigenvalues encode rotation. This explains
-                stability in dynamical systems, convergence of Markov chains, exploding or vanishing recurrent
-                states, and the power method.
+                The characteristic equation follows from \((A-\lambda I)v=0\). A nonzero solution requires
+                \(A-\lambda I\) to be singular, so \(\det(A-\lambda I)=0\). If \(A\) has enough independent
+                eigenvectors, then \(A=V\Lambda V^{-1}\). The matrix \(V^{-1}\) changes to eigenvector
+                coordinates, the diagonal matrix \(\Lambda\) scales each coordinate independently, and \(V\)
+                returns to the original basis. A coupled transformation becomes separate scalar gains in the
+                right coordinates.
+              </p>
+              <h3>A complete 2-by-2 eigendecomposition</h3>
+              <p>
+                Let \(A=\begin{bmatrix}2&1\\1&2\end{bmatrix}\). Its characteristic polynomial is
+                \(\det(A-\lambda I)=(2-\lambda)^2-1=(\lambda-3)(\lambda-1)\), so the eigenvalues are \(3\) and
+                \(1\). Substituting into \((A-\lambda I)v=0\) gives directions
+                \(v_1=(1,1)^\top\) and \(v_2=(1,-1)^\top\). After normalization they are orthogonal. The matrix
+                triples the component along \(y=x\) and leaves the component along \(y=-x\) unchanged.
               </p>
               <p>
-                For a real symmetric matrix \(A=A^\top\), the spectral theorem guarantees real eigenvalues and
-                an orthonormal eigenbasis: \(A=Q\Lambda Q^\top\). Covariance matrices, Hessians, graph
-                Laplacians, and kernel matrices often have this form. The Rayleigh quotient
-                \(R_A(x)=x^\top Ax/(x^\top x)\) measures curvature or energy in direction \(x\); its extreme
-                values are the smallest and largest eigenvalues.
+                For any input \(x\), compute \(c=Q^\top x\), multiply the two coordinates by \(3\) and \(1\),
+                and reconstruct with \(Q\). Cross terms in the original coordinates appear only because the axes
+                are not aligned with the matrix's natural directions. A covariance matrix behaves the same way:
+                correlated original features become uncorrelated coordinates in its eigenvector basis.
+              </p>
+              <h3>Why repeated transformations expose the dominant eigenvalue</h3>
+              <p>
+                If \(x=\sum_i c_iv_i\), then \(A^kx=\sum_i c_i\lambda_i^kv_i\). Repeated application makes
+                components associated with the largest \(|\lambda_i|\) dominate. This is the basis of power
+                iteration and the stability analysis of \(x_{t+1}=Ax_t\). Spectral radius below one makes states
+                decay; an eigenvalue above one amplifies some perturbation; negative eigenvalues alternate sign;
+                complex eigenvalues combine rotation and scaling.
+              </p>
+              <p>
+                A Markov transition matrix moves probability mass repeatedly. Eigenvalue one corresponds to a
+                stationary distribution, and the remaining eigenvalues determine mixing speed. Graph Laplacian
+                eigenvectors describe smooth graph modes used in spectral clustering. In recurrent networks,
+                repeated multiplication by hidden-state matrices links spectral behavior to exploding and
+                vanishing states. All are versions of one question: which modes persist, and how quickly do they
+                grow or decay?
+              </p>
+              <h3>Symmetric matrices and the spectral theorem</h3>
+              <p>
+                A real symmetric matrix \(A=A^\top\) has real eigenvalues, orthogonal eigenvectors for distinct
+                eigenvalues, and an orthonormal eigenbasis:
+                \(A=Q\Lambda Q^\top\). Covariance matrices, Hessians, Gram matrices, and graph Laplacians often
+                have this structure, so the spectral theorem appears throughout machine learning.
+              </p>
+              <p>
+                The quadratic form \(x^\top Ax\) measures energy or curvature along \(x\). The Rayleigh
+                quotient \(R_A(x)=x^\top Ax/(x^\top x)\) removes vector length; its minimum and maximum are the
+                smallest and largest eigenvalues. For covariance, it is projected variance. For a Hessian, it is
+                directional curvature. PCA's maximum-variance problem and optimization's maximum-curvature
+                analysis share the same mathematics but assign different physical meaning to \(A\).
+              </p>
+              <h3>Positive-definite matrices: energy, distance, and a unique minimum</h3>
+              <p>
+                A symmetric matrix is positive definite when \(x^\top Ax>0\) for every nonzero \(x\). This is
+                equivalent to all eigenvalues being positive and to a factorization \(A=LL^\top\) with
+                invertible \(L\). Positive-definite quadratic contours are closed ellipsoids; there is no flat or
+                downward direction, so a quadratic optimization problem has a unique minimizer. Covariance
+                matrices are at least positive semidefinite because projected variance cannot be negative.
+              </p>
+              <p>
+                Valid kernels generate positive-semidefinite Gram matrices. A nondegenerate Gaussian density
+                requires a positive-definite covariance. In regression, \(X^\top X\) is semidefinite, and adding
+                \(\lambda I\) makes it positive definite, giving ridge regression a unique and stable solution.
+                Positive definiteness unifies the ideas that energy is nonnegative, distance is coherent, and
+                local optimization curvature points upward.
               </p>
             </section>
 
             <section class="article-section" id="en-6">
               <span class="section-number">06 / DECOMPOSITION</span>
-              <h2>SVD and PCA: rotate, scale, reveal</h2>
+              <h2>SVD and PCA: rotate, scale, and reveal structure inside noise</h2>
               <p>
-                Every matrix has a singular value decomposition
-                \(A=U\Sigma V^\top\). The right singular vectors \(V\) form orthonormal input directions, the
-                singular values \(\sigma_i\ge0\) scale those directions, and the left singular vectors \(U\)
-                give the corresponding output directions. Geometrically, a matrix maps the unit sphere to an
-                ellipsoid.
+                Eigendecomposition applies directly only to square matrices and may fail to produce a complete
+                eigenbasis. Singular value decomposition applies to every \(m\times n\) real matrix:
+                \(A=U\Sigma V^\top\). First \(V^\top\) rotates or reflects the input space, then the diagonal
+                matrix \(\Sigma\) scales orthogonal directions, and finally \(U\) rotates the output space. A
+                unit sphere is mapped to an ellipsoid whose axes and lengths are given by the singular vectors
+                and singular values.
               </p>
               <div class="equation">\[A=U\Sigma V^\top,\qquad A_k=\sum_{i=1}^{k}\sigma_i u_i v_i^\top\]<span class="equation-number">(6)</span></div>
               <p>
-                The Eckart–Young theorem says \(A_k\) is the best rank-\(k\) approximation to \(A\) in both
-                spectral and Frobenius norm. Truncating small singular values compresses data, removes weak
-                directions, and regularizes unstable inversions. The condition number
-                \(\kappa(A)=\sigma_{\max}/\sigma_{\min}\) measures how strongly input errors can be amplified.
+                Singular values are ordered \(\sigma_1\ge\sigma_2\ge\cdots\ge0\), and the number of nonzero
+                values equals rank. The Eckart–Young theorem states that
+                \(A_k=\sum_{i=1}^k\sigma_i u_iv_i^\top\) is the best rank-\(k\) approximation in both spectral
+                and Frobenius norm. Truncation is not an arbitrary deletion: among all models with the same rank,
+                it retains the most matrix energy possible.
+              </p>
+              <h3>How SVD emerges from two symmetric matrices</h3>
+              <p>
+                Both \(A^\top A\) and \(AA^\top\) are symmetric positive semidefinite. Eigenvectors of
+                \(A^\top A\) are the right singular vectors \(v_i\), with eigenvalues \(\sigma_i^2\). Defining
+                \(u_i=Av_i/\sigma_i\) produces the left singular vectors. Thus
+                \(Av_i=\sigma_i u_i\) and \(A^\top u_i=\sigma_i v_i\). SVD finds paired orthogonal input and
+                output directions between which the entire map reduces to scalar multiplication.
               </p>
               <p>
-                PCA centers a data matrix \(X\), then finds directions of maximum variance. These are the
-                eigenvectors of the covariance matrix \(X^\top X/(n-1)\), or equivalently the right singular
-                vectors of \(X\). PCA is both a variance-maximization problem and a minimum-reconstruction-error
-                projection. Those two statements are the same geometry viewed from opposite sides.
+                The pseudoinverse follows directly:
+                \(A^+=V\Sigma^+U^\top\), where nonzero singular values are inverted and zeros remain zero. A very
+                small singular value becomes a very large inverse gain, amplifying noise. Truncated SVD discards
+                weak directions entirely, while Tikhonov or ridge regularization suppresses them smoothly. Both
+                ask whether an exact fit is worth the instability in directions that data barely supports.
+              </p>
+              <p>
+                Image compression expresses an image matrix as rank-one patterns
+                \(\sigma_i u_iv_i^\top\). Large terms capture major contours and brightness structure, while
+                small terms often capture texture or noise. User-item matrices are frequently approximately
+                low-rank because a small number of latent preferences explain much of the behavior. LoRA uses
+                the same idea for language models, representing task-specific weight updates through two small
+                low-rank factors.
+              </p>
+              <h3>Conditioning and ill-posed directions</h3>
+              <p>
+                The condition number
+                \(\kappa(A)=\sigma_{\max}/\sigma_{\min}\) measures worst-case sensitivity. If
+                \(\sigma_{\min}\) is near zero, some input direction is almost flattened. Recovering it requires
+                enormous amplification, so measurement noise and rounding error grow as well. Ill-conditioning
+                is not necessarily an implementation bug; it can be an intrinsic lack of recoverable
+                information. Regularization accepts some bias to reduce the variance caused by these fragile
+                directions.
+              </p>
+              <h3>PCA as two equivalent optimization problems</h3>
+              <p>
+                For centered data \(X\in\mathbb{R}^{n\times d}\), the covariance matrix is
+                \(C=X^\top X/(n-1)\). The first principal component chooses a unit vector \(v\) maximizing
+                projected variance \(v^\top Cv\), so it is the eigenvector of \(C\) with the largest eigenvalue.
+                Later components maximize variance subject to orthogonality. Equivalently, the right singular
+                vectors of centered \(X\) are the principal directions, and squared singular values are
+                proportional to explained variance.
+              </p>
+              <p>
+                PCA can also be defined as the \(k\)-dimensional subspace that minimizes squared reconstruction
+                error after projection. Total centered energy is fixed, so retaining more projected variance
+                leaves less orthogonal residual. Maximizing variance and minimizing reconstruction error are the
+                same geometry viewed from opposite sides. Centering is essential; otherwise the first component
+                may point from the origin toward the data mean rather than along variation around the mean.
+              </p>
+              <h3>A practical PCA workflow, explained variance, and whitening</h3>
+              <p>
+                A reliable workflow estimates the mean from training data, decides whether feature units also
+                require standardization, computes the SVD of the centered matrix, keeps the first \(k\) columns
+                of \(V\), forms low-dimensional coordinates \(Z=XV_k\), and reconstructs with
+                \(\hat X=ZV_k^\top\) before restoring the mean. Explained-variance ratio is
+                \(\sigma_i^2/\sum_j\sigma_j^2\). Choose \(k\) using cumulative variance or validation
+                performance rather than an automatic universal threshold.
+              </p>
+              <p>
+                PCA decorrelates coordinates but leaves different component variances. Whitening further scales
+                by \(\Lambda^{-1/2}\), producing a covariance near the identity:
+                \(Z_{\text{white}}=XV\Lambda^{-1/2}\). Whitening equalizes scales but can amplify noise in
+                low-variance directions and removes original units, so practical versions add
+                \(\varepsilon\) or truncate weak components.
               </p>
               <div class="example-box">
-                <span class="box-label">Why centering matters</span>
+                <span class="box-label">Do not automatically call components real factors</span>
                 <p>
-                  Without subtracting the mean, the first component may point toward the dataset's offset from
-                  the origin rather than the direction in which observations vary. PCA describes variation
-                  around the mean, not absolute position.
+                  PCA uses second-order statistics and linear projection. A component may mix several real
+                  causes or be dominated by outliers. It is an optimal linear coordinate under a stated
+                  criterion, not a guarantee of causal meaning or human interpretability.
                 </p>
               </div>
             </section>
 
             <section class="article-section" id="en-7">
               <span class="section-number">07 / LEARNING</span>
-              <h2>Gradients, Jacobians, and curvature</h2>
+              <h2>Gradients, Jacobians, and Hessians: local change is linear algebra</h2>
               <p>
-                Learning adjusts parameters to reduce a scalar objective. For \(f:\mathbb{R}^n\to\mathbb{R}\),
-                the gradient collects partial derivatives and points in the direction of steepest local
-                increase. Gradient descent moves in the opposite direction:
+                Machine learning adjusts parameters to reduce a scalar loss. For
+                \(f:\mathbb{R}^n\to\mathbb{R}\), the gradient collects first partial derivatives. A small
+                perturbation satisfies \(df\approx\nabla f^\top dx\). Under a fixed Euclidean step length,
+                Cauchy–Schwarz shows that the gradient points in the direction of steepest local increase, so
+                gradient descent updates
                 \(\theta_{t+1}=\theta_t-\eta\nabla f(\theta_t)\).
               </p>
               <div class="equation">\[df=\nabla f^\top d\theta,\qquad d(Wx)=(dW)x+W(dx)\]<span class="equation-number">(7)</span></div>
               <p>
-                The differential view is reliable because it makes shapes explicit. If \(y=f(x)\) is
-                vector-valued, its Jacobian \(J_{ij}=\partial y_i/\partial x_j\) is the best local linear map:
-                \(f(x+\Delta x)\approx f(x)+J\Delta x\). Backpropagation is repeated multiplication by
-                transposed local Jacobians, applying the chain rule from output sensitivity back to each
-                parameter.
+                For \(f:\mathbb{R}^n\to\mathbb{R}^m\), the Jacobian
+                \(J_{ij}=\partial f_i/\partial x_j\) is the best local linear map:
+                \(f(x+\Delta x)\approx f(x)+J\Delta x\). A nonlinear network therefore behaves like a matrix in
+                a sufficiently small neighborhood. The chain rule multiplies Jacobians through a composition,
+                while backpropagation multiplies their transposes in reverse order to carry output sensitivity
+                back to each parameter.
               </p>
               <p>
-                The Hessian \(H_{ij}=\partial^2 f/\partial\theta_i\partial\theta_j\) describes local curvature.
-                Positive eigenvalues curve upward, negative eigenvalues reveal descent directions at a saddle,
-                and a wide eigenvalue spread makes optimization ill-conditioned. Preconditioning and adaptive
-                optimization try to rescale this geometry so that one step size works across directions.
+                For \(y=Wx\) and loss \(L(y)\),
+                \(dL=(\nabla_yL)^\top[(dW)x+W(dx)]\). Rearranging the inner products gives
+                \(\nabla_xL=W^\top\nabla_yL\) and
+                \(\nabla_WL=(\nabla_yL)x^\top\). The first explains why error signals move backward through
+                \(W^\top\). The second is an outer product between output error and input activation: a weight
+                changes according to both the sending and receiving sides.
               </p>
+              <h3>Where common matrix derivatives come from</h3>
+              <p>
+                Shape discipline is the heart of matrix calculus. A scalar differentiated with respect to a
+                column vector should produce a column of the same shape; differentiating with respect to a
+                matrix should produce a matrix of the same shape. The differential-and-trace method writes
+                \(df=\operatorname{tr}[(\nabla_Wf)^\top dW]\), using
+                \(a^\top db=\operatorname{tr}(a^\top db)\) and the cyclic trace identity to move \(dW\) into a
+                readable position.
+              </p>
+              <p>
+                Useful results include \(\nabla_x(a^\top x)=a\),
+                \(\nabla_x(x^\top Ax)=(A+A^\top)x\),
+                \(\nabla_X\|X\|_F^2=2X\), and
+                \(\nabla_X\operatorname{tr}(A^\top X)=A\). The quadratic form has two terms because \(x\)
+                appears on both sides of \(A\): differentiating only one occurrence misses half the change.
+              </p>
+              <h3>A complete gradient derivation for linear regression</h3>
+              <p>
+                For \(L(w)=\frac{1}{2n}\|Xw-y\|_2^2\), let \(r=Xw-y\). Then
+                \(dL=\frac1n r^\top X\,dw\), so
+                \(\nabla_wL=X^\top(Xw-y)/n\). Forward propagation uses \(X\) to map parameters to predictions;
+                reverse propagation uses \(X^\top\) to aggregate sample errors into feature parameters. Setting
+                the gradient to zero immediately gives the normal equations, showing that closed-form fitting
+                and gradient optimization express the same first-order condition.
+              </p>
+              <div class="equation">\[\nabla_w\frac{1}{2n}\|Xw-y\|_2^2=\frac1nX^\top(Xw-y),\qquad H=\frac1nX^\top X\]<span class="equation-number">(13)</span></div>
+              <p>
+                The Hessian is \(X^\top X/n\). Correlated features create small eigenvalues and elongated loss
+                contours: gradient descent oscillates across stiff directions and moves slowly along flat ones.
+                Standardization and decorrelation make contours more spherical. The same spectrum therefore
+                links preprocessing, identifiability, condition number, learning-rate limits, and convergence
+                speed.
+              </p>
+              <h3>Chain rule, computation graphs, and vanishing gradients</h3>
+              <p>
+                For \(z=f_L\circ\cdots\circ f_1(x)\), local perturbations satisfy
+                \(dz=J_LJ_{L-1}\cdots J_1dx\). Reverse-mode automatic differentiation computes
+                \(\nabla_xL=J_1^\top\cdots J_L^\top\nabla_zL\). If the important singular values of many
+                Jacobians remain below one, gradients decay exponentially; if they remain above one, gradients
+                can explode. Initialization, normalization, residual paths, and gating mechanisms all attempt
+                to preserve useful signal directions through depth.
+              </p>
+              <h3>The Hessian describes local loss curvature</h3>
+              <p>
+                The Hessian \(H_{ij}=\partial^2f/\partial\theta_i\partial\theta_j\) enters the second-order
+                approximation
+                \(f(\theta+\Delta)\approx f(\theta)+g^\top\Delta+\frac12\Delta^\top H\Delta\). Positive
+                eigenvalues curve upward, negative eigenvalues reveal descending directions at a saddle or
+                maximum, and near-zero eigenvalues mark flat directions in which parameters can move with
+                little change in loss.
+              </p>
+              <p>
+                A wide Hessian eigenvalue range produces a narrow valley. A step size safe for high-curvature
+                directions is slow in flat directions, while a step large enough for flat directions oscillates
+                in stiff ones. Newton's method rescales the gradient with \(H^{-1}\). Preconditioners, momentum,
+                and adaptive optimizers also modify directional scales. An optimizer does not merely choose
+                where to move; it implicitly chooses a metric on parameter space.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">A gradient is metric-dependent</span>
+                <p>
+                  “Steepest” depends on how step length is measured. The ordinary gradient is steepest under the
+                  Euclidean metric. Natural gradient uses Fisher information to measure change in model
+                  distributions, aiming for equal steps in predictive behavior rather than equal steps in raw
+                  parameter coordinates.
+                </p>
+              </div>
             </section>
 
             <section class="article-section" id="en-8">
               <span class="section-number">08 / MODELS</span>
-              <h2>Classical learning in matrix form</h2>
+              <h2>Writing classical machine learning in matrix form</h2>
               <p>
-                Put \(n\) examples into the rows of a design matrix \(X\in\mathbb{R}^{n\times d}\), parameters
-                into \(w\in\mathbb{R}^d\), and targets into \(y\in\mathbb{R}^n\). Linear regression minimizes
-                \(\|Xw-y\|_2^2\). At the optimum, the residual is orthogonal to every column of \(X\), producing
-                the normal equations.
+                Put \(n\) observations in the rows of \(X\in\mathbb{R}^{n\times d}\), parameters in
+                \(w\in\mathbb{R}^d\), and targets in \(y\in\mathbb{R}^n\). Linear regression predicts
+                \(\hat y=Xw\) and minimizes \(\|Xw-y\|_2^2\). Every possible prediction lies in the column
+                space of \(X\). Training projects \(y\) onto that space, and the residual at the optimum is
+                orthogonal to every feature column.
               </p>
               <div class="equation">\[X^\top X\hat w=X^\top y,\qquad \hat w=(X^\top X+\lambda I)^{-1}X^\top y\]<span class="equation-number">(8)</span></div>
               <p>
-                The second expression is ridge regression. Adding \(\lambda I\) shifts every eigenvalue of
-                \(X^\top X\), suppressing poorly supported directions and improving conditioning. Regularization
-                is therefore not merely “making weights small”; it changes the geometry of the inverse problem.
+                Ridge regression adds \(\lambda\|w\|_2^2\). Algebraically, it replaces \(X^\top X\) with
+                \(X^\top X+\lambda I\). Spectrally, it shifts each eigenvalue and prevents weak directions from
+                receiving enormous coefficients. Statistically, it trades some bias for lower variance.
+                Bayesianly, it corresponds to an isotropic zero-mean Gaussian prior. “Smaller weights” are the
+                visible outcome; stabilizing poorly supported directions is the deeper effect.
               </p>
               <p>
-                Logistic regression uses the same linear score \(Xw\), then maps it through a sigmoid and fits
-                cross-entropy. Kernel methods replace explicit coordinates with inner products
-                \(k(x_i,x_j)\), allowing a linear method in an implicit feature space. The Gram matrix records
-                all pairwise inner products and carries the geometry needed by the algorithm.
+                Lasso uses \(\lambda\|w\|_1\). Its diamond-shaped constraint often touches a loss contour on a
+                coordinate axis, producing exact zeros. \(L_2\) prefers many distributed small coefficients;
+                \(L_1\) prefers a smaller active set. The form and strength of regularization express a geometric
+                preference about plausible parameter directions.
+              </p>
+              <h3>How a design matrix encodes a modeling assumption</h3>
+              <p>
+                Linear regression is linear in parameters, not necessarily in raw input. Mapping one variable to
+                \(\phi(x)=[1,x,x^2,\ldots,x^p]\) yields polynomial regression while preserving the matrix form
+                \(\hat y=\Phi w\). Interaction terms encode effects that depend on another feature; sine and
+                cosine columns encode periodicity; spline bases encode local flexibility. What the model can
+                express is determined first by the column space of the design matrix.
+              </p>
+              <p>
+                Adding columns can only reduce training residual because it enlarges the prediction space, but
+                it may also increase variance, collinearity, and overfitting. Lower training error does not prove
+                that the new directions carry stable information. Validation, cross-validation, and
+                regularization decide whether the enlarged function space generalizes.
+              </p>
+              <h3>Intercepts, centering, and coefficient interpretation</h3>
+              <p>
+                An intercept can be included by adding a column of ones to \(X\). If both features and target are
+                centered, the optimal intercept is zero; in original units it is
+                \(\bar y-\bar x^\top w\). Standardized coefficients express output change in standard deviations
+                per input standard deviation, which helps compare scale but does not establish causality.
+                Correlated features share and compete for explanatory power, making individual coefficients
+                sensitive to small data changes.
+              </p>
+              <h3>Classification, kernels, and Gram matrices</h3>
+              <p>
+                Logistic regression forms the linear score \(z=Xw\), maps it through a sigmoid, and optimizes
+                cross-entropy. The boundary \(w^\top x+b=0\) is a hyperplane with normal vector \(w\); signed
+                distance is proportional to \((w^\top x+b)/\|w\|\). Multiclass softmax produces several scores
+                with a weight matrix, so each class vector acts like a learned matching template.
+              </p>
+              <p>
+                Sigmoid cross-entropy gives the single-example gradient
+                \((\hat p-y)x\), and the batch gradient is \(X^\top(\hat p-y)\). This mirrors linear regression's
+                \(X^\top(\hat y-y)\): the transpose design matrix again aggregates sample-level error back into
+                parameter coordinates. The difference lies in the response function and definition of error,
+                not in the basic linear structure.
+              </p>
+              <p>
+                A support-vector machine focuses on margin geometry. Scaling \(w\) and \(b\) together does not
+                move the boundary, so fixing the scale through \(\|w\|\) makes maximum margin equivalent to
+                minimizing \(\frac12\|w\|^2\) under classification constraints. Only support vectors on or
+                inside the margin determine the final boundary.
+              </p>
+              <p>
+                Kernel methods use an implicit feature map \(\phi(x)\) but access it only through
+                \(k(x_i,x_j)=\phi(x_i)^\top\phi(x_j)\). The Gram matrix stores all pairwise inner products and
+                is positive semidefinite, so it defines a valid Euclidean feature geometry. The kernel trick is
+                not mysterious “automatic high dimension”; it supplies the geometry of a new space without
+                explicitly constructing every coordinate.
+              </p>
+              <h3>Linear algebra inside probabilistic models</h3>
+              <p>
+                A multivariate Gaussian
+                \(p(x)\propto|\Sigma|^{-1/2}\exp[-\frac12(x-\mu)^\top\Sigma^{-1}(x-\mu)]\) is determined by a
+                mean vector and covariance matrix. Covariance eigenvectors give ellipsoid axes, eigenvalues give
+                directional variances, the determinant controls volume scale, and the inverse covariance or
+                precision matrix defines Mahalanobis geometry.
+              </p>
+              <p>
+                The entry \(\Sigma_{ij}=E[(x_i-\mu_i)(x_j-\mu_j)]\) measures linear co-variation. Zero
+                covariance does not generally imply independence, although it does for jointly Gaussian
+                variables. Zeros in the precision matrix correspond to conditional-independence structure in a
+                Gaussian graphical model. In high dimension with few observations, sample covariance may be
+                singular and require shrinkage, low-rank structure, or a diagonal approximation.
+              </p>
+              <h3>Statistical assumptions and geometric facts in linear regression</h3>
+              <p>
+                Least-squares projection itself requires no Gaussian noise assumption. Classical unbiasedness
+                and variance claims additionally assume a model \(y=Xw+\varepsilon\), conditional mean
+                \(E[\varepsilon\mid X]=0\), and suitable variance structure. Gaussian noise makes least squares
+                a maximum-likelihood estimator. One must distinguish “the algorithm can compute a projection”
+                from “that projection supports valid statistical inference.”
+              </p>
+              <p>
+                Heteroscedasticity does not automatically bias coefficients but invalidates ordinary standard
+                errors. Omitting an important variable correlated with included features can break the
+                conditional-mean assumption. Distribution shift can invalidate relationships learned in the
+                original column space. Linear algebra specifies the fitted subspace; statistics determines
+                whether that finite-sample subspace represents the population.
               </p>
             </section>
 
             <section class="article-section" id="en-9">
               <span class="section-number">09 / REPRESENTATION</span>
-              <h2>Embeddings, tensors, and attention</h2>
+              <h2>Embeddings, tensors, convolutions, and attention still rest on linear algebra</h2>
               <p>
                 An embedding matrix \(E\in\mathbb{R}^{V\times d}\) assigns each of \(V\) discrete items a learned
-                vector in \(d\) dimensions. Training moves items used in similar predictive contexts toward
-                useful geometric relationships. These coordinates are not hand-labeled meanings; they are a
-                basis discovered because it helps the objective.
+                vector in \(d\) dimensions. Looking up token \(i\) is equivalent to multiplying by its one-hot
+                vector \(e_i\) and selecting the corresponding row. Training does not give each coordinate a
+                human-written meaning. It reshapes the whole space according to the prediction objective:
+                objects that play similar roles in similar contexts often acquire nearby directions, and some
+                relations may appear as approximate vector differences. Such patterns are created jointly by
+                the task and the data, so they should not be mistaken for universal semantic truths.
               </p>
               <p>
-                Batches, images, and sequences are often stored as tensors, but most neural operations remain
-                linear algebra applied along selected axes. Convolutions are structured linear maps with shared
-                weights. A multi-layer perceptron is a sequence of affine maps and nonlinearities. Reshaping
-                changes indexing, not information, unless elements are discarded or aggregated.
+                Deep learning uses tensors to represent batches, sequences, images, channels, and multiple
+                attention heads. A tensor is a multi-axis array, and the essential question is what each axis
+                means. Most tensor operations are still matrix products, inner or outer products, broadcasting,
+                and summation performed along selected axes. A reshape normally changes indexing without
+                changing the stored information; a transpose reorders axes; a reduction aggregates values and
+                genuinely removes degrees of freedom. Labeling shapes is one of the most effective ways to
+                prevent implementation errors.
               </p>
+              <h3>Derive a network from shapes instead of guessing code</h3>
+              <p>
+                Let the batch size be \(B\), sequence length \(T\), and hidden dimension \(d\), so
+                \(X\in\mathbb{R}^{B\times T\times d}\). A linear layer with
+                \(W\in\mathbb{R}^{d\times h}\) acts only on the last axis and produces a tensor of shape
+                \(B\times T\times h\). The same \(W\) is shared across all samples and positions. Temporarily
+                flattening the first two axes into a \((BT)\times d\) matrix and multiplying by \(W\) is
+                equivalent to applying the layer independently at every position. This principle, “choose the
+                active axis and treat the others as batch axes,” unifies dense layers, pointwise convolutions,
+                and multi-head projections.
+              </p>
+              <p>
+                Broadcasting repeats data along missing dimensions. When a bias
+                \(b\in\mathbb{R}^{h}\) is added to a \(B\times T\times h\) output, the same \(b\) is reused for
+                every sample and every position. That convenience can hide a semantic error: a quantity that
+                should vary by sample may accidentally lose an axis, and the program will still run while
+                sharing it across the entire batch. Checking the meaning of every axis matters more than merely
+                checking the total number of elements.
+              </p>
+              <p>
+                A convolution is linear in its input, but its matrix is sparse and uses shared weights. The same
+                local filter is reused at different positions, encoding translation equivariance while reducing
+                the parameter count. A dense layer connects every output to every input; a convolution restricts
+                the connection pattern; a graph neural network aggregates according to adjacency. All can be
+                viewed as linear operators with different structural constraints. Structure is not only a
+                computational shortcut: it inserts assumptions about locality and symmetry into the model.
+              </p>
+              <p>
+                A one-dimensional convolution can be expanded into multiplication by a Toeplitz matrix. Each row
+                contains a shifted copy of the same kernel, so the matrix is sparse and repetitive. Two-dimensional
+                convolution follows the same idea with more elaborate indexing. Sharing a kernel across an image
+                says that the same local pattern should trigger the same detector wherever it appears. Pooling
+                and stride reduce spatial resolution by aggregating and discarding position degrees of freedom,
+                while channel mixing performs a change of feature basis at every location.
+              </p>
+              <h3>Three views of attention</h3>
               <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V\]<span class="equation-number">(9)</span></div>
               <p>
-                In attention, \(QK^\top\) is a matrix of pairwise dot products: each query compares its direction
-                with every key. Softmax converts those scores into positive row-wise weights, and multiplying by
-                \(V\) forms weighted combinations of value vectors. The factor \(\sqrt{d_k}\) stabilizes score
-                variance because an unscaled dot product typically grows with dimension.
+                Learned matrices project an input representation into queries \(Q\), keys \(K\), and values
+                \(V\). Entry \(ij\) of \(QK^\top\) is the dot product between query \(i\) and key \(j\), measuring
+                how aligned they are in a learned matching space. Row-wise softmax makes the weights positive and
+                sum to one; multiplying by \(V\) then forms a weighted combination of value vectors. Algebraically
+                this is matrix multiplication and normalization, geometrically it is directional similarity
+                retrieval, and statistically it is an input-dependent weighted average.
+              </p>
+              <p>
+                Why divide by \(\sqrt{d_k}\)? If query and key coordinates are approximately independent, have
+                mean zero, and variance one, their dot product is a sum of \(d_k\) products with variance roughly
+                \(d_k\). Larger dimensions therefore produce larger score magnitudes, push softmax toward
+                saturation, and shrink useful gradients. Dividing by \(\sqrt{d_k}\) restores a roughly constant
+                variance scale. This small factor is where probability, numerical stability, and linear algebra
+                meet in a single formula.
+              </p>
+              <p>
+                Multi-head attention uses several sets of projection matrices to construct matching relations in
+                different low-dimensional subspaces. A head need not correspond to a clean human concept, but
+                multiple heads allow several relation geometries to coexist. A residual connection writes the
+                transformation as \(x+F(x)\), asking the block to learn a correction to the identity and giving
+                gradients a direct path. Layer normalization recenters and rescales coordinates within each
+                sample. Modern architectures are elaborate, but their recurring operations remain projection,
+                inner product, weighted sum, normalization, and change of basis.
+              </p>
+              <h3>Checking self-attention shapes step by step</h3>
+              <p>
+                Ignore the batch axis and let \(X\in\mathbb{R}^{T\times d}\), with
+                \(W_Q,W_K\in\mathbb{R}^{d\times d_k}\) and
+                \(W_V\in\mathbb{R}^{d\times d_v}\). Then
+                \(Q,K\in\mathbb{R}^{T\times d_k}\), \(V\in\mathbb{R}^{T\times d_v}\), and
+                \(QK^\top\in\mathbb{R}^{T\times T}\). That score matrix gives every query position a score for
+                every key position. Softmax preserves its shape, and multiplying by \(V\) produces
+                \(T\times d_v\). Rows always identify positions issuing queries; columns identify positions that
+                may be read.
+              </p>
+              <p>
+                A causal mask sets future-position scores to negative infinity before softmax, forcing their
+                weights to zero. It restricts allowed connections in the attention matrix rather than modifying
+                the value vectors. Each attention row sums to one, so its immediate output lies in the convex
+                hull of the value vectors, although output projections, residual paths, and nonlinear layers make
+                the complete block more than a simple average. For long sequences the \(T\times T\) score matrix
+                has quadratic time and memory cost; efficient attention methods approximate, block, sparsify, or
+                otherwise structure this matrix.
+              </p>
+              <h3>Rank, bottlenecks, and model capacity</h3>
+              <p>
+                If two linear layers have no nonlinearity between them, \(W_2W_1x\) is still one linear map, and
+                the rank of the composite cannot exceed the intermediate width. A narrow hidden layer therefore
+                creates a rank bottleneck that limits the independent directions transmitted. With nonlinearities,
+                different input regions have different local Jacobians, so the network can no longer be collapsed
+                globally into one matrix. This distinction explains when depth merely reparameterizes a linear
+                map and when nonlinear depth genuinely expands expressive power.
+              </p>
+              <p>
+                Low-rank factorization can also compress a weight matrix. Approximate
+                \(W\in\mathbb{R}^{m\times n}\) by \(AB\), where
+                \(A\in\mathbb{R}^{m\times r}\), \(B\in\mathbb{R}^{r\times n}\), and
+                \(r\ll\min(m,n)\). Parameters and computation decrease, at the cost of passing information through
+                only \(r\) intermediate directions. LoRA freezes the original weight and learns a low-rank
+                update, expressing the hypothesis that adaptation to a new task occupies a small collection of
+                directions rather than the entire high-dimensional parameter space.
               </p>
               <div class="insight-box">
-                <span class="box-label">One operation, three views</span>
+                <span class="box-label">The geometry of representation learning</span>
                 <p>
-                  Algebraically, attention is three matrix multiplications and a normalization. Geometrically,
-                  it is similarity-based retrieval. Statistically, it is a data-dependent weighted average.
-                  Understanding arrives when all three descriptions become interchangeable.
+                  A classifier need not draw a complicated boundary in the original input space. Earlier layers
+                  can repeatedly change coordinates, separate task-relevant factors, and compress irrelevant
+                  variation until the final layer needs only a simple hyperplane. Depth comes from repeatedly
+                  reshaping space; learning comes from using error to decide how that space should be reshaped.
                 </p>
               </div>
             </section>
 
             <section class="article-section" id="en-10">
               <span class="section-number">10 / MEANING</span>
-              <h2>What the symbols mean physically</h2>
+              <h2>Putting algebra, geometry, physics, and machine learning on one map</h2>
               <p>
-                A vector can represent displacement, force, velocity, a signal, a probability distribution, or
-                an abstract feature state. What makes these objects vectors is not that they look like arrows,
-                but that they combine by superposition. A matrix expresses how causes are mixed into effects:
-                a rotation changes coordinates, a stiffness matrix maps displacement to force, a transition
-                matrix moves probability mass, and a neural weight matrix mixes input features into learned
-                features.
+                Linear algebra reaches across so many fields because superposition is a first approximation to
+                complex systems. Small vibrations decompose into independent modes, light and sound into
+                frequencies, images into spatial patterns, data variation into principal components, and model
+                error into parameter directions. Whenever a system is approximately additive, locally or
+                globally, vectors and matrices let us separate coupled behavior into analyzable directions.
               </p>
               <p>
-                Inner products measure overlap or work: force dotted with displacement is mechanical work;
-                signal dotted with a basis function is the amount of that frequency present; an embedding dotted
-                with another measures aligned features. Eigenvectors describe modes that preserve their form
-                under evolution, such as vibration modes. Singular vectors generalize this idea to maps between
-                different spaces, identifying the most amplified input-output channels.
+                <strong>The physical meaning of a vector is a state or a direction of change.</strong> A position
+                vector says where an object is, velocity says how its state changes in time, force says how
+                momentum is changed, a probability vector says how mass is distributed, and a feature vector
+                records an object in selected coordinates. A vector need not be a literal arrow in physical
+                space. If objects can be added and scaled consistently, they can possess vector structure.
               </p>
               <p>
-                In machine learning, “dimension” is a degree of freedom, “projection” is deliberate information
-                loss, “rank” is the number of independent patterns available, and “regularization” is a
-                preference over directions. A model learns by reshaping a space so that the distinctions needed
-                for prediction become easy to draw.
+                <strong>The physical meaning of a matrix is a response law.</strong> A rotation matrix changes
+                coordinate directions while preserving length; a stiffness matrix maps displacement to restoring
+                force; an inertia tensor maps angular velocity to angular momentum; a transition matrix moves a
+                probability distribution to the next time; a covariance matrix maps a test direction to its
+                co-variation with every direction; and a neural weight matrix mixes input features into new
+                responses. Column \(j\) tells us what output the system produces when only input basis direction
+                \(j\) is activated.
               </p>
+              <p>
+                <strong>The physical meaning of an inner product is effective overlap.</strong> Force orthogonal
+                to displacement performs no work; a signal orthogonal to a frequency basis contains none of that
+                frequency; a least-squares residual orthogonal to every feature column cannot be improved by an
+                infinitesimal linear parameter change; a large query-key dot product indicates a match. The inner
+                product turns directional alignment into a scalar and thereby unifies energy, correlation,
+                projection coefficients, and similarity.
+              </p>
+              <p>
+                <strong>The physical meaning of an eigenvector is an intrinsic mode.</strong> A normal mode of a
+                vibrating string keeps its shape while amplitude and phase change; a stationary distribution of a
+                Markov chain remains fixed after transition; covariance eigenvectors are uncorrelated axes of
+                variation; Hessian eigenvectors are directions in which local loss curvature decouples. A coupled
+                system looks like independent scalar scaling when observed along its modes.
+              </p>
+              <p>
+                <strong>The physical meaning of singular vectors is the strongest input-output channels.</strong>
+                Ordinary eigenvectors are unavailable when input and output spaces differ. SVD finds an input
+                direction \(v_i\) that a matrix maps to output direction \(u_i\), amplified by \(\sigma_i\). Large
+                singular-value directions are sensitive or information-rich channels; small ones are difficult
+                to observe and easily overwhelmed by noise. Dimensionality reduction preserves the former,
+                regularization suppresses the latter, and the condition number compares their extremes.
+              </p>
+              <h3>Physical case study I: spring systems and minimum energy</h3>
+              <p>
+                For masses connected by springs, let \(x\) be a small displacement vector. The restoring force is
+                approximately \(f=-Kx\), where the stiffness matrix \(K\) collects the effects of every connection.
+                The potential energy is \(E(x)=\frac12x^\top Kx\). If \(K\) is positive definite, every nonzero
+                displacement away from equilibrium increases energy. A zero eigenvalue identifies a direction
+                that costs no energy, often a rigid translation or a free mechanism. Eigenvectors of \(K\) give
+                independent vibration modes, and their eigenvalues are related to squared modal frequencies.
+              </p>
+              <p>
+                In machine learning the Hessian acts like a local stiffness matrix of the loss surface. A
+                high-eigenvalue direction resembles a stiff spring: a small parameter motion increases loss
+                quickly. A low-eigenvalue direction resembles a soft spring and permits much larger movement.
+                Gradient descent can oscillate in stiff directions while advancing slowly in soft ones. Weight
+                decay behaves like attaching every parameter direction to the origin with an additional spring,
+                increasing curvature and discouraging large displacement.
+              </p>
+              <h3>Physical case study II: sensors, inverse problems, and invisible directions</h3>
+              <p>
+                Let a true state \(x\) produce sensor measurements \(y=Ax+\varepsilon\). Each row of \(A\)
+                describes how one sensor mixes the underlying state. Changes in the null space do not alter any
+                reading, so no optimizer can reconstruct them from these sensors alone. Small-singular-value
+                directions are theoretically visible but amplify measurement noise during inversion. Adding more
+                sensors raises rank only when they contribute new independent measurement directions; duplicating
+                the same sensor may reduce random noise but cannot remove structural non-identifiability.
+              </p>
+              <p>
+                Image deblurring, medical imaging, astronomical reconstruction, and parameter estimation are all
+                inverse problems. Regularization does not magically repair the answer; it supplies a preference
+                when observations are insufficient, such as favoring smooth images, small parameters, or sparse
+                structure. Machine-learning training is also an inverse problem: infer model parameters from
+                finite input-output observations. Architecture, augmentation, and regularization jointly specify
+                which candidate explanations should be trusted.
+              </p>
+              <h3>Geometric case study: classification changes separability</h3>
+              <p>
+                Imagine two classes forming concentric circles in the plane. No straight line separates them.
+                Add the feature \(r^2=x_1^2+x_2^2\), and a threshold on radius becomes a linear separator in the
+                new coordinate system. Kernel methods construct such feature spaces explicitly or implicitly;
+                neural networks learn transformations layer by layer so that members of one class cluster while
+                different classes separate along task-relevant directions. A simple final linear classifier does
+                not imply that the original task was simple; the representation has already organized its
+                geometry.
+              </p>
+              <p>
+                A useful representation does not preserve every distance. It should become invariant to changes
+                that do not affect the label, such as a small translation of an object or a synonymous rewrite,
+                while remaining sensitive to task-relevant differences. The model therefore compresses some
+                directions and expands others. Data augmentation identifies transformations that should preserve
+                identity, the loss identifies examples that must be separated, and linear algebra describes how
+                those directions are stretched, projected, and combined.
+              </p>
+              <h3>Probability vectors and Markov chains: matrices move mass</h3>
+              <p>
+                A probability vector \(p\) has nonnegative entries summing to one, so valid distributions occupy a
+                simplex rather than all of Euclidean space. A transition matrix \(P\), normalized by rows or
+                columns according to convention, records the probability of moving between states. The update
+                \(p_{t+1}=Pp_t\) neither creates nor destroys total probability; it redistributes mass. A stationary
+                distribution satisfies \(Pp_*=p_*\), making it an eigenvector associated with eigenvalue one.
+              </p>
+              <p>
+                For an irreducible, aperiodic chain, other eigenvalues have magnitude below one. Components of the
+                initial distribution along those modes decay until only the stationary direction remains. The
+                second-largest eigenvalue controls the mixing rate. PageRank, random-walk embeddings, and some
+                diffusion ideas reuse this pattern of repeatedly applying a linear operator so transient modes
+                disappear. Probability constraints also remind us that coefficients in a linear combination
+                cannot always be arbitrary: to preserve a distribution, weights must remain normalized and
+                nonnegative.
+              </p>
+              <h3>Graphs and Laplacians: geometry without coordinates</h3>
+              <p>
+                A graph has nodes and edges but no natural horizontal or vertical coordinates. Its adjacency
+                matrix \(A\) and degree matrix \(D\) nevertheless define the Laplacian \(L=D-A\). The quadratic
+                form
+                \(x^\top Lx=\frac12\sum_{ij}A_{ij}(x_i-x_j)^2\) measures how unsmooth a node signal is across
+                connected pairs. Small values encourage adjacent nodes to have similar representations. The
+                smallest eigenvalue is zero, with constant vectors on each connected component; eigenvectors near
+                zero describe slowly varying, large-scale graph structure.
+              </p>
+              <p>
+                Spectral clustering embeds nodes using low-eigenvalue Laplacian eigenvectors and then applies
+                ordinary clustering. Message passing in graph neural networks also mixes node features through
+                adjacency-based operators: each node collects neighboring vectors and transforms them. Repeated
+                smoothing across too many layers can make node representations indistinguishable, a phenomenon
+                called oversmoothing. Frequency, smoothness, and projection therefore remain meaningful without
+                physical coordinates; the matrix-encoded connectivity creates the geometry.
+              </p>
+              <h3>A geometric translation of machine-learning concepts</h3>
               <table class="comparison-table">
                 <thead><tr><th>Object</th><th>Geometric meaning</th><th>Learning meaning</th></tr></thead>
                 <tbody>
                   <tr><td>Vector</td><td>Point or direction</td><td>Observation, state, parameter, embedding</td></tr>
-                  <tr><td>Matrix</td><td>Linear transformation</td><td>Feature mixer, dataset, local derivative</td></tr>
-                  <tr><td>Dot product</td><td>Directional overlap</td><td>Similarity, score, correlation</td></tr>
-                  <tr><td>Rank</td><td>Output dimensionality</td><td>Independent information capacity</td></tr>
-                  <tr><td>Eigenvalue</td><td>Gain along an invariant axis</td><td>Stability, variance, curvature</td></tr>
-                  <tr><td>SVD</td><td>Rotate–scale–rotate</td><td>Compression, denoising, latent structure</td></tr>
+                  <tr><td>Matrix</td><td>Linear response and spatial transform</td><td>Dataset, weight, feature mixer</td></tr>
+                  <tr><td>Dot product</td><td>Directional overlap or work</td><td>Similarity, score, correlation</td></tr>
+                  <tr><td>Projection</td><td>Retain a subspace component</td><td>Fitting, reduction, denoising</td></tr>
+                  <tr><td>Rank</td><td>Number of independent output directions</td><td>Effective information and capacity</td></tr>
+                  <tr><td>Eigenvalue</td><td>Gain along an intrinsic mode</td><td>Stability, variance, curvature</td></tr>
+                  <tr><td>SVD</td><td>Rotate, scale, rotate</td><td>Compression, pseudoinverse, latent structure</td></tr>
+                  <tr><td>Gradient</td><td>Direction of steepest local change</td><td>Parameter update and error attribution</td></tr>
                 </tbody>
               </table>
+              <p>
+                In machine learning, dimension means a degree of freedom rather than merely an array length;
+                projection means deliberately losing information; low rank says that many observations can be
+                explained by a few latent patterns; regularization expresses preferences over parameter
+                directions; training reshapes a space so required distinctions expand and irrelevant variations
+                contract; and generalization asks whether that geometry reflects stable rules of the data
+                generating process rather than only the training examples.
+              </p>
+              <p>
+                This is also why two-dimensional decision-boundary plots are useful but limited. Real models
+                operate in high-dimensional spaces, and any image we draw is a projection. Projection may hide
+                directions that were separated in the original space or overlap structures that were unrelated.
+                Intuition does not require forcing every problem onto paper. It requires reasoning fluently with
+                transferable concepts such as coordinates, directions, subspaces, transformations, and scale.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">A unified picture</span>
+                <p>
+                  Data supplies points in a space; feature engineering and representation learning choose
+                  coordinates; matrices turn one representation into another; inner products and norms specify
+                  comparison; loss defines preferable outputs; gradients pull output error back into parameter
+                  space; optimizers move parameters under a chosen metric; and matrix factorizations reveal the
+                  most important, stable, or dangerous directions. This is the complete connection between
+                  linear algebra and machine learning.
+                </p>
+              </div>
             </section>
 
             <section class="article-section" id="en-11">
               <span class="section-number">11 / PRACTICE</span>
-              <h2>Numerical habits and a durable mental model</h2>
+              <h2>From symbolic formulas to reliable computation: shapes, stability, and a learning path</h2>
               <p>
-                Exact algebra and floating-point computation are different worlds. Nearly dependent columns may
-                be independent symbolically but indistinguishable numerically. Feature scales can create severe
-                conditioning problems. Stable algorithms use orthogonal transformations, pivoting, and
-                factorizations to avoid magnifying roundoff.
+                Exact algebra and floating-point computation are not the same world. A mathematically nonzero
+                number may be indistinguishable from zero at machine precision; theoretically independent columns
+                may almost coincide; subtracting two huge nearby numbers may erase significant digits; and
+                different evaluation orders for the same formula may produce different errors. Numerical linear
+                algebra asks not only what the answer is, but how violently the answer changes under small input
+                perturbations and whether an algorithm adds further error amplification.
               </p>
               <p>
-                Always track shapes, center or standardize data when the model calls for it, inspect singular
-                values, and solve systems rather than forming inverses. Ask four questions whenever a matrix
-                appears: What are its input and output spaces? What directions does it preserve or erase? How
-                does it change lengths and angles? What does its conditioning imply for learning?
+                Several habits make implementations reliable. First, annotate tensor shapes and the meaning of
+                every axis, identifying input and output spaces before multiplication. Second, inspect feature
+                scales because incompatible units distort distance, gradients, and condition numbers. Third,
+                solve systems instead of explicitly forming inverses. Fourth, use singular values or a condition
+                estimate to diagnose near dependence. Fifth, distinguish transpose from reshape: one reorders
+                axes, while the other changes the indexing view. Sixth, write broadcasting rules explicitly so
+                code does not silently share a quantity along the wrong dimension.
+              </p>
+              <p>
+                For every new object, ask questions on four levels. At the symbolic level: what are its dimensions
+                and legal operations? At the geometric level: what does it do to space, and which directions does
+                it preserve or erase? At the computational level: which stable algorithm should be used, and what
+                are its complexity and conditioning? At the modeling level: what do these coordinates, distances,
+                and transformations represent in the real problem? Formula memorization fails when the task
+                changes, while intuition without rules breaks in high dimensions. The four levels should check
+                one another.
+              </p>
+              <h3>Choosing among common matrix factorizations</h3>
+              <p>
+                Use pivoted LU for a general square linear system; use Cholesky when the matrix is symmetric
+                positive definite, gaining speed and reduced storage; prefer QR for least squares; use SVD when
+                diagnosing rank, constructing a pseudoinverse, or handling severe ill-conditioning; and use
+                iterative methods such as power iteration or Lanczos when only a few extreme eigenvalues of a
+                large symmetric matrix are needed. Algorithm choice should exploit structure instead of applying
+                a generic inverse to every problem.
+              </p>
+              <p>
+                Complexity also shapes the model one can build. A dense \(n\times n\) factorization generally
+                requires \(O(n^3)\) time and \(O(n^2)\) storage, so large systems cannot explicitly construct a full
+                Hessian or covariance matrix. Practical methods exploit sparsity, low rank, blocks, randomized
+                projections, and operators that implement only matrix-vector products. Many iterative algorithms
+                never inspect every matrix entry; they repeatedly compute \(Ax\) and \(A^\top y\). This operator
+                view is central to the scalability of automatic differentiation and large linear models.
+              </p>
+              <h3>Data leakage as a linear-algebra preprocessing error</h3>
+              <p>
+                Means, variances, principal components, and whitening matrices must be estimated using the
+                training set and then applied unchanged to validation and test data. Computing them from the full
+                dataset lets test-distribution information enter the learned representation and produces an
+                overly optimistic evaluation. Online prediction introduces additional concerns: statistics may
+                drift over time, and missing-value imputation may alter covariance structure. A preprocessing
+                matrix is part of the model and belongs inside the reproducible training pipeline.
+              </p>
+              <h3>A shape checklist for reading any formula</h3>
+              <p>
+                When encountering a formula, inspect it in a fixed order. Is each symbol a scalar, vector, matrix,
+                or higher-order tensor? Does each axis mean sample, feature, time, space, or channel? Which axis is
+                contracted by multiplication? Which space contains the output? Is broadcasting present? Does a
+                transpose represent a geometric adjoint or merely shape alignment? Along which axis is
+                normalization performed? What information disappears under a sum or pooling operation? Correct
+                shapes do not guarantee correct semantics, but unclear shapes almost always obstruct sound
+                derivation.
+              </p>
+              <h3>A learning map that can keep growing</h3>
+              <p>
+                At the foundation, become fluent with vectors, linear combinations, bases, matrix products,
+                linear systems, rank, null spaces, inner products, orthogonal projection, and least squares. Next,
+                learn determinants, eigendecomposition, symmetric matrices, quadratic forms, SVD, pseudoinverses,
+                PCA, condition numbers, and common factorizations. In machine learning, derive matrix-form linear
+                regression and regularization; understand Jacobians, Hessians, and backpropagation; explain the
+                linear structure of embeddings, convolutions, kernels, and attention; and choose implementations
+                according to numerical stability.
+              </p>
+              <p>
+                The strongest exercises connect several views with small examples. Draw how a two-dimensional
+                matrix moves a coordinate grid; use three feature columns to verify column-space projection in
+                least squares; change singular values and observe image compression; compute covariance
+                eigenvectors and compare PCA projections; derive the shapes and gradients of a two-layer network;
+                and construct an ill-conditioned matrix to compare normal equations, QR, and SVD. Each time ask
+                which direction, information source, or physical action a number represents.
+              </p>
+              <p>
+                A useful practice routine has three loops. First, use paper and pencil on two- and
+                three-dimensional examples until column spaces, null spaces, projections, and eigen-directions can
+                be drawn. Second, implement elimination, least squares, PCA, and gradient checks in NumPy or a
+                similar tool and compare them with library routines. Third, return to real data and observe how
+                feature scaling, rank truncation, and regularization strength change validation performance.
+                Preserve formulas, diagrams, and numerical experiments in every loop so understanding does not
+                become trapped in one medium.
+              </p>
+              <p>
+                Keep a notebook of counterexamples: vectors with high cosine similarity but very different
+                Euclidean distances; an invertible matrix with an enormous condition number; a high-degree
+                polynomial with tiny training error and poor test error; a dataset whose largest-variance PCA
+                direction is irrelevant to classification; reshapes with equal element counts but incompatible
+                axis meanings. Counterexamples expose the assumptions beneath each theorem and prevent a useful
+                technique from becoming a supposed universal law. Mature intuition includes knowing where a
+                formula fails.
+              </p>
+              <div class="example-box">
+                <span class="box-label">Final self-check</span>
+                <p>
+                  On seeing \(XW\), you should immediately identify which columns are combined, which samples
+                  share the transformation, and the input and output dimensions. \(X^\top X\) should evoke
+                  feature inner products, covariance, Hessians, and conditioning; \(QQ^\top\), orthogonal
+                  projection; \(V\Sigma^{-1}U^\top\), the pseudoinverse and noise amplification; and
+                  \(QK^\top\), all pairwise query-key similarities. Mastery means being able to move between
+                  these interpretations without losing the shapes.
+                </p>
+              </div>
+              <p>
+                Finally, a linear model is not necessarily a simple model, and linear algebra is not limited to
+                low-dimensional straight lines. High-dimensional linear spaces can express extraordinarily rich
+                structure, while nonlinear models are assembled from local linear approximations and matrix
+                operations. The important distinction is not whether matrices appear, but how a model chooses its
+                representation, combines linear and nonlinear structure, and encodes assumptions about the
+                process that generated the data.
               </p>
               <div class="chapter-divider">End of chapter 01</div>
             </section>
