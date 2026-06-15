@@ -22,7 +22,7 @@ const translations = {
     statusDrafting: "撰写中",
     statusCollecting: "整理中",
     statusPlanned: "计划中",
-    linearKicker: "数学 · 约 70 分钟",
+    linearKicker: "数学 · 约 120 分钟",
     linearTitle: "机器学习中的线性代数",
     linearCopy: "从向量与线性变换，到特征空间、梯度、奇异值分解、注意力，以及现代模型背后的几何结构。",
     openChapter: "打开章节",

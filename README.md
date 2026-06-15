@@ -36,7 +36,7 @@ The first collection is live. The remaining collections are intentionally reserv
 
 ## Linear Algebra Chapter
 
-The first long-form chapter contains more than 8,000 Chinese characters and a complete English edition. Its 11 sections cover:
+The first long-form chapter contains more than 17,000 Chinese characters and a complete English edition. Its 11 sections cover:
 
 1. Scalars, vectors, vector spaces, basis, and coordinates
 2. Matrices as linear transformations
