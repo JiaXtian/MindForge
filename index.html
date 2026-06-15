@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="MindForge is a personal field guide to learning artificial intelligence from first principles."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>MindForge — Notes on Learning Intelligence</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#library" data-i18n="navLibrary">Library</a>
+        <a href="#principles" data-i18n="navPrinciples">Principles</a>
+        <a href="#journey" data-i18n="navJourney">Journey</a>
+        <a href="linear-algebra.html" data-i18n="navLatest">Latest note</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span>
+          <span class="language-divider"></span>
+          <span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="hero-orbit" aria-hidden="true">
+          <span class="orbit orbit-one"></span>
+          <span class="orbit orbit-two"></span>
+          <span class="orbit-dot"></span>
+        </div>
+        <p class="eyebrow reveal" data-i18n="heroEyebrow">A field guide to learning intelligence</p>
+        <h1 class="reveal">
+          <span data-i18n="heroTitleLine1">Forge understanding</span>
+          <em data-i18n="heroTitleLine2">from first principles.</em>
+        </h1>
+        <p class="hero-copy reveal" data-i18n="heroCopy">
+          MindForge is my evolving record of learning artificial intelligence: the mathematics beneath the
+          models, the ideas that survive scrutiny, and the questions still worth carrying.
+        </p>
+        <div class="hero-actions reveal">
+          <a class="button button-primary" href="linear-algebra.html">
+            <span data-i18n="heroPrimary">Read the first chapter</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a class="text-link" href="#library">
+            <span data-i18n="heroSecondary">Explore the library</span>
+            <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+        <div class="hero-meta reveal" aria-label="Site statistics">
+          <div><strong>01</strong><span data-i18n="statEssays">long-form essay</span></div>
+          <div><strong>03</strong><span data-i18n="statTracks">learning tracks</span></div>
+          <div><strong>∞</strong><span data-i18n="statQuestions">open questions</span></div>
+        </div>
+      </section>
+
+      <section class="section library-section" id="library">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow" data-i18n="libraryEyebrow">The knowledge map</p>
+            <h2 data-i18n="libraryTitle">Learning, organized by layer.</h2>
+          </div>
+          <p data-i18n="libraryCopy">
+            Each collection follows a different altitude: mathematical foundations, model mechanics, research
+            reading, and lessons from building.
+          </p>
+        </div>
+
+        <div class="module-grid">
+          <a class="module-card module-featured reveal" href="linear-algebra.html">
+            <div class="card-topline">
+              <span>01 / FOUNDATION</span>
+              <span class="status status-live" data-i18n="statusLive">Published</span>
+            </div>
+            <div class="matrix-art" aria-hidden="true">
+              <span>[</span>
+              <div>
+                <i>1</i><i>0</i><i>x</i>
+                <i>0</i><i>λ</i><i>1</i>
+                <i>x</i><i>1</i><i>0</i>
+              </div>
+              <span>]</span>
+            </div>
+            <div class="card-content">
+              <p class="card-kicker" data-i18n="linearKicker">Mathematics · 70 min read</p>
+              <h3 data-i18n="linearTitle">Linear Algebra for Machine Learning</h3>
+              <p data-i18n="linearCopy">
+                From vectors and transformations to eigenspaces, gradients, SVD, attention, and the geometry
+                hidden inside modern models.
+              </p>
+              <span class="card-link"><span data-i18n="openChapter">Open chapter</span> ↗</span>
+            </div>
+          </a>
+
+          <article class="module-card reveal">
+            <div class="card-topline">
+              <span>02 / MODELS</span>
+              <span class="status" data-i18n="statusDrafting">Drafting</span>
+            </div>
+            <div class="card-content">
+              <p class="card-kicker" data-i18n="modelKicker">Machine learning</p>
+              <h3 data-i18n="modelTitle">How Models Learn</h3>
+              <p data-i18n="modelCopy">
+                Loss functions, optimization, generalization, regularization, and the practical intuitions that
+                connect them.
+              </p>
+              <span class="ellipsis" aria-label="More content coming">···</span>
+            </div>
+          </article>
+
+          <article class="module-card reveal">
+            <div class="card-topline">
+              <span>03 / READING</span>
+              <span class="status" data-i18n="statusCollecting">Collecting</span>
+            </div>
+            <div class="card-content">
+              <p class="card-kicker" data-i18n="paperKicker">Paper notes</p>
+              <h3 data-i18n="paperTitle">Ideas Worth Keeping</h3>
+              <p data-i18n="paperCopy">
+                Distilled arguments, diagrams, objections, and enduring lessons from papers that changed how I
+                think.
+              </p>
+              <span class="ellipsis" aria-label="More content coming">···</span>
+            </div>
+          </article>
+
+          <article class="module-card reveal">
+            <div class="card-topline">
+              <span>04 / PRACTICE</span>
+              <span class="status" data-i18n="statusPlanned">Planned</span>
+            </div>
+            <div class="card-content">
+              <p class="card-kicker" data-i18n="labKicker">Lab notebook</p>
+              <h3 data-i18n="labTitle">Build, Measure, Reflect</h3>
+              <p data-i18n="labCopy">
+                Experiments, implementation notes, failed assumptions, and the engineering decisions behind
+                working systems.
+              </p>
+              <span class="ellipsis" aria-label="More content coming">···</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section principles-section" id="principles">
+        <div class="principles-copy reveal">
+          <p class="eyebrow" data-i18n="principlesEyebrow">Working principles</p>
+          <h2 data-i18n="principlesTitle">Understanding is built, not collected.</h2>
+          <p data-i18n="principlesCopy">
+            These notes are not a warehouse of definitions. They are an attempt to reconstruct each idea from
+            its assumptions, test it against examples, and connect symbols back to something we can see.
+          </p>
+        </div>
+        <ol class="principle-list">
+          <li class="reveal">
+            <span>01</span>
+            <div>
+              <h3 data-i18n="principleOneTitle">Begin with the question.</h3>
+              <p data-i18n="principleOneCopy">A formula matters only after we know what problem forced it to exist.</p>
+            </div>
+          </li>
+          <li class="reveal">
+            <span>02</span>
+            <div>
+              <h3 data-i18n="principleTwoTitle">Move between views.</h3>
+              <p data-i18n="principleTwoCopy">Algebra, geometry, computation, and intuition should explain one another.</p>
+            </div>
+          </li>
+          <li class="reveal">
+            <span>03</span>
+            <div>
+              <h3 data-i18n="principleThreeTitle">Leave the trail visible.</h3>
+              <p data-i18n="principleThreeCopy">Confusion, revisions, and failed attempts are part of the learning record.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section journey-section" id="journey">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow" data-i18n="journeyEyebrow">The learning journey</p>
+            <h2 data-i18n="journeyTitle">A map that grows with the territory.</h2>
+          </div>
+          <p data-i18n="journeyCopy">
+            MindForge will expand one careful chapter at a time. The roadmap is public so unfinished questions
+            remain visible.
+          </p>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item is-current reveal">
+            <span class="timeline-marker"></span>
+            <p>2026 · Q2</p>
+            <h3 data-i18n="phaseOneTitle">Mathematical foundations</h3>
+            <span data-i18n="phaseOneCopy">Linear algebra · probability · calculus · optimization</span>
+          </div>
+          <div class="timeline-item reveal">
+            <span class="timeline-marker"></span>
+            <p>2026 · Q3</p>
+            <h3 data-i18n="phaseTwoTitle">Classical machine learning</h3>
+            <span data-i18n="phaseTwoCopy">Regression · trees · kernels · ensembles · evaluation</span>
+          </div>
+          <div class="timeline-item reveal">
+            <span class="timeline-marker"></span>
+            <p data-i18n="ongoing">Ongoing</p>
+            <h3 data-i18n="phaseThreeTitle">Deep learning & beyond</h3>
+            <span data-i18n="phaseThreeCopy">Neural networks · transformers · agents · alignment · ...</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing-section">
+        <p class="eyebrow reveal" data-i18n="closingEyebrow">Latest publication</p>
+        <h2 class="reveal" data-i18n="closingTitle">See the geometry behind the model.</h2>
+        <a class="button button-light reveal" href="linear-algebra.html">
+          <span data-i18n="closingButton">Read Linear Algebra for Machine Learning</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <p data-i18n="footerCopy">Notes forged through curiosity, rigor, and revision.</p>
+      <a href="https://github.com/JiaXtian/MindForge" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </footer>
+  </body>
+</html>

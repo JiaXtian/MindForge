@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A rigorous, visual guide to the linear algebra behind machine learning: vectors, matrices, eigenspaces, SVD, gradients, PCA, embeddings, and attention."
+    />
+    <meta name="theme-color" content="#f2efe7" />
+    <title>Linear Algebra for Machine Learning — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="article.css" />
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+        svg: { fontCache: "global" }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body data-page="article">
+    <div class="reading-progress" aria-hidden="true"><span></span></div>
+    <div class="noise" aria-hidden="true"></div>
+    <a class="skip-link" href="#article" data-i18n="skip">Skip to content</a>
+    <header class="site-header article-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html#library" data-i18n="navLibrary">Library</a>
+        <a href="index.html#principles" data-i18n="navPrinciples">Principles</a>
+        <a href="index.html#journey" data-i18n="navJourney">Journey</a>
+        <a href="linear-algebra.html" data-i18n="navLatest">Latest note</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span>
+          <span class="language-divider"></span>
+          <span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="article">
+      <header class="article-hero">
+        <span class="article-index" aria-hidden="true">01</span>
+        <p class="eyebrow reveal" data-i18n="linearKicker">Mathematics · 70 min read</p>
+        <h1 class="reveal">
+          <span data-i18n="linearHeroOne">Linear Algebra</span>
+          <em data-i18n="linearHeroTwo">for Machine Learning</em>
+        </h1>
+        <p class="article-deck reveal" data-i18n="linearDeck">
+          A first-principles guide to the language of data: how vectors encode observations, matrices transform
+          space, decompositions reveal structure, and modern models turn geometry into learning.
+        </p>
+        <div class="article-meta reveal">
+          <span data-i18n="metaUpdated">Updated June 2026</span>
+          <span data-i18n="metaLevel">Foundations → Advanced</span>
+          <span data-i18n="metaTopics">11 chapters · 40+ equations</span>
+        </div>
+      </header>
+
+      <div class="article-layout">
+        <aside class="article-sidebar">
+          <p class="toc-label" data-i18n="tocLabel">On this page</p>
+          <nav class="toc" data-lang-content="en" aria-label="Article contents">
+            <a href="#en-1">01 · The language of data</a>
+            <a href="#en-2">02 · Matrices as transformations</a>
+            <a href="#en-3">03 · Systems, span, rank</a>
+            <a href="#en-4">04 · Geometry and similarity</a>
+            <a href="#en-5">05 · Eigenvalues and dynamics</a>
+            <a href="#en-6">06 · Decompositions and PCA</a>
+            <a href="#en-7">07 · Gradients and learning</a>
+            <a href="#en-8">08 · Models in matrix form</a>
+            <a href="#en-9">09 · Embeddings and attention</a>
+            <a href="#en-10">10 · Physical meaning</a>
+            <a href="#en-11">11 · Numerical practice</a>
+          </nav>
+          <nav class="toc" data-lang-content="zh" aria-label="文章目录" hidden>
+            <a href="#zh-1">01 · 数据的基本语言</a>
+            <a href="#zh-2">02 · 矩阵就是空间变换</a>
+            <a href="#zh-3">03 · 方程组、张成与秩</a>
+            <a href="#zh-4">04 · 长度、角度与正交</a>
+            <a href="#zh-5">05 · 特征值与系统动力学</a>
+            <a href="#zh-6">06 · 分解、SVD 与 PCA</a>
+            <a href="#zh-7">07 · 梯度与矩阵微分</a>
+            <a href="#zh-8">08 · 用矩阵表达机器学习</a>
+            <a href="#zh-9">09 · 表示、嵌入与注意力</a>
+            <a href="#zh-10">10 · 联系与物理意义</a>
+            <a href="#zh-11">11 · 数值计算与学习地图</a>
+          </nav>
+        </aside>
+
+        <article class="article-content">
+          <details class="toc-panel">
+            <summary data-i18n="tocLabel">On this page</summary>
+            <nav class="toc" data-lang-content="en" aria-label="Article contents">
+              <a href="#en-1">01 · The language of data</a>
+              <a href="#en-2">02 · Matrices as transformations</a>
+              <a href="#en-3">03 · Systems, span, rank</a>
+              <a href="#en-4">04 · Geometry and similarity</a>
+              <a href="#en-5">05 · Eigenvalues and dynamics</a>
+              <a href="#en-6">06 · Decompositions and PCA</a>
+              <a href="#en-7">07 · Gradients and learning</a>
+              <a href="#en-8">08 · Models in matrix form</a>
+              <a href="#en-9">09 · Embeddings and attention</a>
+              <a href="#en-10">10 · Physical meaning</a>
+              <a href="#en-11">11 · Numerical practice</a>
+            </nav>
+            <nav class="toc" data-lang-content="zh" aria-label="文章目录" hidden>
+              <a href="#zh-1">01 · 数据的基本语言</a>
+              <a href="#zh-2">02 · 矩阵就是空间变换</a>
+              <a href="#zh-3">03 · 方程组、张成与秩</a>
+              <a href="#zh-4">04 · 长度、角度与正交</a>
+              <a href="#zh-5">05 · 特征值与系统动力学</a>
+              <a href="#zh-6">06 · 分解、SVD 与 PCA</a>
+              <a href="#zh-7">07 · 梯度与矩阵微分</a>
+              <a href="#zh-8">08 · 用矩阵表达机器学习</a>
+              <a href="#zh-9">09 · 表示、嵌入与注意力</a>
+              <a href="#zh-10">10 · 联系与物理意义</a>
+              <a href="#zh-11">11 · 数值计算与学习地图</a>
+            </nav>
+          </details>
+
+          <div data-lang-content="en">
+            <p class="article-intro">
+              Linear algebra is not merely a prerequisite for machine learning. It is the medium in which data,
+              models, and learning become visible.
+            </p>
+
+            <section class="article-section" id="en-1">
+              <span class="section-number">01 / FOUNDATIONS</span>
+              <h2>The language of data: scalars, vectors, and spaces</h2>
+              <p>
+                A <strong>scalar</strong> is a single magnitude, such as a temperature, probability, learning
+                rate, or loss. A <strong>vector</strong> is an ordered collection of scalars. The order is part
+                of the meaning: \(x=(x_1,x_2,\ldots,x_n)^\top\) may represent one observation with \(n\)
+                features, one point in an \(n\)-dimensional space, one direction, or one model state.
+              </p>
+              <p>
+                In machine learning we deliberately turn objects into vectors. A 28-by-28 grayscale image
+                becomes a vector in \(\mathbb{R}^{784}\); a customer becomes a row of measured attributes; a
+                word becomes a learned coordinate in an embedding space. Vectorization does not claim that the
+                object “is” a list of numbers. It chooses measurable coordinates through which an algorithm can
+                compare and transform that object.
+              </p>
+              <div class="equation">\[\mathbf{x}=\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix}\in\mathbb{R}^n,\qquad \alpha\mathbf{x}+\beta\mathbf{y}\in\mathbb{R}^n\]<span class="equation-number">(1)</span></div>
+              <h3>Vector spaces and basis</h3>
+              <p>
+                A vector space is a set closed under vector addition and scalar multiplication. This closure is
+                what allows interpolation, superposition, and optimization. A set of vectors
+                \(\{b_1,\ldots,b_k\}\) spans a space if every vector in that space can be written as
+                \(x=\sum_i c_i b_i\). If the spanning vectors are linearly independent, they form a
+                <strong>basis</strong>, and the coefficients \(c_i\) are coordinates in that basis.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">Geometric intuition</span>
+                <p>
+                  A basis is a coordinate system, not the space itself. Rotating the axes changes the numbers
+                  used to describe a point but does not move the point. Many machine-learning methods are best
+                  understood as searching for a basis in which the data becomes simpler.
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="en-2">
+              <span class="section-number">02 / TRANSFORMATIONS</span>
+              <h2>A matrix is an action on space</h2>
+              <p>
+                A matrix \(A\in\mathbb{R}^{m\times n}\) is a rectangular array of numbers, but its deeper
+                meaning is a linear map from \(\mathbb{R}^n\) to \(\mathbb{R}^m\). Linearity means
+                \(A(\alpha x+\beta y)=\alpha Ax+\beta Ay\). The map preserves addition and scalar multiplication,
+                so grid lines remain straight and parallel lines remain parallel, although lengths, angles,
+                orientation, and dimension may change.
+              </p>
+              <div class="equation">\[A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n\]<span class="equation-number">(2)</span></div>
+              <p>
+                Equation (2) gives the most useful interpretation of matrix-vector multiplication: the output
+                is a weighted combination of the columns of \(A\). Equivalently, the columns tell us where the
+                input basis vectors land. Once the images of the basis are known, linearity determines the image
+                of every vector.
+              </p>
+              <p>
+                Matrix multiplication \(BA\) means composition: apply \(A\) first, then \(B\). Order matters
+                because transformations generally do not commute. The transpose \(A^\top\) swaps rows and
+                columns and reverses the direction of the associated map under the Euclidean inner product:
+                \(\langle Ax,y\rangle=\langle x,A^\top y\rangle\). This identity is central to backpropagation.
+              </p>
+              <div class="example-box">
+                <span class="box-label">Example · a neural layer</span>
+                <p>
+                  In \(h=\sigma(Wx+b)\), the matrix \(W\) rotates, stretches, reflects, or projects the input;
+                  \(b\) translates it; and the nonlinear activation \(\sigma\) bends the result. Deep networks
+                  alternate learned linear geometry with nonlinear folding.
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="en-3">
+              <span class="section-number">03 / STRUCTURE</span>
+              <h2>Linear systems, span, independence, and rank</h2>
+              <p>
+                The system \(Ax=b\) asks whether \(b\) can be expressed as a combination of the columns of
+                \(A\). Therefore a solution exists exactly when \(b\) lies in the column space
+                \(\operatorname{Col}(A)\). The null space \(\operatorname{Null}(A)=\{x:Ax=0\}\) contains input
+                directions erased by the transformation.
+              </p>
+              <div class="equation">\[\operatorname{rank}(A)+\operatorname{nullity}(A)=n\]<span class="equation-number">(3)</span></div>
+              <p>
+                Rank is the number of independent output directions. It measures effective dimensionality,
+                not merely matrix size. A low-rank data matrix says that many observed features are generated
+                from fewer latent directions. Rank deficiency creates non-unique parameters: if \(z\) is in the
+                null space, then \(A(x+z)=Ax\), so the data cannot distinguish \(x\) from \(x+z\).
+              </p>
+              <p>
+                An inverse \(A^{-1}\) exists for a square matrix only when the map loses no direction:
+                \(\operatorname{rank}(A)=n\), the null space contains only zero, and the determinant is nonzero.
+                In data problems, however, matrices are often rectangular or singular. The Moore–Penrose
+                pseudoinverse \(A^+\) then selects the minimum-norm least-squares solution.
+              </p>
+              <div class="warning-box">
+                <span class="box-label">Important practice</span>
+                <p>
+                  Numerical software should almost never compute an explicit inverse to solve a system.
+                  Factorizations such as QR or Cholesky are faster and more stable. “Divide by a matrix” is a
+                  symbolic idea; solving the system is the computational operation.
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="en-4">
+              <span class="section-number">04 / GEOMETRY</span>
+              <h2>Length, angle, projection, and similarity</h2>
+              <p>
+                The inner product \(x^\top y\) connects algebra to geometry. It determines the Euclidean norm
+                \(\|x\|_2=\sqrt{x^\top x}\), and the angle through
+                \(\cos\theta=x^\top y/(\|x\|_2\|y\|_2)\). A zero inner product means orthogonality: one direction
+                contains no component of the other.
+              </p>
+              <div class="equation">\[\operatorname{proj}_{u}(x)=\frac{u^\top x}{u^\top u}u,\qquad P_U=U(U^\top U)^{-1}U^\top\]<span class="equation-number">(4)</span></div>
+              <p>
+                Projection is the nearest-point operation. Least squares, PCA, Fourier approximation, and many
+                estimators all ask for a projection onto a chosen subspace. If the columns of \(Q\) are
+                orthonormal, the projector simplifies to \(QQ^\top\), and coordinates are recovered by
+                \(Q^\top x\) without geometric distortion.
+              </p>
+              <p>
+                Different norms express different beliefs. The \(L_2\) norm measures ordinary distance and
+                yields smooth spherical level sets. The \(L_1\) norm has diamond-shaped level sets and promotes
+                sparse solutions. The \(L_\infty\) norm records the largest coordinate deviation. Choosing a
+                norm is choosing which errors count as similar.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">Machine-learning connection</span>
+                <p>
+                  Cosine similarity ignores magnitude and compares direction. That is often appropriate for
+                  text embeddings, where vector length may reflect confidence or frequency while direction
+                  carries semantic identity. Euclidean distance and cosine similarity answer different
+                  questions; neither is universally correct.
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="en-5">
+              <span class="section-number">05 / INVARIANTS</span>
+              <h2>Eigenvalues reveal a transformation's natural directions</h2>
+              <p>
+                An eigenvector \(v\neq0\) satisfies \(Av=\lambda v\). The transformation may stretch, shrink, or
+                reverse this direction, but it does not rotate it away from itself. Eigenvectors are therefore
+                the natural axes of a linear system, and eigenvalues are the gains along those axes.
+              </p>
+              <div class="equation">\[Av=\lambda v,\qquad \det(A-\lambda I)=0,\qquad A=V\Lambda V^{-1}\]<span class="equation-number">(5)</span></div>
+              <p>
+                If a matrix is diagonalizable, repeated application becomes transparent:
+                \(A^k=V\Lambda^kV^{-1}\). Components with \(|\lambda|>1\) grow, those with \(|\lambda|<1\)
+                decay, \(\lambda<0\) alternates sign, and complex eigenvalues encode rotation. This explains
+                stability in dynamical systems, convergence of Markov chains, exploding or vanishing recurrent
+                states, and the power method.
+              </p>
+              <p>
+                For a real symmetric matrix \(A=A^\top\), the spectral theorem guarantees real eigenvalues and
+                an orthonormal eigenbasis: \(A=Q\Lambda Q^\top\). Covariance matrices, Hessians, graph
+                Laplacians, and kernel matrices often have this form. The Rayleigh quotient
+                \(R_A(x)=x^\top Ax/(x^\top x)\) measures curvature or energy in direction \(x\); its extreme
+                values are the smallest and largest eigenvalues.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-6">
+              <span class="section-number">06 / DECOMPOSITION</span>
+              <h2>SVD and PCA: rotate, scale, reveal</h2>
+              <p>
+                Every matrix has a singular value decomposition
+                \(A=U\Sigma V^\top\). The right singular vectors \(V\) form orthonormal input directions, the
+                singular values \(\sigma_i\ge0\) scale those directions, and the left singular vectors \(U\)
+                give the corresponding output directions. Geometrically, a matrix maps the unit sphere to an
+                ellipsoid.
+              </p>
+              <div class="equation">\[A=U\Sigma V^\top,\qquad A_k=\sum_{i=1}^{k}\sigma_i u_i v_i^\top\]<span class="equation-number">(6)</span></div>
+              <p>
+                The Eckart–Young theorem says \(A_k\) is the best rank-\(k\) approximation to \(A\) in both
+                spectral and Frobenius norm. Truncating small singular values compresses data, removes weak
+                directions, and regularizes unstable inversions. The condition number
+                \(\kappa(A)=\sigma_{\max}/\sigma_{\min}\) measures how strongly input errors can be amplified.
+              </p>
+              <p>
+                PCA centers a data matrix \(X\), then finds directions of maximum variance. These are the
+                eigenvectors of the covariance matrix \(X^\top X/(n-1)\), or equivalently the right singular
+                vectors of \(X\). PCA is both a variance-maximization problem and a minimum-reconstruction-error
+                projection. Those two statements are the same geometry viewed from opposite sides.
+              </p>
+              <div class="example-box">
+                <span class="box-label">Why centering matters</span>
+                <p>
+                  Without subtracting the mean, the first component may point toward the dataset's offset from
+                  the origin rather than the direction in which observations vary. PCA describes variation
+                  around the mean, not absolute position.
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="en-7">
+              <span class="section-number">07 / LEARNING</span>
+              <h2>Gradients, Jacobians, and curvature</h2>
+              <p>
+                Learning adjusts parameters to reduce a scalar objective. For \(f:\mathbb{R}^n\to\mathbb{R}\),
+                the gradient collects partial derivatives and points in the direction of steepest local
+                increase. Gradient descent moves in the opposite direction:
+                \(\theta_{t+1}=\theta_t-\eta\nabla f(\theta_t)\).
+              </p>
+              <div class="equation">\[df=\nabla f^\top d\theta,\qquad d(Wx)=(dW)x+W(dx)\]<span class="equation-number">(7)</span></div>
+              <p>
+                The differential view is reliable because it makes shapes explicit. If \(y=f(x)\) is
+                vector-valued, its Jacobian \(J_{ij}=\partial y_i/\partial x_j\) is the best local linear map:
+                \(f(x+\Delta x)\approx f(x)+J\Delta x\). Backpropagation is repeated multiplication by
+                transposed local Jacobians, applying the chain rule from output sensitivity back to each
+                parameter.
+              </p>
+              <p>
+                The Hessian \(H_{ij}=\partial^2 f/\partial\theta_i\partial\theta_j\) describes local curvature.
+                Positive eigenvalues curve upward, negative eigenvalues reveal descent directions at a saddle,
+                and a wide eigenvalue spread makes optimization ill-conditioned. Preconditioning and adaptive
+                optimization try to rescale this geometry so that one step size works across directions.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-8">
+              <span class="section-number">08 / MODELS</span>
+              <h2>Classical learning in matrix form</h2>
+              <p>
+                Put \(n\) examples into the rows of a design matrix \(X\in\mathbb{R}^{n\times d}\), parameters
+                into \(w\in\mathbb{R}^d\), and targets into \(y\in\mathbb{R}^n\). Linear regression minimizes
+                \(\|Xw-y\|_2^2\). At the optimum, the residual is orthogonal to every column of \(X\), producing
+                the normal equations.
+              </p>
+              <div class="equation">\[X^\top X\hat w=X^\top y,\qquad \hat w=(X^\top X+\lambda I)^{-1}X^\top y\]<span class="equation-number">(8)</span></div>
+              <p>
+                The second expression is ridge regression. Adding \(\lambda I\) shifts every eigenvalue of
+                \(X^\top X\), suppressing poorly supported directions and improving conditioning. Regularization
+                is therefore not merely “making weights small”; it changes the geometry of the inverse problem.
+              </p>
+              <p>
+                Logistic regression uses the same linear score \(Xw\), then maps it through a sigmoid and fits
+                cross-entropy. Kernel methods replace explicit coordinates with inner products
+                \(k(x_i,x_j)\), allowing a linear method in an implicit feature space. The Gram matrix records
+                all pairwise inner products and carries the geometry needed by the algorithm.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-9">
+              <span class="section-number">09 / REPRESENTATION</span>
+              <h2>Embeddings, tensors, and attention</h2>
+              <p>
+                An embedding matrix \(E\in\mathbb{R}^{V\times d}\) assigns each of \(V\) discrete items a learned
+                vector in \(d\) dimensions. Training moves items used in similar predictive contexts toward
+                useful geometric relationships. These coordinates are not hand-labeled meanings; they are a
+                basis discovered because it helps the objective.
+              </p>
+              <p>
+                Batches, images, and sequences are often stored as tensors, but most neural operations remain
+                linear algebra applied along selected axes. Convolutions are structured linear maps with shared
+                weights. A multi-layer perceptron is a sequence of affine maps and nonlinearities. Reshaping
+                changes indexing, not information, unless elements are discarded or aggregated.
+              </p>
+              <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V\]<span class="equation-number">(9)</span></div>
+              <p>
+                In attention, \(QK^\top\) is a matrix of pairwise dot products: each query compares its direction
+                with every key. Softmax converts those scores into positive row-wise weights, and multiplying by
+                \(V\) forms weighted combinations of value vectors. The factor \(\sqrt{d_k}\) stabilizes score
+                variance because an unscaled dot product typically grows with dimension.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">One operation, three views</span>
+                <p>
+                  Algebraically, attention is three matrix multiplications and a normalization. Geometrically,
+                  it is similarity-based retrieval. Statistically, it is a data-dependent weighted average.
+                  Understanding arrives when all three descriptions become interchangeable.
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="en-10">
+              <span class="section-number">10 / MEANING</span>
+              <h2>What the symbols mean physically</h2>
+              <p>
+                A vector can represent displacement, force, velocity, a signal, a probability distribution, or
+                an abstract feature state. What makes these objects vectors is not that they look like arrows,
+                but that they combine by superposition. A matrix expresses how causes are mixed into effects:
+                a rotation changes coordinates, a stiffness matrix maps displacement to force, a transition
+                matrix moves probability mass, and a neural weight matrix mixes input features into learned
+                features.
+              </p>
+              <p>
+                Inner products measure overlap or work: force dotted with displacement is mechanical work;
+                signal dotted with a basis function is the amount of that frequency present; an embedding dotted
+                with another measures aligned features. Eigenvectors describe modes that preserve their form
+                under evolution, such as vibration modes. Singular vectors generalize this idea to maps between
+                different spaces, identifying the most amplified input-output channels.
+              </p>
+              <p>
+                In machine learning, “dimension” is a degree of freedom, “projection” is deliberate information
+                loss, “rank” is the number of independent patterns available, and “regularization” is a
+                preference over directions. A model learns by reshaping a space so that the distinctions needed
+                for prediction become easy to draw.
+              </p>
+              <table class="comparison-table">
+                <thead><tr><th>Object</th><th>Geometric meaning</th><th>Learning meaning</th></tr></thead>
+                <tbody>
+                  <tr><td>Vector</td><td>Point or direction</td><td>Observation, state, parameter, embedding</td></tr>
+                  <tr><td>Matrix</td><td>Linear transformation</td><td>Feature mixer, dataset, local derivative</td></tr>
+                  <tr><td>Dot product</td><td>Directional overlap</td><td>Similarity, score, correlation</td></tr>
+                  <tr><td>Rank</td><td>Output dimensionality</td><td>Independent information capacity</td></tr>
+                  <tr><td>Eigenvalue</td><td>Gain along an invariant axis</td><td>Stability, variance, curvature</td></tr>
+                  <tr><td>SVD</td><td>Rotate–scale–rotate</td><td>Compression, denoising, latent structure</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="article-section" id="en-11">
+              <span class="section-number">11 / PRACTICE</span>
+              <h2>Numerical habits and a durable mental model</h2>
+              <p>
+                Exact algebra and floating-point computation are different worlds. Nearly dependent columns may
+                be independent symbolically but indistinguishable numerically. Feature scales can create severe
+                conditioning problems. Stable algorithms use orthogonal transformations, pivoting, and
+                factorizations to avoid magnifying roundoff.
+              </p>
+              <p>
+                Always track shapes, center or standardize data when the model calls for it, inspect singular
+                values, and solve systems rather than forming inverses. Ask four questions whenever a matrix
+                appears: What are its input and output spaces? What directions does it preserve or erase? How
+                does it change lengths and angles? What does its conditioning imply for learning?
+              </p>
+              <div class="chapter-divider">End of chapter 01</div>
+            </section>
+
+            <footer class="article-end">
+              <h2>Keep the geometry in view.</h2>
+              <p>
+                The symbols become useful when you can move fluently between an equation, a transformation, a
+                computation, and the real system being modeled. That movement is the core skill.
+              </p>
+              <a class="article-next" href="index.html#library">Return to the knowledge map <span>↗</span></a>
+            </footer>
+          </div>
+
+          <div data-lang-content="zh" hidden>
+            <p class="article-intro">
+              线性代数并不只是机器学习之前必须跨过的一门先修课。它就是数据、模型与学习过程得以被描述、被计算、被看见的语言。
+            </p>
+
+            <section class="article-section" id="zh-1">
+              <span class="section-number">01 / 基础语言</span>
+              <h2>从标量、向量到向量空间：数据如何成为可计算对象</h2>
+              <p>
+                线性代数首先回答一个看似朴素的问题：怎样用统一的数学对象表示现实世界中的信息？一个温度、概率、学习率或损失值，可以用单个数表示，这样的数称为<strong>标量</strong>。当一个对象需要多个属性共同描述时，我们把这些数按确定顺序排列成向量
+                \(x=(x_1,x_2,\ldots,x_n)^\top\)。顺序不是装饰，它决定每个坐标的含义。例如
+                \(x=(身高,体重,年龄)\) 与 \(x=(年龄,身高,体重)\) 虽然包含相同数字，却不是同一个表示。
+              </p>
+              <p>
+                向量可以同时拥有四种理解。代数上，它是一列可参与加法与数乘的数字；几何上，它可以是空间中的点，也可以是从原点出发的有向位移；物理上，它可以代表速度、力、场或系统状态；机器学习中，它可以是一条样本、模型参数、梯度、隐藏状态或词嵌入。所谓“把数据向量化”，并不是断言图片、句子和人本质上都是数字，而是选择一组可测量的坐标，使算法能够比较和变换它们。
+              </p>
+              <div class="equation">\[\mathbf{x}=\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix}\in\mathbb{R}^n,\qquad \alpha\mathbf{x}+\beta\mathbf{y}\in\mathbb{R}^n\]<span class="equation-number">(1)</span></div>
+              <p>
+                一个 \(28\times28\) 的灰度图像可按行展开成 \(\mathbb{R}^{784}\) 中的向量，每个坐标是一个像素强度；一段声音可表示为不同时刻的振幅向量；一个词可由训练得到的几百维向量表示。维度
+                \(n\) 表示描述对象所用的坐标数量，但坐标数量不一定等于数据真正拥有的自由度。大量像素之间通常高度相关，因此图像虽然位于高维空间，却可能集中在一个低维结构附近，这正是降维方法能够工作的原因。
+              </p>
+              <h3>向量运算究竟表达什么</h3>
+              <p>
+                向量加法表示叠加。若两个位移依次发生，总位移是二者之和；若两个信号同时出现，总信号可以是它们的和；若两个特征方向共同贡献，新的表示就是线性组合。数乘 \(\alpha x\) 表示沿同一方向缩放：\(\alpha>1\) 放大，\(0<\alpha<1\) 缩小，\(\alpha<0\) 还会反向。线性组合
+                \(\alpha_1v_1+\cdots+\alpha_kv_k\) 因而是一种“用若干基本模式合成新对象”的语言。
+              </p>
+              <p>
+                向量空间不是“装向量的容器”这么简单。它要求其中对象对加法和数乘封闭，并满足交换律、结合律、零元、逆元等公理。这些规则保证我们可以稳定地讨论叠加、插值、方向与坐标。函数也可以组成向量空间：两个函数相加仍是函数，函数乘常数仍是函数。因此傅里叶分析把复杂信号写成正弦和余弦的线性组合，与在平面中用横轴和纵轴描述一个点，本质上是同一种思想。
+              </p>
+              <h3>张成、线性无关与基</h3>
+              <p>
+                给定向量集合 \(\{v_1,\ldots,v_k\}\)，所有线性组合构成的集合叫作它们的<strong>张成空间</strong>。如果二维平面中两个向量不共线，它们就能张成整个平面；若它们共线，再怎样组合也只能停留在一条直线上。若等式
+                \(c_1v_1+\cdots+c_kv_k=0\) 只有全零解，则这些向量线性无关，说明没有任何一个向量能够由其余向量合成。
+              </p>
+              <p>
+                能够张成整个空间且线性无关的一组向量称为<strong>基</strong>。基不是空间本身，而是一套坐标尺。同一个几何向量在不同基下会得到不同坐标，但它代表的对象没有改变。标准基方便记录，旋转后的基可能更贴合数据，傅里叶基适合描述频率，PCA 基适合描述最大方差方向，神经网络则在训练中学习一连串更有利于任务的表示基。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">核心直觉</span>
+                <p>
+                  学习表示的过程，常常就是寻找更好的坐标系：在原坐标里纠缠复杂的数据，换一个基以后可能变得稀疏、分离或近似线性。坐标改变了，信息没有凭空产生；真正改变的是问题被看见的方式。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-2">
+              <span class="section-number">02 / 线性变换</span>
+              <h2>矩阵不只是一张数字表：它是对空间采取的动作</h2>
+              <p>
+                矩阵 \(A\in\mathbb{R}^{m\times n}\) 有 \(m\) 行、\(n\) 列。把它看成数字表格时，我们容易陷入机械计算；把它看成从 \(\mathbb{R}^n\) 到
+                \(\mathbb{R}^m\) 的函数时，许多规则会自然起来。线性变换满足
+                \(A(\alpha x+\beta y)=\alpha Ax+\beta Ay\)：先组合再变换，等于先分别变换再组合。它保持直线与原点，平行线仍然平行，但可以旋转、拉伸、压缩、镜像、剪切或投影，甚至把高维空间压到低维空间。
+              </p>
+              <div class="equation">\[A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n\]<span class="equation-number">(2)</span></div>
+              <p>
+                式 (2) 是理解矩阵乘向量最重要的入口。矩阵的第 \(j\) 列 \(a_j\) 是第 \(j\) 个标准基向量经过变换后的落点；输入坐标 \(x_j\) 则决定对应列向量的权重。因此
+                \(Ax\) 是矩阵各列的线性组合。另一个等价视角是逐行做内积：输出的第 \(i\) 个坐标等于矩阵第 \(i\) 行与输入向量的内积。列视角强调“输出由哪些方向合成”，行视角强调“每个输出特征如何读取输入”。
+              </p>
+              <p>
+                矩阵乘法 \(BA\) 表示函数复合：先施加 \(A\)，再施加 \(B\)。次序通常不可交换，例如先把平面沿横轴拉伸再旋转，与先旋转再沿固定横轴拉伸，会得到不同结果。维度规则也来自函数接口：若
+                \(A:\mathbb{R}^n\to\mathbb{R}^m\)，\(B:\mathbb{R}^m\to\mathbb{R}^p\)，那么 \(BA:\mathbb{R}^n\to\mathbb{R}^p\)，中间维度必须匹配。
+              </p>
+              <h3>转置、逆与行列式</h3>
+              <p>
+                转置 \(A^\top\) 交换行列。它不仅是排版操作，更是线性映射在欧氏内积下的伴随，因为
+                \(\langle Ax,y\rangle=\langle x,A^\top y\rangle\)。这条等式说明：若正向传播用 \(A\) 把输入影响传向输出，那么反向传播会用
+                \(A^\top\) 把输出处的敏感度传回输入。神经网络中频繁出现转置，并非偶然的符号习惯，而是“影响如何反向归因”的几何规律。
+              </p>
+              <p>
+                方阵的逆 \(A^{-1}\) 表示撤销变换：\(A^{-1}A=I\)。只有当 \(A\) 没有把任何非零方向压成零、没有让不同输入合并为同一输出时，逆才存在。行列式
+                \(\det(A)\) 描述有向体积的缩放倍数：绝对值大于一表示体积放大，小于一表示压缩，等于零表示某个维度被彻底压扁；负号表示空间取向发生翻转。二阶行列式可看成变换后平行四边形的有向面积。
+              </p>
+              <div class="example-box">
+                <span class="box-label">神经网络中的对应</span>
+                <p>
+                  一层网络 \(h=\sigma(Wx+b)\) 中，\(W\) 对输入空间进行旋转、拉伸、混合或投影，偏置 \(b\) 将整个空间平移，非线性函数
+                  \(\sigma\) 再把空间弯折。深度网络可以理解为“线性重组—非线性弯折”的反复叠加，最终让原本难以分开的类别在新表示中变得容易分开。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-3">
+              <span class="section-number">03 / 结构与可解性</span>
+              <h2>线性方程组、列空间、零空间与秩是一件事的四个侧面</h2>
+              <p>
+                方程组 \(Ax=b\) 表面上是在求未知数，几何上是在问：目标向量 \(b\) 是否位于矩阵列向量张成的空间中？因为
+                \(Ax\) 必然是列向量的线性组合，所以方程有解当且仅当 \(b\in\operatorname{Col}(A)\)。若列空间只是一张穿过原点的平面，而
+                \(b\) 在平面外，就不存在精确解；这时最小二乘法会寻找列空间中距离 \(b\) 最近的投影。
+              </p>
+              <p>
+                零空间 \(\operatorname{Null}(A)=\{x:Ax=0\}\) 收集被变换完全抹去的输入方向。如果 \(z\) 位于零空间，那么
+                \(A(x+z)=Ax\)，输出无法区分 \(x\) 与 \(x+z\)。这就是参数不可辨识的线性代数根源：数据没有提供足够信息，某些参数方向怎么变化都不影响预测。增加相同类型的数据未必能解决问题，只有观测到新的独立方向才会提高可辨识性。
+              </p>
+              <div class="equation">\[\operatorname{rank}(A)+\operatorname{nullity}(A)=n\]<span class="equation-number">(3)</span></div>
+              <p>
+                秩 \(\operatorname{rank}(A)\) 是列空间的维数，也是行空间的维数，表示变换能够输出多少个独立方向。秩—零度定理说明，输入空间的
+                \(n\) 个自由度会被分成两部分：一部分穿过矩阵成为可观察输出，另一部分落入零空间而消失。秩并不等于矩阵的行数或列数，而是有效信息维度。一个尺寸很大的矩阵完全可能只有很低的秩。
+              </p>
+              <h3>消元法的几何意义</h3>
+              <p>
+                高斯消元通过初等行变换把方程组化为阶梯形。交换两行只是调整方程顺序；某行乘非零常数不改变该方程表达的约束；把一行的倍数加到另一行，仍保持解集不变。主元数量就是秩，自由变量数量就是零空间维数。消元法不是一套孤立技巧，而是在不改变解集的前提下，把约束之间的独立关系显露出来。
+              </p>
+              <p>
+                当 \(A\) 为可逆方阵时，方程对每个 \(b\) 都有唯一解，以下条件等价：\(\det(A)\neq0\)；列向量线性无关；列空间是整个
+                \(\mathbb{R}^n\)；零空间只有零向量；秩为 \(n\)；不存在零特征值。线性代数中许多“可逆矩阵定理”的条目，其实都在表达同一事实：这个变换既不丢失方向，也不重复方向。
+              </p>
+              <h3>最小二乘与伪逆</h3>
+              <p>
+                现实数据常包含噪声，\(Ax=b\) 往往无精确解。最小二乘选择使残差 \(r=b-Ax\) 长度最小的参数。最优点处残差与列空间正交，所以
+                \(A^\top(b-A\hat x)=0\)，得到正规方程
+                \(A^\top A\hat x=A^\top b\)。若 \(A\) 满列秩，可写成
+                \(\hat x=(A^\top A)^{-1}A^\top b\)。更一般地，Moore–Penrose 伪逆 \(A^+\) 给出
+                \(\hat x=A^+b\)，并在多个解中选择欧氏范数最小者。
+              </p>
+              <div class="warning-box">
+                <span class="box-label">数值计算误区</span>
+                <p>
+                  推导中写出逆矩阵很方便，但程序中不应为了求解方程显式计算逆。QR、Cholesky、LU 或 SVD 分解通常更快、更稳定。特别是正规方程会把条件数平方，数据病态时应优先使用 QR 或 SVD。数学上的“除以矩阵”，在计算机里应被理解为“求解线性系统”。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-4">
+              <span class="section-number">04 / 几何</span>
+              <h2>内积把数字变成长度、角度、投影与相似性</h2>
+              <p>
+                两个向量的欧氏内积为 \(x^\top y=\sum_i x_i y_i\)。几何上，
+                \(x^\top y=\|x\|_2\|y\|_2\cos\theta\)，因此它同时编码长度与夹角。内积为正说明夹角小于 \(90^\circ\)，方向大体一致；为负说明方向相反；为零说明正交。物理中力与位移的内积是功，因为只有沿位移方向的力产生位移功；信号处理中，信号与某个基函数的内积衡量该模式在信号中出现多少。
+              </p>
+              <p>
+                范数衡量大小。最常见的 \(L_2\) 范数
+                \(\|x\|_2=\sqrt{x^\top x}\) 对应直线距离；\(L_1\) 范数
+                \(\|x\|_1=\sum_i|x_i|\) 对应各坐标绝对值之和；\(L_\infty\) 范数取最大坐标绝对值。三者并非只是公式不同，它们定义了不同形状的“等距离曲面”：二维中分别是圆、菱形和正方形，因此与约束边界接触的位置不同。L1 正则更容易在坐标轴上得到解，正是它促进稀疏的几何原因。
+              </p>
+              <div class="equation">\[\operatorname{proj}_{u}(x)=\frac{u^\top x}{u^\top u}u,\qquad P_U=U(U^\top U)^{-1}U^\top\]<span class="equation-number">(4)</span></div>
+              <h3>投影就是“保留可解释部分”</h3>
+              <p>
+                把 \(x\) 投影到方向 \(u\)，就是寻找 \(u\) 轴上离 \(x\) 最近的点。系数
+                \(u^\top x/(u^\top u)\) 表示 \(x\) 沿 \(u\) 的分量，剩余误差与 \(u\) 正交。投影到子空间时，最优误差与该子空间中的每一个方向都正交。最小二乘是把目标向量投影到特征列空间；PCA 是把数据投影到低维主子空间；傅里叶展开是把信号投影到频率基；它们共享同一个最近点原理。
+              </p>
+              <p>
+                若矩阵 \(Q\) 的列向量两两正交且长度为一，则 \(Q^\top Q=I\)，称为正交归一矩阵。用 \(Q^\top x\) 可直接得到
+                \(x\) 在这些基向量上的坐标，投影矩阵简化为 \(QQ^\top\)。正交变换保持长度、角度和内积，因此数值计算偏爱正交分解：它不会额外放大舍入误差，也不会把原本独立的方向挤得几乎重合。
+              </p>
+              <h3>距离与相似度必须匹配任务</h3>
+              <p>
+                欧氏距离比较绝对位置，余弦相似度
+                \(\cos\theta=x^\top y/(\|x\|\|y\|)\) 忽略长度，只比较方向。文本嵌入中，方向往往携带语义关系，而长度可能还受到词频或置信度影响，因此余弦相似度常见；但如果向量长度本身有意义，归一化就会丢掉重要信息。马氏距离
+                \(\sqrt{(x-y)^\top\Sigma^{-1}(x-y)}\) 会按协方差调整方向：在数据自然波动大的方向上，同样偏移不算异常，在波动小的方向上则更显著。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">选择度量，就是表达偏好</span>
+                <p>
+                  “两个样本是否相近”不是脱离任务的客观事实。选择内积、范数或距离，相当于声明哪些变化重要、哪些变化可以忽略。特征缩放会改变几何，所以在基于距离、内积或梯度的方法中，标准化并不是表面预处理，而是在重新规定空间的尺度。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-5">
+              <span class="section-number">05 / 不变方向</span>
+              <h2>特征值与特征向量揭示变换自身偏爱的坐标轴</h2>
+              <p>
+                对方阵 \(A\)，若非零向量 \(v\) 满足 \(Av=\lambda v\)，则 \(v\) 是特征向量，\(\lambda\) 是对应特征值。一般向量经过矩阵后会改变方向，而特征向量只会沿自身方向被缩放：\(|\lambda|>1\) 放大，\(0<|\lambda|<1\) 缩小，\(\lambda<0\) 还会反向，\(\lambda=0\) 则被压入零点。它们是变换最自然、最稳定的观察轴。
+              </p>
+              <div class="equation">\[Av=\lambda v,\qquad \det(A-\lambda I)=0,\qquad A=V\Lambda V^{-1}\]<span class="equation-number">(5)</span></div>
+              <p>
+                特征方程来自 \((A-\lambda I)v=0\)。要存在非零解，\(A-\lambda I\) 必须不可逆，因此
+                \(\det(A-\lambda I)=0\)。若 \(A\) 有足够多线性无关的特征向量，可对角化为
+                \(A=V\Lambda V^{-1}\)。这相当于先用 \(V^{-1}\) 换到特征坐标系，在每个坐标上独立乘以
+                \(\lambda_i\)，再用 \(V\) 换回原坐标。复杂的耦合变换在合适基下变成互不干扰的缩放。
+              </p>
+              <h3>为什么重复变换会暴露最大特征值</h3>
+              <p>
+                若 \(x=\sum_i c_iv_i\)，则 \(A^kx=\sum_i c_i\lambda_i^kv_i\)。反复作用后，绝对值最大的特征值对应分量通常占主导。这解释了幂迭代为何能找到主特征向量，也解释离散动力系统
+                \(x_{t+1}=Ax_t\) 的稳定性：谱半径小于一时状态趋于零；存在大于一的特征值时，某些扰动会指数增长；负特征值带来交替振荡；复特征值则同时编码旋转与缩放。
+              </p>
+              <p>
+                马尔可夫链的转移矩阵不断搬运概率质量，特征值 \(1\) 对应稳态分布，其余特征值的大小决定混合速度。图拉普拉斯矩阵的特征向量描述图上的平滑振动模式，可用于谱聚类。循环神经网络中，隐藏状态反复乘权重矩阵，其谱性质与梯度消失或爆炸密切相关。不同领域看似无关的问题，都在研究“系统沿哪些模式演化，以及这些模式增长多快”。
+              </p>
+              <h3>对称矩阵与谱定理</h3>
+              <p>
+                实对称矩阵 \(A=A^\top\) 具有特别优美的结构：所有特征值为实数，不同特征值的特征向量正交，并可写成
+                \(A=Q\Lambda Q^\top\)，其中 \(Q\) 为正交矩阵。协方差矩阵、Hessian、Gram 矩阵、图拉普拉斯矩阵经常是对称矩阵，因此谱定理在机器学习中无处不在。
+              </p>
+              <p>
+                二次型 \(x^\top Ax\) 描述方向 \(x\) 上的能量或曲率。Rayleigh 商
+                \(R_A(x)=x^\top Ax/(x^\top x)\) 是单位长度方向上的二次型，其最大值与最小值分别是最大和最小特征值。协方差矩阵的 Rayleigh 商是数据沿方向
+                \(x\) 的方差；Hessian 的 Rayleigh 商是损失沿该方向的局部曲率。因此 PCA 寻找最大方差方向与优化分析寻找最大曲率方向，数学形式完全一致，只是矩阵的物理含义不同。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-6">
+              <span class="section-number">06 / 矩阵分解</span>
+              <h2>SVD 与 PCA：旋转、缩放，并从噪声中显露结构</h2>
+              <p>
+                特征分解只直接适用于方阵且不一定总能得到完整特征基，奇异值分解则适用于任意
+                \(m\times n\) 矩阵。任何实矩阵都可写成 \(A=U\Sigma V^\top\)：先由 \(V^\top\) 在输入空间旋转或反射，再由对角矩阵
+                \(\Sigma\) 沿互相正交的轴缩放，最后由 \(U\) 在输出空间旋转。单位球经过矩阵后成为椭球，右奇异向量给出输入球上的主轴，奇异值给出各轴伸缩倍数，左奇异向量给出输出椭球的方向。
+              </p>
+              <div class="equation">\[A=U\Sigma V^\top,\qquad A_k=\sum_{i=1}^{k}\sigma_i u_i v_i^\top\]<span class="equation-number">(6)</span></div>
+              <p>
+                奇异值按 \(\sigma_1\ge\sigma_2\ge\cdots\ge0\) 排列，非零奇异值数量等于矩阵的秩。Eckart–Young 定理说明，保留前
+                \(k\) 个奇异值构成的 \(A_k\)，是在谱范数和 Frobenius 范数意义下最接近 \(A\) 的秩 \(k\) 矩阵。这给低秩近似一个严格最优性：不是随意删掉信息，而是在固定容量下保留最多可表达的结构。
+              </p>
+              <p>
+                图像压缩可以把图像矩阵拆成若干秩一模式 \(\sigma_i u_iv_i^\top\)，大奇异值对应主要轮廓与明暗结构，小奇异值常对应精细纹理或噪声。推荐系统的用户—物品矩阵往往近似低秩，因为大量行为可由少数潜在偏好解释。大型语言模型中的低秩适配
+                LoRA 假设任务更新主要位于低维子空间，用两个小矩阵近似权重增量，从而显著减少可训练参数。
+              </p>
+              <h3>条件数与病态问题</h3>
+              <p>
+                条件数 \(\kappa(A)=\sigma_{\max}/\sigma_{\min}\) 衡量输入微小误差最多会被放大多少。若最小奇异值接近零，某个输入方向几乎被压扁，想从输出恢复该方向就必须进行巨大放大，于是测量噪声与浮点误差都会被同步放大。病态不等于算法写错，而是问题本身缺少稳定可恢复的信息。正则化通过抑制这些脆弱方向，用少量偏差换取显著方差下降。
+              </p>
+              <h3>PCA 的两种等价目标</h3>
+              <p>
+                对中心化后的数据矩阵 \(X\in\mathbb{R}^{n\times d}\)，协方差矩阵为
+                \(C=X^\top X/(n-1)\)。第一主成分选择单位方向 \(v\)，使投影方差
+                \(v^\top Cv\) 最大；解是 \(C\) 最大特征值对应的特征向量。后续主成分在与之前方向正交的约束下继续最大化方差。等价地，对
+                \(X\) 做 SVD，右奇异向量就是主成分方向，奇异值平方与解释方差成正比。
+              </p>
+              <p>
+                PCA 也可以表述为寻找一个 \(k\) 维子空间，使数据投影后再重建的平方误差最小。最大化保留方差与最小化重建误差是同一件事：中心化数据的总能量固定，投影捕获得越多，正交残差留下得越少。必须先减均值，否则第一主轴可能只是从原点指向数据中心，而不是样本围绕中心变化最大的方向。若各特征单位差异悬殊，还需要判断是否标准化；标准化会把“绝对方差大”改写为“相对自身尺度变化大”。
+              </p>
+              <div class="example-box">
+                <span class="box-label">不要把主成分自动当成真实因素</span>
+                <p>
+                  PCA 只根据二阶统计与线性投影寻找方差方向。一个主成分可能混合多个现实因素，也可能由异常值主导。它提供的是最优线性坐标，不保证具有因果含义或天然可解释性。解释必须回到数据生成过程与具体任务。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-7">
+              <span class="section-number">07 / 微分与优化</span>
+              <h2>梯度、Jacobian 与 Hessian：局部变化仍然是线性代数</h2>
+              <p>
+                机器学习通过调整参数降低标量损失。对 \(f:\mathbb{R}^n\to\mathbb{R}\)，梯度
+                \(\nabla f=(\partial f/\partial x_1,\ldots,\partial f/\partial x_n)^\top\) 收集所有一阶偏导。微小扰动
+                \(dx\) 引起的函数变化近似为 \(df=\nabla f^\top dx\)。在固定 \(\|dx\|_2\) 时，内积由 Cauchy–Schwarz 不等式可知沿梯度方向增加最快，因此梯度下降沿负梯度更新：
+                \(\theta_{t+1}=\theta_t-\eta\nabla f(\theta_t)\)。
+              </p>
+              <div class="equation">\[df=\nabla f^\top d\theta,\qquad d(Wx)=(dW)x+W(dx)\]<span class="equation-number">(7)</span></div>
+              <p>
+                若函数 \(f:\mathbb{R}^n\to\mathbb{R}^m\) 输出向量，Jacobian
+                \(J_{ij}=\partial f_i/\partial x_j\) 是它在某点附近最好的线性近似：
+                \(f(x+\Delta x)\approx f(x)+J\Delta x\)。一个非线性网络在足够小的邻域内仍像矩阵一样工作。链式法则说明复合函数的 Jacobian 相乘，反向传播则把输出处的梯度依次乘以局部 Jacobian 的转置，将敏感度传回每个参数。
+              </p>
+              <p>
+                以 \(y=Wx\)、损失 \(L(y)\) 为例，微分
+                \(dL=(\nabla_yL)^\top d y=(\nabla_yL)^\top[(dW)x+W(dx)]\)。整理内积可得
+                \(\nabla_xL=W^\top\nabla_yL\)，以及
+                \(\nabla_WL=(\nabla_yL)x^\top\)。前者解释误差信号为何乘 \(W^\top\) 向前一层传播，后者是“输出误差”与“输入激活”的外积，说明一个权重应如何根据发送端和接收端共同修正。
+              </p>
+              <h3>Hessian 描述损失地形的局部曲率</h3>
+              <p>
+                Hessian \(H_{ij}=\partial^2f/\partial\theta_i\partial\theta_j\) 是二阶导数组成的矩阵。二阶泰勒展开为
+                \(f(\theta+\Delta)\approx f(\theta)+g^\top\Delta+\frac12\Delta^\top H\Delta\)。若所有特征值为正，局部各方向都向上弯，是局部极小值；存在负特征值说明有向下方向，是鞍点或极大值；接近零的特征值表示平坦方向，参数变化对损失影响很小。
+              </p>
+              <p>
+                Hessian 特征值跨度大时，等高线像狭长峡谷。沿高曲率方向步长稍大就震荡，沿低曲率方向又前进缓慢，这就是优化病态。牛顿法用
+                \(H^{-1}g\) 按曲率重新缩放梯度；预条件、动量以及 Adam 等方法也在不同程度上改善各方向尺度不一致的问题。优化器不仅决定“往哪走”，还隐含地规定了参数空间中的度量。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">梯度不是普通箭头那么简单</span>
+                <p>
+                  “最陡方向”依赖于怎样定义步长。欧氏度量下得到普通梯度；若参数采用不同度量，最陡方向会改变。自然梯度利用 Fisher 信息矩阵衡量模型分布的实际变化，试图让相同步长代表相近的概率分布变化，而不是相近的参数坐标变化。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-8">
+              <span class="section-number">08 / 机器学习模型</span>
+              <h2>把经典机器学习写成矩阵，模型结构会变得透明</h2>
+              <p>
+                将 \(n\) 个样本按行放入设计矩阵 \(X\in\mathbb{R}^{n\times d}\)，每行是一个样本，每列是一个特征；参数为
+                \(w\in\mathbb{R}^d\)，目标为 \(y\in\mathbb{R}^n\)。线性回归预测
+                \(\hat y=Xw\)，并最小化 \(\|Xw-y\|_2^2\)。从几何上看，所有可能预测都位于 \(X\) 的列空间中，训练就是把目标
+                \(y\) 投影到这个空间，残差必与每一列特征正交。
+              </p>
+              <div class="equation">\[X^\top X\hat w=X^\top y,\qquad \hat w_\lambda=(X^\top X+\lambda I)^{-1}X^\top y\]<span class="equation-number">(8)</span></div>
+              <p>
+                岭回归在损失中加入 \(\lambda\|w\|_2^2\)。代数上它把 \(X^\top X\) 改为
+                \(X^\top X+\lambda I\)；谱上它把每个特征值增加 \(\lambda\)，避免小特征值方向被过度放大；统计上它用偏差换取更低方差；贝叶斯上它对应参数的零均值各向同性高斯先验。所谓“让权重变小”只是表面结果，更深层的作用是稳定数据证据不足的方向。
+              </p>
+              <p>
+                Lasso 使用 \(\lambda\|w\|_1\)，其菱形约束更容易与损失等高线在坐标轴上相切，因而产生精确零系数。这里再次看到，正则化形式通过几何形状表达建模偏好：L2 偏好均匀分散的小权重，L1 偏好少数非零方向。正则强度决定数据拟合与先验偏好之间的平衡。
+              </p>
+              <h3>分类、核方法与 Gram 矩阵</h3>
+              <p>
+                Logistic 回归仍先计算线性得分 \(z=Xw\)，再用 sigmoid 把它映射到概率。决策边界
+                \(w^\top x+b=0\) 是超平面，\(w\) 是其法向量，点到边界的有符号距离与
+                \((w^\top x+b)/\|w\|\) 成正比。多分类 softmax 使用权重矩阵一次生成多个类别得分，每个类别向量可看成一种匹配模板。
+              </p>
+              <p>
+                核方法把样本映射到高维特征空间 \(\phi(x)\)，但只通过内积
+                \(k(x_i,x_j)=\phi(x_i)^\top\phi(x_j)\) 工作。Gram 矩阵
+                \(K_{ij}=k(x_i,x_j)\) 记录所有样本两两内积，它是半正定矩阵，因此确实对应某个欧氏特征空间。核技巧的本质不是神秘地“升维”，而是用相似度矩阵间接提供新空间的几何，而不必显式构造每个高维坐标。
+              </p>
+              <h3>概率模型中的线性代数</h3>
+              <p>
+                多元高斯分布
+                \(p(x)\propto|\Sigma|^{-1/2}\exp[-\frac12(x-\mu)^\top\Sigma^{-1}(x-\mu)]\)
+                由均值向量和协方差矩阵决定。协方差的特征向量给椭球主轴，特征值给各方向方差；行列式是椭球体积尺度；逆协方差又称精度矩阵，控制等密度面的马氏距离。在线性高斯模型、卡尔曼滤波、Gaussian Process 和二次判别中，这套几何反复出现。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-9">
+              <span class="section-number">09 / 深度学习表示</span>
+              <h2>嵌入、张量、卷积与注意力仍建立在线性代数之上</h2>
+              <p>
+                嵌入矩阵 \(E\in\mathbb{R}^{V\times d}\) 为 \(V\) 个离散对象各分配一个 \(d\) 维向量。输入一个词元编号，等价于用 one-hot 向量
+                \(e_i\) 左乘矩阵并取出对应行。训练并没有给每个坐标手工命名，而是根据预测目标调整整个空间：在相似上下文中发挥类似作用的对象，往往形成相近方向；某些关系可能表现为近似向量差，但这种结构是任务与数据共同塑造的，不应被误读为绝对语义真理。
+              </p>
+              <p>
+                深度学习常用“张量”表示批次、序列、图像和多头结构。张量可以理解为多轴数组，核心困难是明确每条轴的语义。许多张量运算仍是沿指定轴执行矩阵乘法、内积、外积、广播与求和。reshape 通常只改变索引方式，不改变数据；transpose 改变轴顺序；reduction 会聚合并真正丢失某个轴的信息。始终标注形状，是避免模型实现错误最有效的习惯之一。
+              </p>
+              <p>
+                卷积对输入而言也是线性变换，只是矩阵具有稀疏和权重共享结构：同一个局部滤波器在不同位置复用，从而编码平移等变性并减少参数。全连接层允许每个输出连接全部输入；卷积限制连接模式；图神经网络按邻接关系聚合；它们的区别可以统一理解为线性算子的结构约束。结构不是纯粹为了加速，而是在模型中加入关于数据对称性和局部性的先验。
+              </p>
+              <h3>注意力机制的三重视角</h3>
+              <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V\]<span class="equation-number">(9)</span></div>
+              <p>
+                输入表示分别乘学习矩阵得到查询 \(Q\)、键 \(K\) 与值 \(V\)。矩阵
+                \(QK^\top\) 的第 \(ij\) 项是第 \(i\) 个查询与第 \(j\) 个键的内积，表示二者在学习到的匹配空间中有多对齐。softmax 对每行归一化，使权重为正且总和为一；再乘 \(V\)，就是根据这些权重对值向量做线性组合。因此代数上它是矩阵乘法与归一化，几何上它是方向相似度检索，统计上它是随输入变化的加权平均。
+              </p>
+              <p>
+                为什么除以 \(\sqrt{d_k}\)？若查询与键的各坐标近似独立、均值为零、方差为一，则点积是 \(d_k\) 项乘积之和，方差约为
+                \(d_k\)。维度越大，分数尺度越大，softmax 越容易饱和，梯度变小。除以 \(\sqrt{d_k}\) 把方差拉回常数量级，使训练更稳定。这个缩放展示了概率估计、数值稳定与线性代数如何在一个公式中相遇。
+              </p>
+              <p>
+                多头注意力使用多组投影矩阵，在不同低维子空间里建立匹配。每个头不必对应清晰的人类概念，但它允许模型并行形成多种关系几何。残差连接把变换写成
+                \(x+F(x)\)，使网络只需学习相对恒等映射的改变量，也为梯度提供直接通道。层归一化则按样本内部坐标重新居中和缩放，改善不同方向尺度差异。现代架构虽复杂，基本动作依然是投影、内积、加权和、归一化与基变换。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">表示学习的几何本质</span>
+                <p>
+                  分类器未必需要在原始空间画出复杂边界。前面的网络可以不断变换坐标，把任务相关因素拉开，把无关变化压缩，使最后一层只需一个简单超平面。深度来自多次重塑空间，学习来自根据误差决定怎样重塑。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-10">
+              <span class="section-number">10 / 联系与物理意义</span>
+              <h2>把代数、几何、物理与机器学习放回同一张图</h2>
+              <p>
+                线性代数之所以跨越如此多领域，是因为“叠加”是理解复杂系统的第一种近似。小振动可以分解成独立模态，光和声音可以分解成频率，图像可以分解成空间模式，数据变化可以分解成主成分，模型误差可以沿参数方向分解。只要系统在局部或整体近似满足叠加，向量与矩阵就能把复杂相互作用拆成可分析的方向。
+              </p>
+              <p>
+                <strong>向量的物理意义是状态或变化方向。</strong>位置向量描述物体在哪里，速度向量描述状态随时间怎样改变，力向量描述改变动量的作用，概率向量描述质量分配，机器学习特征向量描述一个对象在所选坐标下的状态。向量并不要求存在真实空间箭头；只要对象能够相加和缩放，就可以拥有向量结构。
+              </p>
+              <p>
+                <strong>矩阵的物理意义是响应规律。</strong>旋转矩阵把坐标方向改变而保持长度；刚度矩阵把位移映射为恢复力；惯性张量把角速度映射为角动量；转移矩阵把当前概率分布映射到下一时刻；协方差矩阵把一个测试方向映射成与各方向的共同变化；神经网络权重矩阵把输入特征混合成新的响应。矩阵的每一列可理解为“只激活一个输入基方向时，系统产生怎样的输出”。
+              </p>
+              <p>
+                <strong>内积的物理意义是有效重叠。</strong>力与位移正交时不做功；信号与某频率正交时不含该频率；残差与特征列正交时，任何线性参数微调都不能继续降低平方误差；查询与键内积大时，注意力认为二者匹配。内积把“方向是否对得上”转换为标量，成为能量、相关性、投影系数和相似度的共同基础。
+              </p>
+              <p>
+                <strong>特征向量的物理意义是固有模态。</strong>琴弦振动的正常模态在系统演化中保持形状，只改变幅度与相位；马尔可夫链稳态在转移后保持不变；协方差主轴是数据波动互不相关的方向；Hessian 特征向量是损失曲率解耦的方向。一个“模态”之所以重要，是因为沿它观察时，耦合系统表现得像单独的标量缩放。
+              </p>
+              <p>
+                <strong>奇异向量的物理意义是最强输入—输出通道。</strong>当输入空间与输出空间不同，普通特征向量不再适用。SVD 找到一个输入方向 \(v_i\)，矩阵把它变成输出方向
+                \(u_i\)，放大倍数为 \(\sigma_i\)。大奇异值方向是系统敏感或信息丰富的通道，小奇异值方向是系统难以观察、容易被噪声淹没的通道。降维保留前者，正则化抑制后者，条件数比较二者的极端比例。
+              </p>
+              <h3>机器学习概念的几何翻译</h3>
+              <table class="comparison-table">
+                <thead><tr><th>概念</th><th>几何或物理意义</th><th>机器学习中的作用</th></tr></thead>
+                <tbody>
+                  <tr><td>向量</td><td>点、方向、状态</td><td>样本、参数、梯度、嵌入</td></tr>
+                  <tr><td>矩阵</td><td>线性响应与空间变换</td><td>数据集、权重、特征混合器</td></tr>
+                  <tr><td>内积</td><td>方向重叠、做功</td><td>相似度、得分、相关性</td></tr>
+                  <tr><td>投影</td><td>保留子空间分量</td><td>拟合、降维、去噪</td></tr>
+                  <tr><td>秩</td><td>独立输出方向数量</td><td>有效信息维度与容量</td></tr>
+                  <tr><td>特征值</td><td>固有方向的增益</td><td>稳定性、方差、曲率</td></tr>
+                  <tr><td>SVD</td><td>旋转—缩放—旋转</td><td>压缩、伪逆、潜在结构</td></tr>
+                  <tr><td>梯度</td><td>局部最陡变化方向</td><td>参数更新与误差归因</td></tr>
+                </tbody>
+              </table>
+              <p>
+                “维度”在机器学习中应理解为自由度，而不只是数组长度；“投影”意味着有目的地丢失信息；“低秩”意味着大量观测可以由少数潜在模式解释；“正则化”意味着对不同参数方向施加偏好；“训练”意味着根据损失信号改变空间，使任务需要的差异被放大，不需要的变化被压缩；“泛化”则要求这种几何结构不仅适合训练样本，还反映数据生成过程中的稳定规律。
+              </p>
+              <p>
+                这也解释为什么可视化二维决策边界有用却有限。真实模型在高维空间操作，我们看见的二维图只是某种投影。投影可能隐藏原空间中相离的方向，也可能让无关结构重叠。直观不是把所有问题强行画在纸面上，而是学会在“坐标、方向、子空间、变换、尺度”这些可迁移概念之间思考。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">统一图景</span>
+                <p>
+                  数据给出空间中的点；特征工程与表示学习选择坐标；矩阵把一个表示变成另一个表示；内积和范数规定怎样比较；损失定义哪些输出更好；梯度把输出误差拉回参数空间；优化器沿某种度量更新参数；分解方法揭示其中最重要、最稳定或最危险的方向。这就是线性代数与机器学习的完整连接。
+                </p>
+              </div>
+            </section>
+
+            <section class="article-section" id="zh-11">
+              <span class="section-number">11 / 数值实践</span>
+              <h2>从纸面公式走向可靠计算：形状、稳定性与学习路线</h2>
+              <p>
+                精确代数与浮点计算并不是同一个世界。数学上非零的数在机器精度下可能与零无法区分；理论上线性无关的列可能几乎重合；先做两个巨大数相减可能丢失有效位；相同公式的不同计算顺序会产生不同误差。数值线性代数关心的不只是“答案是什么”，还关心“输入略有扰动时答案是否剧烈变化”以及“算法是否额外放大误差”。
+              </p>
+              <p>
+                实践中应养成几条习惯。第一，始终标注张量形状及每条轴的语义，矩阵乘法前明确输入空间与输出空间。第二，检查特征尺度；单位差异会扭曲距离、梯度和条件数。第三，求解方程而非显式求逆。第四，使用奇异值或条件数诊断近线性相关。第五，分清转置与 reshape：前者改变轴顺序，后者改变索引视图，错误混用会悄悄破坏语义。第六，对批量运算写清广播规则，避免代码“能运行”却在错误维度上共享参数。
+              </p>
+              <p>
+                学习线性代数时，可以对每个对象连续追问四层。符号层：它的维度和运算规则是什么？几何层：它对空间做了什么，保留和丢失哪些方向？计算层：应使用哪种稳定算法，复杂度与条件数如何？建模层：这些坐标、距离和变换在现实问题中代表什么？只记公式会在任务变化时失去方向，只讲直觉又容易在高维和复杂形状中犯错；四层相互校验，才能形成可靠理解。
+              </p>
+              <h3>一份可继续扩展的知识地图</h3>
+              <p>
+                基础阶段应熟练掌握向量、线性组合、基、矩阵乘法、方程组、秩、零空间、内积、正交投影和最小二乘。进阶阶段应理解行列式、特征分解、对称矩阵、二次型、SVD、伪逆、PCA、条件数与常见分解。进入机器学习后，要能推导矩阵形式的线性回归与正则化，理解 Jacobian、Hessian 和反向传播，解释嵌入、卷积、核方法与注意力中的线性结构，并能根据数值稳定性选择实现。
+              </p>
+              <p>
+                最有效的练习不是重复做大量同型手算，而是用小规模例子连接多种视角：画出二维矩阵如何移动网格；用三列数据验证列空间与最小二乘投影；改变奇异值观察图像压缩；对协方差矩阵求特征向量并比较 PCA 投影；手推一个两层网络的形状与梯度；构造病态矩阵比较正规方程、QR 与 SVD 的误差。每次都问“这个数字对应哪条方向、哪种信息、哪项物理作用”。
+              </p>
+              <p>
+                最后需要记住：线性模型并不等于简单模型，线性代数也不等于低维直线。高维线性空间可以表达极其丰富的结构，非线性模型也由大量局部线性近似和矩阵运算构成。真正的分界不在“有没有矩阵”，而在模型如何选择表示、如何组合线性结构与非线性结构、以及它对数据生成规律加入了什么假设。
+              </p>
+              <div class="chapter-divider">第一章完</div>
+            </section>
+
+            <footer class="article-end">
+              <h2>始终让几何留在视野中。</h2>
+              <p>
+                当你能在公式、空间变换、计算过程与现实系统之间自由切换时，线性代数才真正成为机器学习的工具，而不再是一组需要记忆的符号。
+              </p>
+              <a class="article-next" href="index.html#library">返回知识地图 <span>↗</span></a>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <p data-i18n="footerCopy">Notes forged through curiosity, rigor, and revision.</p>
+      <a href="https://github.com/JiaXtian/MindForge" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </footer>
+  </body>
+</html>

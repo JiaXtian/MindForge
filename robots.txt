@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jiaxtian.github.io/MindForge/sitemap.xml
