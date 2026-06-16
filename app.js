@@ -10,7 +10,7 @@ const translations = {
     heroTitleLine2: "从第一性原理出发。",
     heroCopy:
       "MindForge 是我的人工智能学习档案：记录模型之下的数学、经得住推敲的思想，以及那些仍值得继续追问的问题。",
-    heroPrimary: "阅读第一章",
+    heroPrimary: "阅读最新章节",
     heroSecondary: "探索知识库",
     statEssays: "篇长文",
     statTracks: "条学习主线",
@@ -26,9 +26,10 @@ const translations = {
     linearTitle: "机器学习中的线性代数",
     linearCopy: "从向量与线性变换，到特征空间、梯度、奇异值分解、注意力，以及现代模型背后的几何结构。",
     openChapter: "打开章节",
-    modelKicker: "机器学习",
-    modelTitle: "模型如何学习",
-    modelCopy: "损失函数、优化、泛化、正则化，以及把这些概念连接起来的实践直觉。",
+    modelKicker: "大模型 · 约 160 分钟",
+    modelTitle: "大语言模型详解",
+    modelCopy:
+      "从 Transformer 内部机制，到 GPT、BERT、预训练、对齐、检索、智能体、多模态、效率、安全与前沿技术。",
     paperKicker: "论文笔记",
     paperTitle: "值得留下的思想",
     paperCopy: "提炼那些改变我思考方式的论文：核心论证、图示、质疑和能够穿越时间的启发。",
@@ -56,8 +57,8 @@ const translations = {
     phaseThreeTitle: "深度学习与前沿",
     phaseThreeCopy: "神经网络 · Transformer · 智能体 · 对齐 · ……",
     closingEyebrow: "最新发布",
-    closingTitle: "看见模型背后的几何。",
-    closingButton: "阅读《机器学习中的线性代数》",
+    closingTitle: "理解语言模型背后的完整技术栈。",
+    closingButton: "阅读《大语言模型详解》",
     footerCopy: "以好奇、严谨与反复修订，锻造每一篇笔记。",
     linearHeroOne: "线性代数：",
     linearHeroTwo: "机器学习的空间语言",
@@ -65,6 +66,14 @@ const translations = {
     metaUpdated: "更新于 2026 年 6 月",
     metaLevel: "基础 → 进阶",
     metaTopics: "11 章 · 40+ 公式",
+    llmKicker: "大模型 · 约 160 分钟",
+    llmHeroOne: "大语言模型详解：",
+    llmHeroTwo: "从 Transformer 到智能体",
+    llmDeck:
+      "从第一性原理出发：理解现代语言模型如何把 token 转化为表示，如何扩展 Transformer 计算，如何从人类偏好中学习，如何检索知识、使用工具，并成为可部署的 AI 系统。",
+    llmMetaUpdated: "更新于 2026 年 6 月",
+    llmMetaLevel: "Transformer → 前沿系统",
+    llmMetaTopics: "12 章 · 8 个核心公式",
     tocLabel: "本页目录",
     themeToDark: "切换到深色模式",
     themeToLight: "切换到浅色模式",
@@ -122,8 +131,8 @@ function setLanguage(language) {
 
   if (document.body.dataset.page === "article") {
     document.title = isChinese
-      ? "机器学习中的线性代数 — MindForge"
-      : "Linear Algebra for Machine Learning — MindForge";
+      ? document.body.dataset.titleZh ?? "机器学习中的线性代数 — MindForge"
+      : document.body.dataset.titleEn ?? "Linear Algebra for Machine Learning — MindForge";
   }
   setTheme(root.dataset.theme);
 }

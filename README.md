@@ -25,15 +25,16 @@ MindForge is a personal, bilingual learning space for documenting ideas, notes, 
 | --- | --- | --- |
 | Home | Site introduction, learning collections, principles, and roadmap | [Open home](https://jiaxtian.github.io/MindForge/) |
 | Linear Algebra for Machine Learning | An 11-chapter guide covering foundations, machine-learning applications, geometry, and physical meaning | [Read the chapter](https://jiaxtian.github.io/MindForge/linear-algebra.html) |
+| Large Language Models Explained | A 12-chapter guide covering Transformer architecture, GPT/BERT, pre-training, alignment, RAG, agents, multimodality, efficiency, safety, and frontier mechanisms | [Read the chapter](https://jiaxtian.github.io/MindForge/llm.html) |
 
 ## Knowledge Map
 
 1. **Mathematical Foundations** — linear algebra, probability, calculus, and optimization.
-2. **Machine Learning Models** — loss functions, optimization, generalization, and classical models.
+2. **Machine Learning Models** — large language models, loss functions, optimization, generalization, and classical models.
 3. **Paper Notes** — distilled arguments, diagrams, questions, and lasting insights.
 4. **Lab Notebook** — experiments, implementation decisions, failed assumptions, and lessons learned.
 
-The first collection is live. The remaining collections are intentionally reserved as the site grows.
+The first two long-form chapters are live. The remaining collections are intentionally reserved as the site grows.
 
 ## Linear Algebra Chapter
 
@@ -51,6 +52,23 @@ The first long-form chapter contains more than 17,000 Chinese characters and a c
 10. Connections among algebra, geometry, physics, and machine learning
 11. Numerical stability, implementation habits, and a continued learning map
 
+## LLM Chapter
+
+The second long-form chapter contains more than 12,000 Chinese characters and a synchronized English edition. Its 12 sections cover:
+
+1. Tokenization, next-token prediction, embeddings, perplexity, and compression
+2. Transformer self-attention, multi-head routing, and positional information
+3. Residual streams, normalization, MLPs, optimization, and training flow
+4. Encoder-only, decoder-only, and encoder-decoder architectures including BERT and GPT
+5. Large-scale pre-training, data quality, scaling laws, and base-model behavior
+6. Instruction tuning, RLHF, DPO, refusals, and preference alignment
+7. Decoding, sampling, context windows, KV cache, and serving constraints
+8. Prompting, reasoning traces, verification, tool use, and agents
+9. Retrieval-Augmented Generation, vector search, grounding, and memory
+10. LoRA, QLoRA, quantization, distillation, and Mixture-of-Experts systems
+11. Multimodal models, long-context mechanisms, and perception-action interfaces
+12. Evaluation, hallucination, security, privacy, and a durable frontier map
+
 ## Project Structure
 
 ```text
@@ -64,6 +82,7 @@ MindForge/
 │   └── check-content-parity.mjs
 ├── index.html
 ├── linear-algebra.html
+├── llm.html
 ├── styles.css
 ├── article.css
 ├── app.js

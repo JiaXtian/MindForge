@@ -1,0 +1,1451 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A bilingual MindForge chapter explaining large language models from Transformer architecture to alignment, retrieval, agents, multimodality, efficiency, and frontier mechanisms."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Large Language Models Explained — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="article.css" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"]]
+        },
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body
+    data-page="article"
+    data-title-en="Large Language Models Explained — MindForge"
+    data-title-zh="大语言模型详解 — MindForge"
+  >
+    <div class="reading-progress" aria-hidden="true"><span></span></div>
+    <div class="noise" aria-hidden="true"></div>
+    <a class="skip-link" href="#article" data-i18n="skip">Skip to content</a>
+    <header class="site-header article-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html#library" data-i18n="navLibrary">Library</a>
+        <a href="index.html#principles" data-i18n="navPrinciples">Principles</a>
+        <a href="index.html#journey" data-i18n="navJourney">Journey</a>
+        <a href="llm.html" data-i18n="navLatest">Latest note</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span>
+          <span class="language-divider"></span>
+          <span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="article">
+      <header class="article-hero">
+        <span class="article-index" aria-hidden="true">02</span>
+        <p class="eyebrow reveal" data-i18n="llmKicker">Models · 160 min read</p>
+        <h1 class="reveal">
+          <span data-i18n="llmHeroOne">LLMs Explained</span>
+          <em data-i18n="llmHeroTwo">from Transformers to Agents</em>
+        </h1>
+        <p class="article-deck reveal" data-i18n="llmDeck">
+          A first-principles guide to how modern language models turn tokens into representations, scale
+          Transformer computation, learn from human preferences, retrieve knowledge, use tools, and become
+          practical AI systems.
+        </p>
+        <div class="article-meta reveal">
+          <span data-i18n="llmMetaUpdated">Updated June 2026</span>
+          <span data-i18n="llmMetaLevel">Transformer → Frontier Systems</span>
+          <span data-i18n="llmMetaTopics">12 chapters · 8 key equations</span>
+        </div>
+      </header>
+
+      <div class="article-layout">
+        <aside class="article-sidebar">
+          <p class="toc-label" data-i18n="tocLabel">On this page</p>
+          <nav class="toc" data-lang-content="en" aria-label="Article contents">
+            <a href="#en-1">01 · Language modeling</a>
+            <a href="#en-2">02 · Transformer core</a>
+            <a href="#en-3">03 · Blocks and training flow</a>
+            <a href="#en-4">04 · Encoder, decoder, GPT, BERT</a>
+            <a href="#en-5">05 · Pre-training at scale</a>
+            <a href="#en-6">06 · Alignment and preferences</a>
+            <a href="#en-7">07 · Inference and decoding</a>
+            <a href="#en-8">08 · Prompting, tools, agents</a>
+            <a href="#en-9">09 · Retrieval and memory</a>
+            <a href="#en-10">10 · Efficient adaptation</a>
+            <a href="#en-11">11 · Multimodal and long context</a>
+            <a href="#en-12">12 · Evaluation and frontier map</a>
+          </nav>
+          <nav class="toc" data-lang-content="zh" aria-label="文章目录" hidden>
+            <a href="#zh-1">01 · 语言建模</a>
+            <a href="#zh-2">02 · Transformer 核心</a>
+            <a href="#zh-3">03 · 模块与训练流</a>
+            <a href="#zh-4">04 · 编码器、解码器、GPT、BERT</a>
+            <a href="#zh-5">05 · 大规模预训练</a>
+            <a href="#zh-6">06 · 对齐与偏好学习</a>
+            <a href="#zh-7">07 · 推理与解码</a>
+            <a href="#zh-8">08 · 提示、工具、智能体</a>
+            <a href="#zh-9">09 · 检索与记忆</a>
+            <a href="#zh-10">10 · 高效适配</a>
+            <a href="#zh-11">11 · 多模态与长上下文</a>
+            <a href="#zh-12">12 · 评估与前沿地图</a>
+          </nav>
+        </aside>
+
+        <article class="article-content">
+          <details class="toc-panel">
+            <summary data-i18n="tocLabel">On this page</summary>
+            <nav class="toc" data-lang-content="en" aria-label="Article contents">
+              <a href="#en-1">01 · Language modeling</a>
+              <a href="#en-2">02 · Transformer core</a>
+              <a href="#en-3">03 · Blocks and training flow</a>
+              <a href="#en-4">04 · Encoder, decoder, GPT, BERT</a>
+              <a href="#en-5">05 · Pre-training at scale</a>
+              <a href="#en-6">06 · Alignment and preferences</a>
+              <a href="#en-7">07 · Inference and decoding</a>
+              <a href="#en-8">08 · Prompting, tools, agents</a>
+              <a href="#en-9">09 · Retrieval and memory</a>
+              <a href="#en-10">10 · Efficient adaptation</a>
+              <a href="#en-11">11 · Multimodal and long context</a>
+              <a href="#en-12">12 · Evaluation and frontier map</a>
+            </nav>
+            <nav class="toc" data-lang-content="zh" aria-label="文章目录" hidden>
+              <a href="#zh-1">01 · 语言建模</a>
+              <a href="#zh-2">02 · Transformer 核心</a>
+              <a href="#zh-3">03 · 模块与训练流</a>
+              <a href="#zh-4">04 · 编码器、解码器、GPT、BERT</a>
+              <a href="#zh-5">05 · 大规模预训练</a>
+              <a href="#zh-6">06 · 对齐与偏好学习</a>
+              <a href="#zh-7">07 · 推理与解码</a>
+              <a href="#zh-8">08 · 提示、工具、智能体</a>
+              <a href="#zh-9">09 · 检索与记忆</a>
+              <a href="#zh-10">10 · 高效适配</a>
+              <a href="#zh-11">11 · 多模态与长上下文</a>
+              <a href="#zh-12">12 · 评估与前沿地图</a>
+            </nav>
+          </details>
+
+          <div data-lang-content="en">
+            <p class="article-intro">
+              A large language model is not a database that stores sentences, nor a hand-written reasoning
+              machine. It is a very large conditional probability model trained to predict and transform token
+              sequences, then shaped into an assistant through instruction data, preference learning, retrieval,
+              tools, and system design. This chapter begins with the Transformer, because almost every modern LLM
+              is a variation on that computation; it then follows the path from pre-training to deployment,
+              evaluation, safety, and frontier mechanisms.
+            </p>
+
+            <section class="article-section" id="en-1">
+              <span class="section-number">01 / LANGUAGE MODELING</span>
+              <h2>From text to tokens: what a language model actually learns</h2>
+              <p>
+                Human language arrives as characters, words, documents, conversations, code files, diagrams
+                described by markup, and many other artifacts. A neural model, however, consumes arrays of
+                integers. Tokenization is the bridge: it turns raw text into a sequence
+                \(x_1,x_2,\ldots,x_T\), where each \(x_t\) indexes a vocabulary item. The item might be a word, a
+                subword fragment, punctuation, a byte sequence, or a special control token. The model does not
+                see “meaning” directly; it sees token identities, positions, and the statistical structure that
+                connects them.
+              </p>
+              <p>
+                Modern tokenizers often use subword units because natural language has an enormous open-ended
+                vocabulary. A word-level vocabulary cannot comfortably contain rare names, new technical terms,
+                misspellings, and every programming identifier. A character-level vocabulary is flexible but
+                makes sequences long. Subword tokenization compromises: frequent words can be single tokens,
+                while rare words are decomposed into pieces. This design affects cost and behavior. A language
+                with less efficient tokenization consumes more context length for the same idea, and a model may
+                handle spelling, arithmetic, or morphology differently depending on token boundaries.
+              </p>
+              <h3>Autoregressive probability as the basic objective</h3>
+              <p>
+                The most common GPT-style objective decomposes the probability of a sequence into next-token
+                predictions. By the chain rule,
+              </p>
+              <div class="equation">\[p(x_{1:T})=\prod_{t=1}^{T}p(x_t\mid x_{<t})\]<span class="equation-number">(1)</span></div>
+              <p>
+                Training minimizes negative log likelihood, or cross-entropy, on many examples. The model is
+                rewarded when it assigns high probability to the observed next token given the previous context.
+                This objective sounds narrow, yet it forces the network to model syntax, facts, discourse,
+                formats, styles, code dependencies, and many latent variables that help prediction. A model that
+                predicts the next token in a proof must represent mathematical structure; a model that predicts a
+                line of code must represent local APIs and long-range constraints.
+              </p>
+              <p>
+                The objective also explains a central limitation. The model learns statistical continuation, not
+                direct truth. If a false statement is frequent or contextually plausible, next-token prediction
+                alone may reproduce it. If the prompt asks for a source that is absent from the context, the model
+                may still generate a plausible citation because citation-shaped text has high probability. Later
+                systems add retrieval, verification, refusal policies, tool use, and preference tuning precisely
+                because next-token prediction is powerful but incomplete.
+              </p>
+              <h3>Embeddings turn token IDs into vectors</h3>
+              <p>
+                A token ID is not a vector with semantic geometry. The embedding matrix
+                \(E\in\mathbb{R}^{V\times d}\) maps vocabulary items into \(d\)-dimensional representations.
+                Looking up token \(x_t\) selects row \(E_{x_t}\). During training, tokens that play similar roles
+                tend to acquire related vectors, but the coordinates are task-discovered rather than
+                hand-labeled. Positional information is added because the sequence “dog bites man” differs from
+                “man bites dog” even though the bag of tokens is the same.
+              </p>
+              <p>
+                The final output layer usually produces a logit vector over the vocabulary. After softmax, logits
+                become probabilities for the next token. In many models the input embedding matrix and output
+                matrix are tied or related, meaning the same learned vocabulary geometry participates in both
+                reading and writing. A forward pass therefore begins with discrete symbols, moves through
+                continuous vector spaces, and returns to a distribution over discrete symbols.
+              </p>
+              <h3>Perplexity, compression, and why prediction can create knowledge</h3>
+              <p>
+                Perplexity is the exponentiated average negative log likelihood. Roughly, it measures how many
+                plausible choices remain at each step. Lower perplexity means the model compresses the data
+                better. Compression is not magic, but it is meaningful: to compress a corpus, the model must
+                discover repeated structure. It must learn that functions close braces, that dates follow
+                calendars, that names co-occur with roles, and that arguments have premises and conclusions.
+              </p>
+              <p>
+                The phrase “LLMs understand” can be misleading if it suggests human experience, goals, or
+                consciousness. A safer technical description is that they build high-dimensional representations
+                useful for predicting and transforming language. Those representations can support translation,
+                summarization, coding, planning, and reasoning-like behavior, yet they remain sensitive to data,
+                prompts, decoding, and evaluation. Understanding an LLM means tracking the whole pipeline, not
+                anthropomorphizing the final text.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-2">
+              <span class="section-number">02 / TRANSFORMER CORE</span>
+              <h2>Self-attention: the computation that made modern LLMs possible</h2>
+              <p>
+                Before Transformers, sequence models were often recurrent or convolutional. Recurrence processes
+                tokens one step at a time and carries a hidden state forward; convolution processes local windows
+                and stacks layers to expand the receptive field. The Transformer replaces both with self-attention:
+                every token representation can directly compare itself with other token representations. This is
+                why the architecture parallelizes well during training and why long-range dependencies can be
+                represented without walking through a long recurrent chain.
+              </p>
+              <p>
+                Let \(X\in\mathbb{R}^{T\times d}\) be token representations at one layer. Learned matrices project
+                them into queries, keys, and values:
+                \(Q=XW_Q\), \(K=XW_K\), \(V=XW_V\). A query asks what a position is looking for; a key describes
+                what a position offers for matching; a value contains the content to be mixed into the output.
+                These are not separate data sources. They are three learned views of the same hidden state.
+              </p>
+              <h3>Scaled dot-product attention</h3>
+              <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\left(\frac{QK^\top+M}{\sqrt{d_k}}\right)V\]<span class="equation-number">(2)</span></div>
+              <p>
+                The matrix \(QK^\top\in\mathbb{R}^{T\times T}\) contains pairwise compatibility scores. Row \(i\)
+                says how much token \(i\) attends to every token \(j\). The mask \(M\) can forbid certain
+                connections, for example future tokens in an autoregressive decoder. Dividing by \(\sqrt{d_k}\)
+                keeps dot-product variance controlled as the key dimension grows. Softmax converts scores into a
+                row-wise probability distribution, and multiplying by \(V\) computes a weighted average of value
+                vectors.
+              </p>
+              <p>
+                Attention is best understood through three views at once. Algebraically, it is matrix
+                multiplication, masking, normalization, and another matrix multiplication. Geometrically, it is
+                similarity-based routing of information across positions. Computationally, it is an expensive
+                \(T\times T\) interaction pattern whose memory and time scale quadratically with sequence length.
+                Much of modern LLM engineering is about preserving attention’s modeling power while reducing this
+                cost.
+              </p>
+              <h3>Multi-head attention learns several relation spaces</h3>
+              <p>
+                A single attention head forms one matching geometry. Multi-head attention creates \(h\) smaller
+                attention computations in parallel, each with its own projections. Their outputs are concatenated
+                and projected back to the model dimension. One head might specialize in local syntax, another in
+                delimiter matching, another in copying names, and another in broad topic alignment, though such
+                interpretations are approximate. The important point is that different subspaces can route
+                different kinds of information at the same layer.
+              </p>
+              <p>
+                If the model dimension is \(d\) and there are \(h\) heads, each head often uses
+                \(d_k=d/h\). This keeps total projection size roughly comparable while allowing multiple
+                relation patterns. The output is not a symbolic graph of grammar rules. It is a learned continuous
+                communication pattern: every token representation is updated by selectively mixing information
+                from positions allowed by the mask.
+              </p>
+              <h3>Positional information makes order visible</h3>
+              <p>
+                Pure attention without position is permutation equivariant: if token representations are shuffled,
+                attention alone has no inherent reason to know which token came first. Transformers therefore add
+                positional signals. The original Transformer used sinusoidal encodings; later models often use
+                learned positions, relative position biases, rotary positional embeddings, or other schemes.
+                These methods differ, but all answer the same question: how should the model know distance,
+                order, and relative arrangement?
+              </p>
+              <p>
+                Positional design matters for long context. Absolute learned embeddings may not extrapolate far
+                beyond training length. Relative and rotary methods make distance relationships more explicit and
+                are often better suited to extension, although training distribution and attention implementation
+                still matter. Long-context LLMs are not obtained merely by increasing a number; they require
+                compatible position handling, data, memory-efficient attention, and evaluation that checks whether
+                the model actually uses far-away information.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-3">
+              <span class="section-number">03 / BLOCKS</span>
+              <h2>Inside a Transformer block: residual streams, normalization, and MLPs</h2>
+              <p>
+                A Transformer layer is usually built around a residual stream. Each submodule reads the current
+                hidden state, computes an update, and adds that update back. In simplified pre-normalization
+                notation,
+              </p>
+              <div class="equation">\[Y=X+\operatorname{Attn}(\operatorname{LN}(X)),\qquad Z=Y+\operatorname{MLP}(\operatorname{LN}(Y))\]<span class="equation-number">(3)</span></div>
+              <p>
+                Residual connections are not cosmetic. They let information and gradients pass through many
+                layers without every layer having to preserve everything. A layer can make a local edit to the
+                representation while the residual stream carries accumulated context forward. This makes very
+                deep models trainable and supports the view that a Transformer progressively refines a shared
+                workspace rather than replacing it from scratch at each layer.
+              </p>
+              <h3>Layer normalization stabilizes the representation scale</h3>
+              <p>
+                Layer normalization computes statistics across the hidden dimension of one token representation,
+                then recenters and rescales it. This differs from batch normalization, which depends on batch
+                statistics. For language modeling, batch elements may have different sequence lengths, topics,
+                and generation states, so per-token normalization is more natural. Pre-norm architectures place
+                normalization before attention and MLP updates, improving gradient flow in deep networks.
+              </p>
+              <p>
+                Normalization is a reminder that optimization is geometry. If hidden vectors have wildly varying
+                scales, dot products, activation functions, and gradients become hard to control. A stable scale
+                helps the same learning rate work across layers. Modern variants may use RMSNorm instead of full
+                LayerNorm, but the purpose is similar: keep the residual stream numerically well-conditioned while
+                allowing learned gain parameters to adapt the scale.
+              </p>
+              <h3>The MLP is where many facts and features are transformed</h3>
+              <p>
+                The feed-forward sublayer, often called the MLP, applies a position-wise nonlinear transformation.
+                A common form is \(W_2\,\phi(W_1x)\), sometimes with gated activations such as SwiGLU. Attention
+                moves information across positions; the MLP transforms information within each position. Because
+                it expands the hidden dimension before projecting back, it can create high-dimensional feature
+                interactions that attention then routes in later layers.
+              </p>
+              <p>
+                Interpretability work often finds that MLP neurons or directions can correlate with features,
+                facts, formats, or behaviors. This does not mean a model has a neat database row for every fact.
+                Knowledge is distributed across embeddings, attention patterns, MLP weights, and residual
+                directions. Still, separating “communication across tokens” from “nonlinear transformation inside
+                a token” gives a useful mental model of why both attention and MLP capacity matter.
+              </p>
+              <h3>Training flow, backpropagation, and why scale changes everything</h3>
+              <p>
+                During pre-training, batches of token sequences pass through many Transformer blocks, produce
+                logits, and receive a cross-entropy loss. Backpropagation computes gradients for every parameter.
+                Optimizers such as AdamW update weights using adaptive moments and weight decay. Learning-rate
+                schedules warm up early training and decay later. Mixed precision, gradient clipping, sharding,
+                activation checkpointing, and distributed data parallelism are engineering necessities rather
+                than optional decorations.
+              </p>
+              <p>
+                Scale changes the problem qualitatively. A small Transformer can be trained on one GPU and
+                debugged like an ordinary model. A frontier LLM requires data pipelines, fault tolerance, cluster
+                scheduling, numerical monitoring, evaluation gates, and careful checkpointing. The architecture
+                may fit in a paper diagram, but the training run is a socio-technical system where data quality,
+                compute reliability, and measurement discipline are as important as the formula for attention.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-4">
+              <span class="section-number">04 / ARCHITECTURES</span>
+              <h2>Encoder, decoder, encoder-decoder: BERT, GPT, and the architecture family</h2>
+              <p>
+                Transformer architecture is a family, not one model. Encoder-only models let every token attend
+                bidirectionally to every other token and are strong for representation tasks. Decoder-only models
+                use causal masking so each position attends only to previous positions and are strong for
+                open-ended generation. Encoder-decoder models encode an input sequence and decode an output
+                sequence with cross-attention. Many differences among BERT, GPT, T5, translation systems, and
+                assistants start from this masking and objective choice.
+              </p>
+              <p>
+                Masking defines the information flow. In a bidirectional encoder, a token can use both left and
+                right context, which is useful for classification, extraction, and sentence understanding. In a
+                causal decoder, token \(t\) cannot see token \(t+1\) during training, matching the generation
+                process at inference. In an encoder-decoder model, the decoder sees previous output tokens and
+                attends to all encoder states, which is natural for translation and structured transformation.
+              </p>
+              <h3>BERT: bidirectional representations through masked prediction</h3>
+              <p>
+                BERT popularized deep bidirectional pre-training for language understanding. Instead of predicting
+                only the next token, it masks some input tokens and trains the model to reconstruct them from both
+                sides of context. The result is a representation model that can be fine-tuned for tasks such as
+                classification, entailment, entity recognition, and extractive question answering. BERT is not
+                naturally an open-ended generator because its training objective does not match left-to-right
+                sampling.
+              </p>
+              <p>
+                BERT’s importance is conceptual as much as historical. It showed that large-scale self-supervised
+                pre-training can create general linguistic representations reusable across tasks. A task-specific
+                head and modest fine-tuning data could outperform training from scratch. Later LLMs shifted the
+                center of gravity toward decoder-only generation, but the idea of pre-training a general model and
+                adapting it downstream remains foundational.
+              </p>
+              <h3>GPT: decoder-only generation and in-context learning</h3>
+              <p>
+                GPT-style models are autoregressive decoders. They train on next-token prediction and generate by
+                repeatedly sampling or selecting the next token, appending it to the context, and running another
+                step. This objective aligns closely with chat, code completion, summarization, and many tasks that
+                can be expressed as “continue this text in the right way.” Scaling decoder-only models revealed
+                in-context learning: the ability to follow examples or instructions inside the prompt without
+                updating weights.
+              </p>
+              <p>
+                In-context learning does not mean the model literally trains a new neural network in the prompt.
+                It means the forward pass can condition on demonstrations and infer a pattern strongly enough to
+                continue it. The mechanism may involve attention retrieving relevant examples, residual features
+                representing task structure, and learned priors from pre-training. The important practical result
+                is that tasks can be specified by text, which turned LLMs into flexible interfaces rather than
+                isolated task models.
+              </p>
+              <h3>Architecture comparison</h3>
+              <table class="comparison-table">
+                <thead><tr><th>Family</th><th>Attention pattern</th><th>Typical strength</th></tr></thead>
+                <tbody>
+                  <tr><td>Encoder-only</td><td>Bidirectional self-attention</td><td>Understanding, classification, extraction</td></tr>
+                  <tr><td>Decoder-only</td><td>Causal self-attention</td><td>Generation, chat, code, in-context learning</td></tr>
+                  <tr><td>Encoder-decoder</td><td>Encoder states plus causal decoding</td><td>Translation, summarization, sequence transformation</td></tr>
+                  <tr><td>Mixture variants</td><td>Dense or sparse routing inside blocks</td><td>Scaling capacity under compute constraints</td></tr>
+                </tbody>
+              </table>
+              <p>
+                No family is universally superior. Decoder-only models dominate general assistants because every
+                interaction can be cast as conditional generation. Encoder models remain efficient for embedding,
+                retrieval, reranking, and classification. Encoder-decoder models are still natural when the input
+                and output have clearly different roles. System builders often combine them: a retriever may use
+                encoder embeddings, a reranker may use a cross-encoder, and a decoder LLM may write the final
+                answer.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-5">
+              <span class="section-number">05 / PRE-TRAINING</span>
+              <h2>Pre-training at scale: data, optimization, and scaling laws</h2>
+              <p>
+                Pre-training is the stage where a model learns broad patterns from massive corpora. The data may
+                include web text, books, code, academic writing, dialogue, documentation, and filtered synthetic
+                or human-produced examples. Data is not interchangeable. Quality, deduplication, language balance,
+                recency, domain mixture, copyright constraints, toxicity filtering, and benchmark contamination
+                all affect behavior. A model trained on “more tokens” can still be worse if those tokens are
+                repetitive, low quality, or mismatched to the intended use.
+              </p>
+              <p>
+                The training objective for a decoder LLM is usually average cross-entropy:
+              </p>
+              <div class="equation">\[\mathcal{L}_{\text{LM}}=-\frac{1}{T}\sum_{t=1}^{T}\log p_\theta(x_t\mid x_{<t})\]<span class="equation-number">(4)</span></div>
+              <p>
+                This compact formula hides a very large industrial process. Tokens must be streamed efficiently,
+                batches balanced, checkpoints saved, gradients synchronized, numerical overflows handled, and
+                evaluations run throughout training. Small bugs in data ordering or masking can waste enormous
+                compute. Because full training is expensive, teams rely on smaller-scale experiments and scaling
+                predictions before launching the largest run.
+              </p>
+              <h3>Scaling laws and compute-optimal training</h3>
+              <p>
+                Empirical scaling laws describe how loss changes with model size, data size, and compute. They do
+                not replace theory, but they guide resource allocation. If the model is too large for the amount
+                of data, it may be undertrained. If the dataset is huge but the model is too small, capacity may
+                bottleneck. Compute-optimal training asks how many parameters and tokens should be used for a
+                fixed budget. This is why later models often train on more tokens per parameter than early giant
+                models.
+              </p>
+              <p>
+                Scaling also interacts with emergent-looking behavior. Some capabilities appear abruptly when
+                measured by a thresholded benchmark, yet the underlying loss may improve smoothly. A model may
+                seem unable to solve arithmetic until accuracy crosses a visible line. This does not prove magic,
+                but it does show why evaluation should use continuous metrics, multiple tasks, and careful
+                calibration. Bigger models often become more useful, but size alone does not guarantee reliability
+                or alignment.
+              </p>
+              <h3>Data quality is model behavior</h3>
+              <p>
+                Pre-training data shapes what the model can imitate, know, and normalize. Code data improves
+                programming and structured reasoning but can also teach insecure patterns if unfiltered. Web
+                forums teach conversational variety but include noise and harmful content. Academic and technical
+                text improves precision but may be stylistically narrow. Multilingual data expands language
+                coverage, yet uneven tokenization and imbalanced corpora can produce unequal quality across
+                languages.
+              </p>
+              <p>
+                Deduplication matters because repeated documents can make the model memorize. Contamination
+                matters because benchmark examples in training data inflate evaluation. Filtering matters because
+                removing all difficult content may make the model naive, while retaining harmful content without
+                controls may make it unsafe. Data curation is therefore not just cleaning; it is a form of model
+                specification. The dataset silently defines what the base model thinks normal text looks like.
+              </p>
+              <h3>Base models are capable but not yet assistants</h3>
+              <p>
+                A base model can continue text, answer questions, write code, and imitate formats, but it has not
+                necessarily learned to be helpful, honest, or safe in a conversational setting. If prompted with a
+                transcript of bad advice, it may continue the transcript. If asked an ambiguous question, it may
+                confidently complete a plausible answer rather than ask for clarification. The base model is a
+                powerful prior over text; an assistant is a post-trained system with norms, refusals, tool
+                protocols, and interaction patterns layered on top.
+              </p>
+              <p>
+                This distinction is crucial. Many surprising assistant behaviors are not properties of the
+                pre-training objective alone. They come from instruction tuning, preference optimization, safety
+                data, system prompts, retrieval, decoding settings, and product constraints. When evaluating an
+                LLM, ask which layer of the stack produced the behavior: base model knowledge, fine-tuned
+                instruction following, retrieval evidence, a tool result, or a rule imposed by the surrounding
+                application.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-6">
+              <span class="section-number">06 / ALIGNMENT</span>
+              <h2>From pretrained model to assistant: instruction tuning and preference learning</h2>
+              <p>
+                Instruction tuning teaches a base model to map user requests to desired responses. The data may
+                include human-written demonstrations, curated task examples, multi-turn conversations, tool-use
+                traces, and synthetic instructions filtered by quality. Supervised fine-tuning minimizes the
+                likelihood of a target answer given an instruction. This simple step often changes the user
+                experience dramatically: the model stops merely continuing arbitrary text and starts behaving like
+                something that recognizes requests.
+              </p>
+              <p>
+                Yet supervised examples cannot cover every preference. Users care about helpfulness, honesty,
+                tone, refusal boundaries, uncertainty, concision, source grounding, and many context-dependent
+                tradeoffs. Preference learning collects comparisons between candidate responses and trains the
+                model toward outputs that raters prefer. The core idea is not to define a perfect rule for every
+                situation, but to learn a policy that ranks behaviors more like human evaluators under a written
+                rubric.
+              </p>
+              <h3>RLHF decomposes alignment into reward modeling and policy optimization</h3>
+              <p>
+                A classic RLHF pipeline has three steps. First, supervised fine-tuning creates a reasonable
+                instruction-following model. Second, humans rank several model responses to the same prompt, and
+                a reward model learns to predict those preferences. Third, the language model is optimized to
+                increase reward while staying close to the supervised model, often with a KL penalty. A simplified
+                objective is
+              </p>
+              <div class="equation">\[\max_\pi\ \mathbb{E}_{y\sim \pi(\cdot|x)}[r_\phi(x,y)]-\beta\,D_{\mathrm{KL}}\!\left(\pi(\cdot|x)\,\|\,\pi_0(\cdot|x)\right)\]<span class="equation-number">(5)</span></div>
+              <p>
+                The KL term is essential because a learned reward model is imperfect. Without a constraint, the
+                policy may exploit reward-model loopholes and produce outputs that score well but are not truly
+                better. This is a general problem in optimization: when the proxy differs from the goal, strong
+                optimization can amplify the gap. Alignment is therefore not “add human feedback and finish”; it
+                is an iterative measurement and control problem.
+              </p>
+              <h3>DPO and direct preference methods</h3>
+              <p>
+                Direct Preference Optimization reframes preference learning so the model can be trained with a
+                classification-like loss on chosen and rejected answers, avoiding an explicit reward-model plus
+                reinforcement-learning loop. In simplified form, DPO increases the relative log probability of a
+                preferred answer compared with a rejected answer, measured against a reference policy. The method
+                is attractive because it is simpler, stable, and widely useful in post-training.
+              </p>
+              <p>
+                Direct methods do not remove the hard parts. Preference data can be inconsistent, culturally
+                narrow, or biased toward pleasing style over correctness. A model can learn to sound confident
+                rather than be accurate. Long reasoning tasks may require process feedback, verifiers, or outcome
+                checks rather than single-turn preference labels. The post-training recipe must match the failure
+                modes one cares about.
+              </p>
+              <h3>Safety, refusal, and the alignment tax</h3>
+              <p>
+                Assistants need boundaries: they should not provide instructions for harm, leak private data, or
+                pretend certainty where evidence is missing. Safety tuning supplies examples and preferences that
+                define these boundaries. A good refusal is not just “no”; it explains the limitation and, when
+                appropriate, redirects to safe alternatives. Over-refusal, however, damages usefulness. The model
+                must distinguish harmful requests from legitimate education, fiction, security research, or
+                medical and legal information-seeking that needs careful framing.
+              </p>
+              <p>
+                This creates an alignment tax: constraints that improve safety can reduce raw benchmark
+                performance or make the model less direct. Conversely, removing constraints may improve apparent
+                capability while increasing risk. The right question is not whether alignment makes a model
+                “better” in a single dimension. It is which deployment context, user population, and risk profile
+                the model is being optimized for, and how that optimization is measured after release.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-7">
+              <span class="section-number">07 / INFERENCE</span>
+              <h2>Inference: decoding, context windows, KV cache, and serving constraints</h2>
+              <p>
+                Inference is where a trained model becomes an interactive system. For a decoder-only LLM, the
+                model receives a context, computes logits for the next token, chooses a token according to a
+                decoding strategy, appends it, and repeats. Training predicts all positions in parallel because
+                ground-truth previous tokens are known. Generation is sequential because each new token depends on
+                tokens the model just produced. This difference is why serving latency and throughput require
+                special engineering.
+              </p>
+              <p>
+                The model’s raw output is a logit vector \(z\). Softmax with temperature \(\tau\) gives
+              </p>
+              <div class="equation">\[p_i=\frac{\exp(z_i/\tau)}{\sum_j \exp(z_j/\tau)}\]<span class="equation-number">(6)</span></div>
+              <p>
+                Lower temperature sharpens the distribution and makes output more deterministic. Higher
+                temperature spreads probability mass and increases variety. Top-\(k\) sampling restricts choices
+                to the \(k\) highest-probability tokens; nucleus or top-\(p\) sampling keeps the smallest set of
+                tokens whose cumulative probability exceeds \(p\). Greedy decoding chooses the maximum token each
+                time. None is universally best; the right strategy depends on whether the task values precision,
+                creativity, diversity, or reproducibility.
+              </p>
+              <h3>KV cache turns repeated attention into an incremental computation</h3>
+              <p>
+                In autoregressive generation, previous tokens do not change. Their key and value vectors can be
+                cached layer by layer, so the model only computes new keys and values for the latest token and
+                attends to the stored cache. The KV cache reduces repeated computation but consumes memory
+                proportional to sequence length, number of layers, heads, and head dimension. Long conversations
+                can therefore become memory-bound even when the model weights fit comfortably on the hardware.
+              </p>
+              <p>
+                Serving systems batch requests to improve hardware utilization, but generation creates uneven
+                workloads because users send prompts of different lengths and responses finish at different
+                times. Continuous batching, paged attention, speculative decoding, quantized weights, and model
+                parallelism all target this mismatch. The product behavior a user sees as “the model is typing”
+                is actually a scheduling problem across memory bandwidth, GPU kernels, network latency, and token
+                selection.
+              </p>
+              <h3>Context windows are not the same as working memory</h3>
+              <p>
+                A context window is the maximum number of tokens the model can attend to in one forward pass.
+                Increasing it allows longer documents and conversations, but it does not guarantee perfect use of
+                every token. Models may miss details in the middle, over-focus on recent instructions, or fail to
+                integrate many retrieved passages. Long-context evaluation must test retrieval of specific facts,
+                synthesis across distant sections, contradiction handling, and resistance to irrelevant distractors.
+              </p>
+              <p>
+                Practical systems often manage context explicitly. They summarize old turns, retrieve relevant
+                memories, compress tool outputs, remove redundant text, or maintain structured state outside the
+                prompt. This is not a weakness of LLMs; it is a systems design principle. Human teams also use
+                notebooks, databases, and checklists rather than relying on raw memory. The art is deciding what
+                belongs in the prompt, what belongs in external storage, and what must be recomputed.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-8">
+              <span class="section-number">08 / INTERACTION</span>
+              <h2>Prompting, reasoning, tool use, and agents</h2>
+              <p>
+                Prompting is programming with natural language, examples, constraints, and context. A prompt
+                defines the task, supplies input data, sets style or format, and may include demonstrations.
+                Because LLMs condition on the entire visible sequence, prompt design changes the distribution
+                being sampled. Clear instructions, explicit criteria, delimiters, and examples reduce ambiguity.
+                But prompting is not a substitute for model capability: a weak model cannot reliably execute a
+                complex task just because the prompt asks nicely.
+              </p>
+              <p>
+                A useful prompt separates roles. System instructions define durable behavior and boundaries.
+                Developer instructions specify application logic. User messages specify the immediate request.
+                Retrieved context supplies evidence. Tool outputs supply observations. Mixing these roles
+                carelessly creates prompt-injection vulnerabilities: untrusted documents may contain instructions
+                that try to override the system. Secure LLM systems treat instructions and data as different
+                kinds of text, even though the base model receives both as tokens.
+              </p>
+              <h3>Reasoning traces, verification, and the danger of fluent explanations</h3>
+              <p>
+                Chain-of-thought prompting can improve performance on multi-step tasks by encouraging the model
+                to allocate tokens to intermediate structure. However, generated reasoning is not guaranteed to
+                be the true causal process that produced the answer. It can be incomplete, post-hoc, or wrong
+                while sounding coherent. For high-stakes tasks, the goal is not merely to obtain a long
+                explanation; it is to obtain a checkable answer with reliable intermediate artifacts.
+              </p>
+              <p>
+                Verification can be external or internal. External verification uses calculators, compilers,
+                theorem provers, unit tests, search, databases, or human review. Internal verification asks the
+                model to critique, compare, or revise outputs, sometimes with multiple samples. Self-checking can
+                help but is not independent evidence. A model may repeat the same misconception. Strong systems
+                pair generation with tools that make mistakes observable.
+              </p>
+              <h3>Tool calling turns text prediction into action selection</h3>
+              <p>
+                Tool use gives an LLM a controlled interface to external functions: search, code execution,
+                calculators, calendars, databases, file systems, or APIs. The model predicts a structured call,
+                the environment executes it, and the result returns as new context. This converts an assistant
+                from a closed text generator into a policy over actions and observations. The model still uses
+                language modeling, but the system loop creates grounded interaction.
+              </p>
+              <p>
+                Tool schemas matter. A vague free-form tool invites malformed calls and security mistakes. A
+                typed schema with required fields narrows the action space and makes validation possible. The
+                model should see enough tool description to choose correctly, but not enough authority to bypass
+                policy. Tool outputs should be treated as data, not trusted instructions. Every serious agent
+                design is partly an access-control design.
+              </p>
+              <h3>Agents are loops, not just bigger prompts</h3>
+              <p>
+                An agentic system repeatedly observes, plans, acts, and updates state. The LLM may decompose a
+                goal, call tools, inspect results, revise its plan, and stop when criteria are met. This loop can
+                solve tasks that do not fit in a single response, such as debugging a codebase or researching a
+                topic. The risk is that errors compound: a wrong plan leads to wrong tool calls, which create
+                misleading context, which makes later decisions worse.
+              </p>
+              <p>
+                Good agents therefore need scaffolding: explicit goals, budgets, checkpoints, reversible actions,
+                logs, permission boundaries, and evaluation of progress. Autonomy is not binary. A system may be
+                allowed to read files but not delete them, draft an email but not send it, or run tests but not
+                deploy. The frontier is less about a model “wanting” things and more about building reliable
+                control loops around probabilistic language-model decisions.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-9">
+              <span class="section-number">09 / RETRIEVAL</span>
+              <h2>Retrieval, grounding, memory, and knowledge that lives outside the weights</h2>
+              <p>
+                LLM parameters store a compressed, static trace of training data. This is useful but limited.
+                Facts change, private documents are not in the training set, and source attribution is difficult.
+                Retrieval-Augmented Generation addresses this by searching an external collection at inference
+                time and adding relevant passages to the prompt. The model then answers using both parametric
+                knowledge in its weights and non-parametric knowledge in retrieved context.
+              </p>
+              <p>
+                A simple RAG pipeline has five stages: ingest documents, split them into chunks, embed each chunk,
+                retrieve chunks relevant to the query, and generate an answer with citations or grounded
+                evidence. Each stage has failure modes. Bad chunking separates a claim from its context. Weak
+                embeddings retrieve semantically nearby but irrelevant text. Too many passages distract the
+                model. Too few passages omit the answer. Generation may still misread the evidence.
+              </p>
+              <h3>Dense retrieval as vector search</h3>
+              <p>
+                Dense retrieval maps queries and documents into an embedding space. Similarity is often measured
+                by dot product or cosine similarity:
+              </p>
+              <div class="equation">\[\operatorname{score}(q,d)=\frac{e_q^\top e_d}{\|e_q\|\,\|e_d\|}\]<span class="equation-number">(7)</span></div>
+              <p>
+                This makes retrieval a geometric problem. The embedding model defines what “near” means. If it is
+                trained for semantic similarity, it may retrieve paraphrases. If trained for question answering,
+                it may retrieve answer-bearing passages. Hybrid systems combine dense vectors with keyword search
+                because exact names, numbers, and rare terms often matter. Rerankers then inspect a smaller set of
+                candidates more carefully.
+              </p>
+              <h3>Grounding is not automatic</h3>
+              <p>
+                Adding documents to a prompt does not force the model to use them faithfully. It may rely on
+                prior knowledge, merge incompatible passages, ignore dates, or cite a source that does not
+                support the sentence. Grounded generation requires prompt design, context selection, citation
+                constraints, answerability checks, and sometimes extraction before synthesis. The system should
+                know when the retrieved evidence is insufficient and say so.
+              </p>
+              <p>
+                RAG also changes the threat model. Retrieved documents may contain prompt injection, malicious
+                instructions, outdated policies, or confidential data. A secure RAG system labels retrieved text
+                as untrusted evidence, strips or quarantines instructions inside documents, controls which tools
+                can be called after retrieval, and logs sources. Retrieval improves factuality only when the
+                retrieval corpus and execution policy are trustworthy.
+              </p>
+              <h3>Memory is a product decision as much as a model feature</h3>
+              <p>
+                “Memory” can mean many things: the current context window, a summary of previous conversation,
+                user preferences stored in a profile, retrieved project documents, vector-store notes, or a
+                structured database. These memories differ in freshness, authority, privacy, and editability.
+                Treating them all as just more prompt text makes systems brittle. A user preference should not
+                have the same authority as a verified database record or a system safety instruction.
+              </p>
+              <p>
+                Good memory systems expose controls. Users should know what is remembered, update or delete it,
+                and understand when it affects output. Technically, memory requires retrieval policies,
+                summarization, conflict resolution, retention rules, and privacy boundaries. The LLM is the
+                interface to memory, not the entire memory system. Durable knowledge belongs in systems that can
+                be inspected, updated, and governed.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-10">
+              <span class="section-number">10 / EFFICIENCY</span>
+              <h2>Fine-tuning, LoRA, quantization, distillation, and sparse experts</h2>
+              <p>
+                Once a base or instruction model exists, adapting it to a domain can be much cheaper than
+                retraining from scratch. Full fine-tuning updates all parameters and can be powerful, but it is
+                expensive and can damage general ability if the dataset is narrow. Parameter-efficient
+                fine-tuning updates a small set of additional parameters while leaving most weights frozen. This
+                is especially important when models have billions of parameters and many downstream tasks.
+              </p>
+              <p>
+                LoRA assumes that the needed weight update is low-rank. Instead of learning a full update
+                \(\Delta W\), it learns two smaller matrices:
+              </p>
+              <div class="equation">\[W' = W + \Delta W,\qquad \Delta W = BA,\quad A\in\mathbb{R}^{r\times d},\ B\in\mathbb{R}^{m\times r}\]<span class="equation-number">(8)</span></div>
+              <p>
+                If \(r\) is small, the number of trainable parameters is far lower than full fine-tuning. The
+                adapter can be stored separately, swapped for different tasks, or merged into the base weights for
+                deployment. LoRA works because many adaptations appear to live in a relatively low-dimensional
+                subspace of the full parameter space, though the best rank and target layers depend on the task.
+              </p>
+              <h3>Quantization reduces memory by lowering numerical precision</h3>
+              <p>
+                Quantization stores weights or activations with fewer bits. A 16-bit weight may become 8-bit,
+                4-bit, or lower, with scale factors that approximate the original values. This reduces memory
+                bandwidth and allows larger models to run on smaller hardware. The cost is quantization error:
+                small changes in weights can accumulate through layers. Good quantization chooses formats,
+                calibration data, and per-channel scales that preserve important behavior.
+              </p>
+              <p>
+                QLoRA combines quantized frozen base weights with trainable LoRA adapters, making fine-tuning
+                large models feasible on much less memory. Inference quantization is a separate problem from
+                training-time quantization: a model can be trained in higher precision and served in lower
+                precision. Engineers must measure task quality, latency, throughput, and memory together, because
+                a smaller model that produces worse answers may increase total cost through retries and human
+                correction.
+              </p>
+              <h3>Distillation transfers behavior into a smaller model</h3>
+              <p>
+                Distillation trains a smaller student model to imitate a larger teacher’s outputs, reasoning
+                traces, preferences, or logits. It can reduce serving cost and latency while preserving much of
+                the task behavior. The student may learn from teacher-generated datasets, preference labels, or
+                probability distributions. Distillation is not free: the student inherits teacher mistakes and may
+                lose rare capabilities that require capacity.
+              </p>
+              <p>
+                A common deployment pattern is not “one model does everything.” A system may route easy requests
+                to a small model, hard requests to a larger model, retrieval to an embedding model, safety checks
+                to classifiers, and code execution to tools. Model efficiency is therefore a routing and product
+                design problem. The right architecture minimizes total cost while meeting reliability and latency
+                requirements.
+              </p>
+              <h3>Mixture of Experts increases parameters without activating all of them</h3>
+              <p>
+                Mixture-of-Experts models contain multiple expert sub-networks and a router that selects a small
+                number for each token. This increases total parameter capacity while keeping per-token compute
+                closer to a dense model of similar active size. The router must balance load so experts do not
+                collapse into a few overused paths. MoE can improve scaling efficiency, but introduces
+                communication cost, routing instability, and deployment complexity.
+              </p>
+              <p>
+                Sparse activation changes how we talk about model size. A model may have hundreds of billions of
+                total parameters but activate only a fraction per token. Total parameters represent stored
+                capacity; active parameters represent compute per token. Both matter. Memory, bandwidth, expert
+                parallelism, batch shape, and routing distribution determine whether MoE is actually efficient in
+                a real serving environment.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-11">
+              <span class="section-number">11 / MULTIMODAL</span>
+              <h2>Multimodal LLMs, long context, and systems that perceive more than text</h2>
+              <p>
+                Multimodal LLMs connect language with images, audio, video, actions, or structured observations.
+                A common pattern uses a modality-specific encoder to turn non-text input into vectors, then maps
+                those vectors into the language model’s embedding space. The LLM can then attend to visual or
+                audio tokens alongside text tokens. The central question is alignment: which visual features
+                should correspond to which words, instructions, spatial relations, or actions?
+              </p>
+              <p>
+                Vision-language models may use image patches as tokens, a learned projection into the LLM hidden
+                dimension, and instruction tuning on image-question-answer pairs. Audio systems may convert sound
+                into spectrogram-like features or discrete acoustic tokens. Video adds time and scale: many frames
+                create huge token counts, so models must sample, compress, or retrieve salient segments. The same
+                Transformer principles remain, but the meaning of a token becomes richer and more heterogeneous.
+              </p>
+              <h3>Cross-modal grounding is harder than captioning</h3>
+              <p>
+                A model that captions an image is not necessarily grounded enough to solve visual reasoning. It
+                may know common object names but fail at counting, spatial relations, diagrams, charts, or tiny
+                text. Grounding requires preserving details that matter for the task and knowing when visual
+                evidence is ambiguous. For documents and screenshots, OCR, layout, typography, and coordinates can
+                matter as much as object recognition.
+              </p>
+              <p>
+                Multimodal systems also create new safety issues. Images can contain private information, hidden
+                instructions, medical details, or copyrighted content. Audio can contain voices and sensitive
+                background context. A model may be asked to infer attributes that should not be guessed. The
+                policy layer must reason about modality-specific privacy and harm, not only about generated text.
+              </p>
+              <h3>Long-context mechanisms must fight quadratic attention</h3>
+              <p>
+                Standard attention compares every token with every other token, making cost scale as \(O(T^2)\).
+                Long documents, video, code repositories, and extended conversations stress this cost. Efficient
+                attention kernels reduce memory movement; sparse attention restricts which tokens interact;
+                sliding windows focus on locality; recurrence or state-space hybrids carry compressed state; and
+                retrieval selects relevant chunks before generation. Each approach trades off exact access,
+                latency, memory, and quality.
+              </p>
+              <p>
+                Long context should be evaluated by use, not only by maximum length. Can the model find a detail
+                at the beginning after reading hundreds of pages? Can it compare two distant clauses? Can it
+                avoid being distracted by irrelevant but similar passages? Can it maintain a plan across a long
+                coding session? The ability to accept many tokens is only the input interface. The deeper ability
+                is selective, faithful use of information.
+              </p>
+              <h3>World models, action, and embodied interfaces</h3>
+              <p>
+                When LLMs interact with browsers, robots, games, or software environments, text becomes one part
+                of a perception-action loop. The model may observe screenshots, DOM trees, logs, sensor readings,
+                or tool outputs, then choose actions. Success requires grounding language in state changes. If the
+                model clicks a button, the environment changes; if it edits code, tests pass or fail; if it moves
+                a robot, physics responds.
+              </p>
+              <p>
+                These systems blur the boundary between LLMs and agents. The language model supplies flexible
+                planning and interpretation, while external modules supply perception, control, memory, and
+                verification. The frontier is not a single monolithic brain but a stack of learned models and
+                engineered interfaces that coordinate under constraints.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-12">
+              <span class="section-number">12 / EVALUATION</span>
+              <h2>Evaluation, risks, and a frontier map for understanding LLM systems</h2>
+              <p>
+                Evaluating LLMs is difficult because they are general interfaces. A benchmark may test math,
+                coding, factual recall, long-context retrieval, tool use, safety, multilingual ability, or
+                preference following, but no single number captures all of these. Benchmarks can saturate, leak
+                into training data, reward superficial style, or miss deployment-specific failures. Human
+                evaluation is richer but slower, expensive, and sensitive to rater instructions.
+              </p>
+              <p>
+                A reliable evaluation stack uses several layers. Unit tests check exact behavior for known cases.
+                Benchmark suites measure broad capability. Red-team prompts search for unsafe failures.
+                Regression tests prevent old bugs from returning. Human review inspects ambiguous quality. Online
+                telemetry monitors real usage, latency, refusal rates, user corrections, and incident reports.
+                Evaluation is not an event before launch; it is a continuous measurement process.
+              </p>
+              <h3>Hallucination is a family of failures, not one bug</h3>
+              <p>
+                Hallucination can mean fabricated facts, unsupported citations, wrong tool assumptions, invalid
+                code, overconfident medical advice, or subtle synthesis errors across sources. The causes differ.
+                Some come from pre-training statistics, some from missing retrieval, some from poor prompts, some
+                from decoding, and some from reward models that prefer confident style. A solution must target the
+                cause: retrieval, uncertainty calibration, verification tools, constrained decoding, abstention
+                training, or human review.
+              </p>
+              <p>
+                It is tempting to ask whether a model “knows” the answer. Operationally, ask what evidence the
+                system used, whether the answer can be checked, how uncertainty was expressed, and what happens
+                when evidence is insufficient. The same model may be reliable for rewriting an email and
+                unreliable for legal research without retrieval. Reliability is a property of model plus task
+                plus system design.
+              </p>
+              <h3>Security, privacy, and misuse</h3>
+              <p>
+                LLM systems introduce security risks because text can be both data and instruction. Prompt
+                injection attempts to smuggle instructions through untrusted content. Data exfiltration attacks
+                try to make the model reveal secrets from tools or context. Model outputs can help with phishing,
+                malware, manipulation, or unsafe advice. Defenses include least-privilege tools, context
+                isolation, content filtering, audit logs, sandboxing, and refusal policies.
+              </p>
+              <p>
+                Privacy requires more than not training on a user’s data. Applications may place private
+                documents into prompts, store conversation memory, call third-party tools, or log outputs for
+                debugging. Each step needs retention rules and access controls. LLMs make data flows feel
+                conversational, but the underlying system still has databases, logs, caches, and APIs. Governance
+                must follow the data, not the friendliness of the interface.
+              </p>
+              <h3>A compact map of frontier mechanisms</h3>
+              <table class="comparison-table">
+                <thead><tr><th>Mechanism</th><th>Core idea</th><th>Main tradeoff</th></tr></thead>
+                <tbody>
+                  <tr><td>RAG</td><td>Retrieve external evidence before generation</td><td>Grounding depends on retrieval quality</td></tr>
+                  <tr><td>RLHF / DPO</td><td>Shape behavior with preference data</td><td>Can optimize style or proxy rewards</td></tr>
+                  <tr><td>LoRA / QLoRA</td><td>Adapt small parameter subsets</td><td>May limit task-specific capacity</td></tr>
+                  <tr><td>MoE</td><td>Activate selected experts per token</td><td>Routing and serving become complex</td></tr>
+                  <tr><td>Tool use</td><td>Call external functions for grounded action</td><td>Requires schemas, permissions, verification</td></tr>
+                  <tr><td>Multimodal grounding</td><td>Map images, audio, or video into model context</td><td>Token cost and evidence fidelity are hard</td></tr>
+                </tbody>
+              </table>
+              <p>
+                The LLM field moves quickly, but the underlying questions are stable. What is the representation?
+                What information can each token see? Where does knowledge live: weights, prompt, retrieval,
+                memory, or tools? What objective shaped the behavior? What evidence supports the answer? What
+                happens when the model is uncertain, attacked, or outside distribution? These questions prevent
+                the technology from becoming a blur of product names.
+              </p>
+              <p>
+                A practical learning path should therefore move in layers. First, implement a tiny decoder-only
+                Transformer and verify every tensor shape. Second, train or inspect a tokenizer and observe how
+                segmentation changes sequence length. Third, fine-tune a small open model with LoRA and compare it
+                with prompting alone. Fourth, build a small RAG system and record retrieval failures. Fifth, add a
+                tool with a strict schema and test prompt injection. These exercises connect theory to the
+                operational reality of LLM systems.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">A durable mental model</span>
+                <p>
+                  An LLM is a Transformer-based probability model embedded in a larger system. Pre-training gives
+                  broad linguistic and world structure; post-training teaches interaction norms; retrieval and
+                  tools supply fresh evidence and action; inference engineering makes the system fast enough to
+                  use; evaluation and policy keep it within acceptable boundaries. The intelligence we experience
+                  is produced by the whole stack.
+                </p>
+              </div>
+              <div class="chapter-divider">End of chapter 02</div>
+            </section>
+
+            <footer class="article-end">
+              <h2>Keep the whole stack in view.</h2>
+              <p>
+                Large language models become understandable when architecture, data, training objectives,
+                inference, tools, retrieval, safety, and product constraints are seen as one connected system.
+              </p>
+              <a class="article-next" href="index.html#library">Return to the knowledge map <span>↗</span></a>
+            </footer>
+          </div>
+
+          <div data-lang-content="zh" hidden>
+            <p class="article-intro">
+              大语言模型不是简单记住句子的数据库，也不是由人工写满规则的推理机器。它首先是一个巨大的条件概率模型：把文本切成 token，在高维空间里不断更新表示，并学习在给定上下文时下一个 token 应该如何分布；随后，它又通过指令数据、偏好学习、检索、工具、系统提示和安全策略，被塑造成可交互的 AI 助手。本章从 Transformer 出发，因为现代 LLM 的绝大多数关键机制都可以还原到这个计算骨架；之后再一路进入预训练、对齐、推理服务、RAG、智能体、多模态、效率优化、评估与前沿技术。
+            </p>
+
+            <section class="article-section" id="zh-1">
+              <span class="section-number">01 / 语言建模</span>
+              <h2>从文本到 token：大语言模型究竟学到了什么</h2>
+              <p>
+                人类看到的语言是字符、词语、段落、对话、代码、表格、网页标记和各种文档结构；神经网络真正接收的却是整数数组。分词器负责完成这次转换：把原始文本变成序列
+                \(x_1,x_2,\ldots,x_T\)，其中每个 \(x_t\) 是词表中的一个编号。这个编号可能对应一个词、一个子词片段、一个标点、一个字节序列，或者一个特殊控制符。模型并不直接看见“意义”，它看见的是 token 身份、位置，以及这些 token 在大量语料中共同出现的统计结构。
+              </p>
+              <p>
+                现代模型常使用子词分词，因为自然语言的词表几乎是开放的。若完全按词切分，罕见人名、新术语、拼写错误和程序变量名会让词表无限膨胀；若完全按字符切分，序列会变得很长，训练和推理成本都会上升。子词方案折中处理：高频词可以独立成 token，低频词拆成若干片段。这不是无关紧要的工程细节。某种语言被切得更碎，就会为同样内容消耗更多上下文长度；模型处理拼写、数字、形态变化和代码标识符的方式，也会受 token 边界影响。
+              </p>
+              <h3>自回归概率是最基本的学习目标</h3>
+              <p>
+                GPT 类模型最常见的目标，是把整个序列概率分解成一连串“预测下一个 token”的问题。根据概率链式法则，
+              </p>
+              <div class="equation">\[p(x_{1:T})=\prod_{t=1}^{T}p(x_t\mid x_{<t})\]<span class="equation-number">(1)</span></div>
+              <p>
+                训练时，模型在海量样本上最小化负对数似然，也就是交叉熵。当它在给定前文时给真实下一个 token 较高概率，就会得到奖励。这个目标听起来很窄，却迫使模型学习语法、事实、话题、格式、代码依赖、论证结构以及许多有助于预测的潜变量。若要预测证明中的下一步，它必须捕捉数学结构；若要预测一行代码，它必须捕捉 API、缩进、变量作用域和远距离约束。
+              </p>
+              <p>
+                这个目标也解释了核心局限：模型学到的是统计延续，而不是直接的真理判定。如果一个错误说法在语料中常见，或者在当前语境下很像“会出现的文本”，仅靠下一个 token 预测就可能复现它。如果用户要求一个上下文中不存在的来源，模型仍可能生成看起来像引用的文字，因为“引用形状”的文本概率很高。后续系统之所以需要检索、验证、拒答策略、工具调用和偏好对齐，正是因为下一个 token 预测极其强大，但并不完整。
+              </p>
+              <h3>嵌入把离散编号变成连续向量</h3>
+              <p>
+                token 编号本身没有语义几何。嵌入矩阵 \(E\in\mathbb{R}^{V\times d}\) 把词表中的每个对象映射成 \(d\) 维向量；读取 token
+                \(x_t\) 就是在矩阵中取出第 \(x_t\) 行。训练过程中，在相似上下文中承担相似功能的 token 往往形成相关方向，但这些坐标不是人工命名的概念，而是任务自动发现的表示。模型还必须加入位置信息，因为“狗咬人”和“人咬狗”的 token 集合相同，顺序却完全改变了含义。
+              </p>
+              <p>
+                最后一层通常输出一个覆盖整个词表的 logit 向量，softmax 后成为下一个 token 的概率分布。许多模型会让输入嵌入矩阵与输出矩阵共享或关联参数，意味着同一套词表几何既参与“读入”，也参与“写出”。一次前向传播因此从离散符号开始，进入连续向量空间，经过多层变换后，再回到离散 token 的概率分布。
+              </p>
+              <h3>困惑度、压缩与预测为什么会产生知识</h3>
+              <p>
+                困惑度是平均负对数似然的指数形式，可以粗略理解为模型在每一步还剩下多少个“同样可能”的选择。困惑度越低，说明模型越能压缩数据。压缩并不是魔法，但它非常有意义：为了压缩语料，模型必须发现重复结构。它需要知道函数通常会闭合括号，日期遵循历法，人物名字常与身份共现，论证包含前提和结论，代码库中同一个变量会在多个位置保持一致。
+              </p>
+              <p>
+                说“大模型理解语言”容易产生误解，因为这句话可能暗示人类式体验、目标或意识。更稳妥的技术说法是：模型学习了对预测和转换语言有用的高维表示。这些表示可以支持翻译、摘要、编程、计划和类似推理的行为，但仍然高度依赖数据、提示、解码方式和评估环境。理解 LLM，不是把最终输出人格化，而是追踪从 token、表示、目标函数到系统设计的完整链条。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-2">
+              <span class="section-number">02 / TRANSFORMER 核心</span>
+              <h2>自注意力：让现代大语言模型成为可能的计算</h2>
+              <p>
+                在 Transformer 之前，序列模型常依赖循环网络或卷积网络。循环网络逐步处理 token，把隐藏状态向后传递；卷积网络处理局部窗口，通过堆叠层数扩大感受野。Transformer 用自注意力替代了这两者：序列中每个位置的表示，都可以直接与其他位置的表示比较并交换信息。因此，它在训练时更容易并行，也能在较短路径中表达长距离依赖，而不必让信息穿过很长的循环链。
+              </p>
+              <p>
+                设某一层的 token 表示为 \(X\in\mathbb{R}^{T\times d}\)。模型用学习矩阵把它投影成查询、键和值：
+                \(Q=XW_Q\)、\(K=XW_K\)、\(V=XW_V\)。查询可以理解为“当前位置想找什么”，键表示“当前位置提供什么匹配信号”，值则是“如果被关注，应传递什么内容”。它们不是三份独立数据，而是同一个隐藏状态的三种学习视图。
+              </p>
+              <h3>缩放点积注意力</h3>
+              <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\left(\frac{QK^\top+M}{\sqrt{d_k}}\right)V\]<span class="equation-number">(2)</span></div>
+              <p>
+                矩阵 \(QK^\top\in\mathbb{R}^{T\times T}\) 包含所有位置之间的匹配分数。第 \(i\) 行表示第 \(i\) 个 token 对所有位置 \(j\) 的关注程度。掩码 \(M\) 可以禁止某些连接，例如自回归解码器中不能看见未来 token。除以 \(\sqrt{d_k}\) 是为了控制键维度增大时点积方差过大的问题。softmax 把每行分数变成概率分布，再乘以 \(V\)，就得到对值向量的加权平均。
+              </p>
+              <p>
+                注意力最好同时从三种角度理解。代数上，它是矩阵乘法、掩码、归一化和再次矩阵乘法；几何上，它根据方向相似度把信息从某些位置路由到另一些位置；计算上，它构造了一个 \(T\times T\) 的交互矩阵，时间和显存开销都随序列长度二次增长。现代 LLM 工程中相当多的工作，都在试图保留注意力的表达能力，同时降低这个成本。
+              </p>
+              <h3>多头注意力学习多种关系空间</h3>
+              <p>
+                单个注意力头只形成一种匹配几何。多头注意力并行构造 \(h\) 个较小的注意力计算，每个头有自己的投影矩阵；它们的输出拼接后再投影回模型维度。某个头可能偏向局部语法，另一个头可能匹配括号或引号，另一个头可能复制实体名，另一个头可能建立较远的主题关联。当然，这些解释只是近似；关键在于，不同子空间可以在同一层路由不同类型的信息。
+              </p>
+              <p>
+                若模型维度为 \(d\)、头数为 \(h\)，每个头通常使用 \(d_k=d/h\)。这样总体投影规模大致保持不变，同时允许多种关系模式并存。注意力输出并不是显式语法树或人工规则表，而是一组连续的、学习到的信息通信模式：每个 token 的表示会根据掩码允许的连接，从其他位置选择性混合信息。
+              </p>
+              <h3>位置信息让顺序可见</h3>
+              <p>
+                如果没有位置编码，纯注意力对排列是等变的：把 token 表示整体打乱，注意力本身没有内在理由知道谁在前、谁在后。因此 Transformer 必须加入位置信号。原始 Transformer 使用正弦位置编码；后续模型常使用学习位置向量、相对位置偏置、旋转位置编码等方法。这些方案不同，但都在回答同一个问题：模型如何感知距离、顺序和相对排列？
+              </p>
+              <p>
+                位置设计对长上下文尤其重要。绝对学习位置向量可能难以外推到训练长度之外；相对位置和旋转位置方法让距离关系更显式，常更适合扩展，但训练分布和注意力实现仍然关键。长上下文 LLM 不是简单把最大长度数字改大就能得到的；它需要匹配的位置机制、长文本数据、节省显存的注意力实现，以及能检验模型是否真的使用远处信息的评估。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-3">
+              <span class="section-number">03 / 模块</span>
+              <h2>Transformer 块内部：残差流、归一化与 MLP</h2>
+              <p>
+                一个 Transformer 层通常围绕残差流构建。每个子模块读取当前隐藏状态，计算一个更新量，再把更新量加回原状态。用简化的 pre-norm 记号表示：
+              </p>
+              <div class="equation">\[Y=X+\operatorname{Attn}(\operatorname{LN}(X)),\qquad Z=Y+\operatorname{MLP}(\operatorname{LN}(Y))\]<span class="equation-number">(3)</span></div>
+              <p>
+                残差连接不是装饰。它允许信息和梯度穿过很多层，而不要求每一层都完整保存所有内容。每个层可以对表示做局部编辑，残差流则持续携带已经积累的上下文。这使得很深的模型可训练，也支持一种重要直觉：Transformer 并不是每层都从零重建表示，而是在一个共享工作空间中逐步修改、补充和重写信息。
+              </p>
+              <h3>层归一化稳定表示尺度</h3>
+              <p>
+                LayerNorm 在单个 token 的隐藏维度上计算统计量，然后重新居中和缩放。它不同于依赖 batch 统计的 BatchNorm。语言模型中的 batch 样本可能长度、主题和生成状态都不同，因此按 token 内部坐标归一化更自然。pre-norm 架构把归一化放在注意力和 MLP 更新之前，通常能改善深层网络的梯度流动。
+              </p>
+              <p>
+                归一化提醒我们：优化本质上也是几何问题。如果隐藏向量尺度剧烈变化，点积、激活函数和梯度都会变得难以控制。稳定尺度能让同一学习率在多层中更可用。现代模型有时用 RMSNorm 取代完整 LayerNorm，但目的相近：让残差流在数值上保持良好条件，同时允许模型通过可学习的缩放参数调整表示强度。
+              </p>
+              <h3>MLP 转换每个位置内部的特征</h3>
+              <p>
+                前馈子层通常称为 MLP，它对每个位置独立执行非线性变换。常见形式是 \(W_2\,\phi(W_1x)\)，也可能使用 SwiGLU 等门控激活。注意力负责在位置之间搬运信息；MLP 负责在一个位置内部重组信息。由于它先把隐藏维度扩展再投影回来，MLP 可以产生大量高维特征交互，随后再由后续注意力层路由到其他位置。
+              </p>
+              <p>
+                可解释性研究常发现某些 MLP 神经元或方向与特征、事实、格式或行为相关。这并不意味着模型为每个事实都保存了一行整齐的数据库记录。知识分布在嵌入、注意力模式、MLP 权重和残差方向中。不过，把“跨 token 通信”和“单 token 内部非线性转换”区分开，有助于理解为什么注意力容量和 MLP 容量都很重要。
+              </p>
+              <h3>训练流、反向传播与规模带来的质变</h3>
+              <p>
+                预训练时，一批批 token 序列经过多个 Transformer 块，产生 logits，并计算交叉熵损失。反向传播为所有参数求梯度，AdamW 等优化器使用自适应矩估计和权重衰减更新参数。学习率通常先 warmup 再衰减。混合精度、梯度裁剪、参数分片、激活检查点、分布式数据并行等工程手段，都是大模型训练的必要组成，而不是锦上添花。
+              </p>
+              <p>
+                规模会让问题发生质变。小 Transformer 可以在单卡上训练，并像普通模型一样调试；前沿 LLM 则需要数据管线、容错机制、集群调度、数值监控、评估闸门和严密的 checkpoint 管理。架构图可能很简洁，但真正的训练运行是一个社会技术系统：数据质量、算力可靠性和度量纪律，和注意力公式本身同样重要。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-4">
+              <span class="section-number">04 / 架构族</span>
+              <h2>编码器、解码器、编码器-解码器：BERT、GPT 与架构家族</h2>
+              <p>
+                Transformer 不是单一模型，而是一整个架构家族。编码器-only 模型允许每个 token 双向关注所有 token，适合表示学习和理解任务；解码器-only 模型使用因果掩码，让每个位置只能关注过去，适合开放式生成；编码器-解码器模型先编码输入序列，再用交叉注意力解码输出序列。BERT、GPT、T5、翻译系统和对话助手之间的许多差异，都源自掩码和训练目标的选择。
+              </p>
+              <p>
+                掩码定义信息流。双向编码器中，一个 token 可以同时使用左侧和右侧上下文，因此适合分类、抽取和句子理解。因果解码器中，训练时第 \(t\) 个 token 不能看到第 \(t+1\) 个 token，这与推理时逐步生成的过程一致。编码器-解码器中，解码器既看见先前输出 token，又可以通过交叉注意力读取全部编码器状态，因此很适合翻译和结构化改写。
+              </p>
+              <h3>BERT：通过遮蔽预测学习双向表示</h3>
+              <p>
+                BERT 推广了深层双向预训练。它不是只预测下一个 token，而是随机遮住输入中的一部分 token，并要求模型根据左右两侧上下文复原它们。这样得到的表示适合下游分类、蕴含判断、实体识别和抽取式问答等任务。BERT 并不天然适合开放式生成，因为它的训练目标与从左到右逐步采样并不一致。
+              </p>
+              <p>
+                BERT 的重要性不仅是历史性的，也是概念性的。它证明了大规模自监督预训练可以得到跨任务复用的通用语言表示；只需加一个任务头并用少量标注数据微调，就能显著优于从零训练。后来通用助手的中心转向 decoder-only 生成模型，但“先预训练通用模型，再面向任务适配”的范式仍然是大模型时代的基础。
+              </p>
+              <h3>GPT：解码器生成与上下文学习</h3>
+              <p>
+                GPT 类模型是自回归解码器。它们用下一个 token 预测训练，生成时不断选择或采样下一个 token，把它接到上下文后再继续下一步。这个目标天然适配聊天、代码补全、摘要和许多可以表达为“请以正确方式续写这段文本”的任务。随着 decoder-only 模型扩大，人们观察到上下文学习：模型可以根据提示中的说明或示例完成新任务，而不更新权重。
+              </p>
+              <p>
+                上下文学习并不意味着模型真的在提示中训练了一个新的神经网络。它意味着一次前向传播能够利用示例，推断出足够强的模式并继续它。机制可能包括注意力检索相关示例、残差流表示任务结构，以及预训练中积累的任务先验。其实用意义在于：任务可以通过文本指定，大语言模型因此从一个个孤立任务模型，变成了灵活的自然语言接口。
+              </p>
+              <h3>架构对比</h3>
+              <table class="comparison-table">
+                <thead><tr><th>家族</th><th>注意力模式</th><th>典型优势</th></tr></thead>
+                <tbody>
+                  <tr><td>编码器-only</td><td>双向自注意力</td><td>理解、分类、抽取</td></tr>
+                  <tr><td>解码器-only</td><td>因果自注意力</td><td>生成、聊天、代码、上下文学习</td></tr>
+                  <tr><td>编码器-解码器</td><td>编码器状态加因果解码</td><td>翻译、摘要、序列转换</td></tr>
+                  <tr><td>混合变体</td><td>块内稠密或稀疏路由</td><td>在算力约束下扩展容量</td></tr>
+                </tbody>
+              </table>
+              <p>
+                没有哪一类架构在所有场景中绝对更好。通用助手以 decoder-only 为主，是因为几乎所有交互都能转写成条件生成；编码器模型仍然适合 embedding、检索、重排和分类；编码器-解码器在输入和输出角色明显不同的任务中依然自然。真实系统常组合多种模型：用编码器做向量检索，用 cross-encoder 做重排，再由解码器 LLM 生成最终回答。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-5">
+              <span class="section-number">05 / 预训练</span>
+              <h2>大规模预训练：数据、优化与 scaling laws</h2>
+              <p>
+                预训练是模型从海量语料中学习广泛模式的阶段。数据可能包括网页、书籍、代码、学术文本、对话、文档、过滤后的合成数据和人工示例。数据并非可以任意替换。质量、去重、语言比例、时间新鲜度、领域混合、版权约束、有害内容过滤和 benchmark contamination，都会影响模型行为。即使 token 更多，如果重复、低质或与使用场景不匹配，模型也可能更差。
+              </p>
+              <p>
+                decoder LLM 的训练目标通常是平均交叉熵：
+              </p>
+              <div class="equation">\[\mathcal{L}_{\text{LM}}=-\frac{1}{T}\sum_{t=1}^{T}\log p_\theta(x_t\mid x_{<t})\]<span class="equation-number">(4)</span></div>
+              <p>
+                这个简洁公式背后，是一个庞大的工业流程。token 必须高效流式读取，batch 需要平衡，checkpoint 要可靠保存，梯度要跨设备同步，数值溢出要监控，训练过程中还要持续运行评估。数据顺序、掩码或 loss 计算中的小错误，都可能浪费巨量算力。由于完整训练极其昂贵，团队通常依赖小规模实验和 scaling 预测，再决定是否启动最大训练运行。
+              </p>
+              <h3>Scaling laws 与算力最优训练</h3>
+              <p>
+                经验 scaling laws 描述损失如何随模型大小、数据量和计算量变化。它不能取代理论，却能指导资源分配。如果模型相对数据太大，可能处于 undertrained 状态；如果数据极多但模型太小，则容量成为瓶颈。算力最优训练关心的是：在固定预算下，参数量和训练 token 数应如何配置。后来许多模型会比早期巨型模型使用更多 token-per-parameter，正是受到这类分析影响。
+              </p>
+              <p>
+                规模也会影响“涌现”行为的观察方式。某些能力在阈值型 benchmark 上看似突然出现，但底层 loss 可能一直平滑下降。模型可能在准确率越过某条线之前看似完全不会算术，越过后又突然可用。这并不证明魔法，却说明评估应使用连续指标、多任务和校准分析。更大的模型常更有用，但规模本身并不保证可靠性或对齐。
+              </p>
+              <h3>数据质量就是模型行为</h3>
+              <p>
+                预训练数据塑造模型能够模仿、知道和默认正常的东西。代码数据提高编程和结构化推理能力，但若不过滤，也可能教会不安全模式；论坛数据带来对话多样性，也包含噪声和有害内容；学术与技术文本提高精确性，但风格可能狭窄；多语言数据扩展覆盖面，但不均衡语料和分词效率差异会导致不同语言质量不均。
+              </p>
+              <p>
+                去重很重要，因为重复文档会增加记忆风险；污染很重要，因为 benchmark 样本进入训练集会虚高评估；过滤很重要，因为完全移除困难内容可能让模型天真，而无控制地保留有害内容又会带来安全风险。因此，数据策划不只是清洗，而是在隐式规定模型。数据集悄悄定义了基础模型眼中“正常文本”应是什么样。
+              </p>
+              <h3>基础模型还不是助手</h3>
+              <p>
+                基础模型可以续写文本、回答问题、写代码和模仿格式，但它未必学会在对话中有帮助、诚实或安全。如果提示给出一段糟糕建议的文本，它可能继续糟糕建议；如果问题含糊，它可能生成一个自信但未经澄清的答案。基础模型是强大的文本先验；助手则是在其上叠加指令微调、偏好优化、安全数据、系统提示、工具协议和交互规范后的系统。
+              </p>
+              <p>
+                这个区分非常关键。许多令人惊讶的助手行为，并不是预训练目标单独产生的。它们来自指令调优、偏好优化、安全策略、检索、解码设置和产品约束。评估 LLM 时，应追问某个行为来自栈的哪一层：基础模型知识、指令跟随能力、检索证据、工具结果，还是外围应用强加的规则。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-6">
+              <span class="section-number">06 / 对齐</span>
+              <h2>从预训练模型到助手：指令调优与偏好学习</h2>
+              <p>
+                指令调优教基础模型把用户请求映射成期望回答。数据可能包括人工示范、任务样例、多轮对话、工具使用轨迹，以及经质量过滤的合成指令。监督微调会在给定指令时最大化目标回答的似然。这个简单步骤往往极大改变用户体验：模型不再只是延续任意文本，而开始表现得像能识别请求的助手。
+              </p>
+              <p>
+                但监督示例无法覆盖所有偏好。用户关心有用性、诚实性、语气、拒答边界、不确定性、简洁性、来源依据，以及许多随上下文变化的取舍。偏好学习收集候选回答之间的比较，让模型朝评价者更喜欢的输出移动。核心并不是为每种情况写出完美规则，而是根据书面 rubric 学习一种更符合人类评价的行为排序。
+              </p>
+              <h3>RLHF 把对齐分解为奖励建模和策略优化</h3>
+              <p>
+                经典 RLHF 流程通常有三步。首先，用监督微调得到一个基本可用的指令模型；其次，让人类对同一提示下的多个回答排序，并训练奖励模型预测这些偏好；最后，优化语言模型以提高奖励，同时通过 KL 惩罚让它不要偏离监督模型太远。一个简化目标是
+              </p>
+              <div class="equation">\[\max_\pi\ \mathbb{E}_{y\sim \pi(\cdot|x)}[r_\phi(x,y)]-\beta\,D_{\mathrm{KL}}\!\left(\pi(\cdot|x)\,\|\,\pi_0(\cdot|x)\right)\]<span class="equation-number">(5)</span></div>
+              <p>
+                KL 项非常重要，因为学习到的奖励模型并不完美。若没有约束，策略可能钻奖励模型空子，生成“得分高但并不真正更好”的回答。这是优化中的普遍问题：当代理指标偏离真实目标时，强优化会放大差距。因此，对齐不是“加一点人类反馈就结束”，而是持续测量和控制的问题。
+              </p>
+              <h3>DPO 与直接偏好方法</h3>
+              <p>
+                Direct Preference Optimization 把偏好学习重新参数化，使模型可以用类似分类的损失直接在 chosen/rejected 回答对上训练，而不必显式训练奖励模型再进入强化学习循环。简化地说，DPO 会提高偏好回答相对拒绝回答的对数概率，并参考一个基准策略限制偏移。它受欢迎，是因为实现更简单、训练更稳定，也很适合大规模 post-training。
+              </p>
+              <p>
+                直接方法并没有消除真正困难的部分。偏好数据可能不一致、文化范围狭窄，或者偏向讨喜风格而非事实正确。模型可能学会“听起来很自信”，而不是“真的准确”。长推理任务还可能需要过程反馈、验证器或结果检查，而不仅是单轮回答偏好。post-training 配方必须与关心的失败模式匹配。
+              </p>
+              <h3>安全、拒答与对齐税</h3>
+              <p>
+                助手需要边界：不应提供伤害性操作指导，不应泄露隐私数据，也不应在证据不足时假装确定。安全调优通过样例和偏好定义这些边界。好的拒答不是简单说“不”，而是解释限制，并在适当时转向安全替代方案。但过度拒答会损害可用性。模型必须区分有害请求与正当教育、虚构创作、安全研究，或需要谨慎说明的医疗法律信息咨询。
+              </p>
+              <p>
+                这带来所谓对齐税：提升安全性的约束可能降低某些原始 benchmark 表现，或让模型不够直接；反过来，移除约束可能提升表面能力，却增加风险。正确问题不是“对齐是否让模型在单一维度上更好”，而是模型针对什么部署场景、用户群体和风险剖面优化，以及上线后如何持续测量这种优化。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-7">
+              <span class="section-number">07 / 推理</span>
+              <h2>推理：解码、上下文窗口、KV cache 与服务约束</h2>
+              <p>
+                推理阶段，训练好的模型才成为可交互系统。对 decoder-only LLM 来说，模型接收上下文，计算下一个 token 的 logits，用某种解码策略选择 token，把它追加到上下文，再重复这个过程。训练时，由于真实前文已知，所有位置可并行预测；生成时，每个新 token 都依赖模型刚生成的 token，因此天然是序列过程。这一差异解释了为什么服务延迟和吞吐需要专门工程。
+              </p>
+              <p>
+                模型原始输出是 logit 向量 \(z\)。带温度 \(\tau\) 的 softmax 给出
+              </p>
+              <div class="equation">\[p_i=\frac{\exp(z_i/\tau)}{\sum_j \exp(z_j/\tau)}\]<span class="equation-number">(6)</span></div>
+              <p>
+                较低温度会让分布更尖锐，输出更确定；较高温度会扩散概率质量，增加多样性。Top-\(k\) 采样只在概率最高的 \(k\) 个 token 中选择；nucleus 或 top-\(p\) 采样保留累计概率超过 \(p\) 的最小 token 集合；贪心解码每步选最大概率 token。没有一种策略永远最好。任务需要精确、创造、多样还是可复现，决定了解码选择。
+              </p>
+              <h3>KV cache 把重复注意力变成增量计算</h3>
+              <p>
+                自回归生成中，过去 token 不会改变。它们在每层产生的 key 和 value 可以缓存起来，因此模型只需为最新 token 计算新的 key/value，并让它关注已存缓存。KV cache 避免重复计算，却消耗与序列长度、层数、头数和头维度成正比的显存。长对话即使模型权重能放进硬件，也可能因为缓存而受限。
+              </p>
+              <p>
+                服务系统会把请求合批以提升硬件利用率，但生成负载并不整齐：用户 prompt 长度不同，回答结束时间不同。连续 batching、paged attention、speculative decoding、权重量化和模型并行，都是为了处理这种不均匀性。用户看到的“模型正在打字”，背后其实是显存带宽、GPU kernel、网络延迟和 token 选择共同构成的调度问题。
+              </p>
+              <h3>上下文窗口不等于工作记忆</h3>
+              <p>
+                上下文窗口是模型一次前向传播能关注的最大 token 数。窗口变大，可以输入更长文档和对话，但不保证模型完美使用每个 token。它可能漏掉中间细节，过度关注最近指令，或无法整合许多检索段落。长上下文评估应测试具体事实检索、远距离综合、矛盾处理，以及对无关干扰信息的抵抗，而不只是测试能否塞进很多 token。
+              </p>
+              <p>
+                实际系统常显式管理上下文：总结旧对话、检索相关记忆、压缩工具输出、删除冗余文本，或在 prompt 外维护结构化状态。这不是 LLM 的弱点，而是系统设计原则。人类团队也依赖笔记、数据库和清单，而不只靠原始记忆。关键在于决定哪些信息放进 prompt，哪些放进外部存储，哪些必须重新计算。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-8">
+              <span class="section-number">08 / 交互</span>
+              <h2>提示、推理、工具调用与智能体</h2>
+              <p>
+                提示工程可以理解为用自然语言、示例、约束和上下文编程。一个 prompt 定义任务，提供输入数据，规定风格或格式，也可能包含演示样例。由于 LLM 条件化于可见序列，prompt 设计会改变采样分布。清晰指令、明确标准、分隔符和示例能减少歧义。但提示不能替代模型能力：一个能力不足的模型，不会因为提示写得礼貌而稳定完成复杂任务。
+              </p>
+              <p>
+                好的提示会区分角色。系统指令定义长期行为和边界；开发者指令定义应用逻辑；用户消息定义当前请求；检索上下文提供证据；工具输出提供观察。若这些角色混在一起，就会产生 prompt injection 漏洞：不可信文档可能包含试图覆盖系统指令的文本。安全的 LLM 系统必须把“指令”和“数据”当作不同类型的文本，即使基础模型最终都把它们看成 token。
+              </p>
+              <h3>推理轨迹、验证与流畅解释的危险</h3>
+              <p>
+                Chain-of-thought 提示可以提升多步任务表现，因为它鼓励模型把 token 用于中间结构。但生成的推理过程不保证就是产生答案的真实因果过程；它可能不完整、事后合理化，甚至错误却很连贯。对高风险任务而言，目标不是得到一段很长的解释，而是得到可检查的答案和可靠的中间产物。
+              </p>
+              <p>
+                验证可以来自外部，也可以来自内部。外部验证使用计算器、编译器、定理证明器、单元测试、搜索、数据库或人类审阅；内部验证让模型批判、比较或修订自己的输出，有时还会采样多个答案。自检能帮助发现一部分问题，但它不是独立证据。模型可能重复同一个误解。强系统会把生成与能让错误暴露的工具配对。
+              </p>
+              <h3>工具调用把文本预测变成行动选择</h3>
+              <p>
+                工具让 LLM 拥有受控的外部函数接口：搜索、代码执行、计算器、日历、数据库、文件系统或 API。模型预测结构化调用，环境执行调用，再把结果作为新上下文返回。这使助手从封闭文本生成器变成“在行动和观察之间循环的策略”。模型仍然使用语言建模，但系统循环让它获得了可落地的交互。
+              </p>
+              <p>
+                工具 schema 很重要。含糊的自由文本工具容易导致格式错误和安全问题；带有必填字段和类型约束的 schema 会缩小行动空间，使验证成为可能。模型应看到足够的工具说明以正确选择工具，但不应拥有绕过策略的权限。工具输出也应被视作数据，而不是可信指令。严肃的智能体设计，本质上也一定是权限控制设计。
+              </p>
+              <h3>智能体是循环，不只是更长的 prompt</h3>
+              <p>
+                Agentic system 会反复观察、计划、行动并更新状态。LLM 可以分解目标、调用工具、检查结果、修改计划，并在满足标准时停止。这样的循环能处理单次回答无法完成的任务，例如调试代码库或研究一个主题。风险在于错误会累积：错误计划导致错误工具调用，错误工具调用产生误导性上下文，后续决策因此更糟。
+              </p>
+              <p>
+                因此，好智能体需要脚手架：明确目标、预算、检查点、可逆操作、日志、权限边界和进度评估。自主性不是非黑即白。系统可以被允许读文件但不能删除，可以起草邮件但不能发送，可以运行测试但不能部署。前沿问题并不是模型是否“想做事”，而是如何围绕概率语言模型决策，构建可靠的控制循环。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-9">
+              <span class="section-number">09 / 检索</span>
+              <h2>检索、落地、记忆与存在于权重之外的知识</h2>
+              <p>
+                LLM 参数保存的是训练数据的压缩静态痕迹。这很有用，但有明显限制：事实会变化，私有文档不在训练集中，来源归因也很困难。Retrieval-Augmented Generation 通过在推理时搜索外部资料，并把相关段落加入 prompt 来缓解这些问题。模型随后同时使用权重中的参数化知识和检索上下文中的非参数知识回答。
+              </p>
+              <p>
+                一个简单 RAG 管线包含五步：摄入文档、把文档切成 chunk、为每个 chunk 计算 embedding、根据查询检索相关 chunk、再用证据生成带引用或可追溯的回答。每一步都有失败模式。糟糕切分会把结论与上下文分开；弱 embedding 会找回语义相近但无关的文本；段落太多会干扰模型；段落太少会漏掉答案；生成阶段仍可能误读证据。
+              </p>
+              <h3>稠密检索就是向量搜索</h3>
+              <p>
+                稠密检索把查询和文档都映射到 embedding 空间。相似度常用点积或余弦相似度衡量：
+              </p>
+              <div class="equation">\[\operatorname{score}(q,d)=\frac{e_q^\top e_d}{\|e_q\|\,\|e_d\|}\]<span class="equation-number">(7)</span></div>
+              <p>
+                这使检索成为几何问题。embedding 模型定义了“近”的含义。若它为语义相似训练，可能找回同义改写；若它为问答训练，可能更偏向包含答案的段落。混合系统常把稠密向量与关键词搜索结合，因为精确名称、数字和罕见术语经常关键。之后，reranker 会对较小候选集进行更细致判断。
+              </p>
+              <h3>落地并不会自动发生</h3>
+              <p>
+                把文档加入 prompt，并不强迫模型忠实使用文档。它可能依赖自身先验，合并不兼容段落，忽略日期，或引用并不支持某句话的来源。可靠 grounded generation 需要提示设计、上下文选择、引用约束、可回答性检查，有时还要先抽取再综合。系统应知道检索证据不足时需要承认不足，而不是硬编答案。
+              </p>
+              <p>
+                RAG 也改变威胁模型。检索文档可能包含 prompt injection、恶意指令、过时政策或机密数据。安全 RAG 系统会把检索文本标记为不可信证据，隔离文档中的指令，控制检索后可调用的工具，并记录来源。检索只有在语料库和执行策略可信时，才真正提升事实可靠性。
+              </p>
+              <h3>记忆既是模型能力，也是产品决策</h3>
+              <p>
+                “记忆”可以指很多东西：当前上下文窗口、旧对话摘要、用户偏好画像、项目文档检索、向量库笔记或结构化数据库。这些记忆在新鲜度、权威性、隐私和可编辑性上完全不同。把它们都当成更多 prompt 文本，会让系统脆弱。用户偏好不应与已验证数据库记录或系统安全指令拥有同等权威。
+              </p>
+              <p>
+                好记忆系统应提供控制。用户需要知道系统记住了什么，能够更新或删除它，也能理解它何时影响输出。技术上，记忆需要检索策略、摘要、冲突解决、保留规则和隐私边界。LLM 是记忆的接口，而不是整个记忆系统。持久知识应放在可检查、可更新、可治理的系统中。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-10">
+              <span class="section-number">10 / 效率</span>
+              <h2>微调、LoRA、量化、蒸馏与稀疏专家</h2>
+              <p>
+                当基础模型或指令模型已经存在后，面向某个领域适配通常比从零训练便宜得多。全量微调会更新所有参数，能力强，但代价高，也可能在窄数据集上破坏通用能力。参数高效微调只更新少量新增参数，让大部分权重冻结。对于拥有数十亿参数且需要适配许多任务的模型，这一点尤其重要。
+              </p>
+              <p>
+                LoRA 假设需要学习的权重更新近似低秩。它不直接学习完整 \(\Delta W\)，而是学习两个较小矩阵：
+              </p>
+              <div class="equation">\[W' = W + \Delta W,\qquad \Delta W = BA,\quad A\in\mathbb{R}^{r\times d},\ B\in\mathbb{R}^{m\times r}\]<span class="equation-number">(8)</span></div>
+              <p>
+                当 \(r\) 很小时，可训练参数远少于全量微调。adapter 可以单独存储，为不同任务切换，也可以在部署前合并进基础权重。LoRA 有效，是因为许多适配变化似乎集中在完整参数空间中的低维子空间里；但最佳秩、目标层和训练数据质量仍然依任务而定。
+              </p>
+              <h3>量化通过降低数值精度减少内存</h3>
+              <p>
+                量化用更少 bit 存储权重或激活。一个 16-bit 权重可以变成 8-bit、4-bit 甚至更低精度，并配合缩放因子近似原始值。这样能降低显存占用和带宽需求，使更大模型在更小硬件上运行。代价是量化误差：每层的小偏差会在深层网络中累积。好的量化需要选择合适格式、校准数据和按通道缩放方式，以尽量保留关键行为。
+              </p>
+              <p>
+                QLoRA 把量化冻结的基础权重与可训练 LoRA adapter 结合，让大模型微调在更低显存下可行。推理量化又是另一个问题：模型可以高精度训练、低精度部署。工程师必须同时衡量任务质量、延迟、吞吐和内存，因为一个更小但答案更差的模型，可能通过重试和人工修正增加总成本。
+              </p>
+              <h3>蒸馏把行为迁移到更小模型</h3>
+              <p>
+                蒸馏训练较小的 student 模型模仿较大 teacher 的输出、推理轨迹、偏好或 logits。它可以降低服务成本和延迟，同时保留许多任务行为。学生模型可能学习 teacher 生成的数据、偏好标签或概率分布。蒸馏不是免费的：student 会继承 teacher 错误，也可能丢失需要大容量支撑的罕见能力。
+              </p>
+              <p>
+                常见部署模式并不是“一个模型做所有事”。系统可以把简单请求路由给小模型，困难请求交给大模型，检索交给 embedding 模型，安全检查交给分类器，代码执行交给工具。因此，模型效率也是路由和产品设计问题。好的架构会在满足可靠性和延迟要求的前提下，最小化总体成本。
+              </p>
+              <h3>Mixture of Experts 增加参数但不全部激活</h3>
+              <p>
+                MoE 模型包含多个 expert 子网络和一个 router，router 为每个 token 选择少数 expert。这样可以增加总参数容量，同时让每个 token 的计算量接近某个较小稠密模型。router 必须平衡负载，避免所有 token 都涌向少数 expert。MoE 可以提高扩展效率，但也带来通信成本、路由不稳定和部署复杂性。
+              </p>
+              <p>
+                稀疏激活改变了我们讨论模型大小的方式。一个模型可能拥有数千亿总参数，但每个 token 只激活其中一部分。总参数代表存储容量，活跃参数代表每 token 计算量；二者都重要。显存、带宽、expert 并行、batch 形状和路由分布，共同决定 MoE 在真实服务环境中是否真的高效。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-11">
+              <span class="section-number">11 / 多模态</span>
+              <h2>多模态 LLM、长上下文与能感知更多对象的系统</h2>
+              <p>
+                多模态 LLM 把语言与图像、音频、视频、动作或结构化观察连接起来。常见做法是用特定模态编码器把非文本输入变成向量，再把这些向量映射到语言模型的 embedding 空间。这样，LLM 就可以把视觉 token 或音频 token 与文本 token 一起注意力计算。核心问题是对齐：哪些视觉特征应对应哪些词语、指令、空间关系或动作？
+              </p>
+              <p>
+                视觉语言模型可能把图像 patch 当作 token，用学习投影映射到 LLM 隐藏维度，并在图像问答数据上做指令调优。音频系统可能把声音变成类似频谱的特征或离散声学 token。视频进一步增加时间和规模：大量帧会产生巨大 token 数，因此模型必须采样、压缩或检索关键片段。Transformer 原理仍在，但 token 的含义变得更丰富、更异质。
+              </p>
+              <h3>跨模态落地比生成 caption 更难</h3>
+              <p>
+                能给图像写 caption 的模型，不一定足够 grounded 到能完成视觉推理。它可能知道常见物体名称，却在计数、空间关系、图表、细小文字或截图布局上失败。落地要求保留任务相关细节，并知道视觉证据何时含糊。对于文档和屏幕截图，OCR、版式、字体和坐标有时与物体识别同样重要。
+              </p>
+              <p>
+                多模态系统也带来新的安全问题。图像可能包含隐私信息、隐藏指令、医疗细节或受版权保护内容；音频可能包含声音身份和敏感背景。用户还可能要求模型推断不应猜测的属性。因此，策略层必须理解特定模态下的隐私和伤害，而不仅仅管理生成文本。
+              </p>
+              <h3>长上下文机制必须对抗二次注意力成本</h3>
+              <p>
+                标准注意力让每个 token 与所有 token 比较，成本随 \(O(T^2)\) 增长。长文档、视频、代码仓库和长对话都会压迫这个成本。高效注意力 kernel 减少显存读写；稀疏注意力限制交互连接；滑动窗口关注局部；递归或状态空间混合方法携带压缩状态；检索则在生成前选择相关片段。每种方法都在精确访问、延迟、内存和质量之间取舍。
+              </p>
+              <p>
+                长上下文应按实际使用能力评估，而不是只看最大长度。模型能否在读完数百页后找到开头细节？能否比较相距很远的两个条款？能否避免被相似但无关的段落干扰？能否在长时间编码任务中保持计划？能接收很多 token 只是输入接口，更深层能力是选择性、忠实地使用信息。
+              </p>
+              <h3>世界模型、行动与具身接口</h3>
+              <p>
+                当 LLM 与浏览器、机器人、游戏或软件环境交互时，文本只是感知-行动循环的一部分。模型可能观察截图、DOM 树、日志、传感器读数或工具输出，然后选择行动。成功要求把语言落地到状态变化中：点击按钮会改变页面，编辑代码会让测试通过或失败，移动机器人会受到物理世界反馈。
+              </p>
+              <p>
+                这些系统模糊了 LLM 与智能体的边界。语言模型提供灵活计划和解释，外部模块提供感知、控制、记忆和验证。前沿方向并不是一个单体大脑，而是在约束下协同工作的学习模型和工程接口栈。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-12">
+              <span class="section-number">12 / 评估</span>
+              <h2>评估、风险与理解大模型系统的前沿地图</h2>
+              <p>
+                评估 LLM 很困难，因为它们是通用接口。一个 benchmark 可能测试数学、代码、事实回忆、长上下文检索、工具使用、安全、多语言或偏好跟随，但没有一个数字能覆盖全部。benchmark 会饱和，会进入训练数据，会奖励表面风格，也会漏掉真实部署中的失败。人工评估更丰富，但更慢、更贵，也受评价说明影响。
+              </p>
+              <p>
+                可靠评估栈通常有多层。单元测试检查已知场景的精确行为；benchmark 套件测量广泛能力；red-team prompt 搜索不安全失败；回归测试防止旧问题回归；人工审阅处理模糊质量；线上遥测监控真实使用、延迟、拒答率、用户修正和事故报告。评估不是上线前一次事件，而是持续测量过程。
+              </p>
+              <h3>幻觉是一组失败，而不是一个 bug</h3>
+              <p>
+                幻觉可以指编造事实、不支持的引用、错误工具假设、无效代码、过度自信的医疗建议，或跨来源综合中的细微错误。原因各不相同：有些来自预训练统计，有些来自检索缺失，有些来自提示不清，有些来自解码，有些来自奖励模型偏好自信风格。解决方案必须对准原因：检索、不确定性校准、验证工具、约束解码、拒答训练或人工审阅。
+              </p>
+              <p>
+                人们常问模型是否“知道”答案。工程上更有用的问题是：系统使用了什么证据，答案是否可检查，不确定性如何表达，证据不足时会发生什么。同一个模型可能可靠地改写邮件，却在没有检索的法律研究中不可靠。可靠性是模型、任务和系统设计共同形成的属性。
+              </p>
+              <h3>安全、隐私与滥用</h3>
+              <p>
+                LLM 系统带来安全风险，因为文本既可能是数据，也可能是指令。Prompt injection 试图通过不可信内容夹带指令；数据外泄攻击试图让模型从工具或上下文中泄露秘密；模型输出可能辅助钓鱼、恶意软件、操纵或危险建议。防御包括最小权限工具、上下文隔离、内容过滤、审计日志、沙箱和拒答策略。
+              </p>
+              <p>
+                隐私不只是“不用用户数据训练”。应用可能把私有文档放入 prompt，保存对话记忆，调用第三方工具，或记录输出用于调试。每一步都需要保留规则和访问控制。LLM 让数据流看起来像对话，但底层仍然有数据库、日志、缓存和 API。治理必须跟着数据走，而不是被友好的界面迷惑。
+              </p>
+              <h3>前沿机制速查图</h3>
+              <table class="comparison-table">
+                <thead><tr><th>机制</th><th>核心思想</th><th>主要取舍</th></tr></thead>
+                <tbody>
+                  <tr><td>RAG</td><td>生成前检索外部证据</td><td>落地质量取决于检索质量</td></tr>
+                  <tr><td>RLHF / DPO</td><td>用偏好数据塑造行为</td><td>可能优化风格或代理奖励</td></tr>
+                  <tr><td>LoRA / QLoRA</td><td>只适配少量参数子集</td><td>可能限制任务专用容量</td></tr>
+                  <tr><td>MoE</td><td>每个 token 激活部分专家</td><td>路由和服务系统更复杂</td></tr>
+                  <tr><td>工具调用</td><td>调用外部函数完成落地行动</td><td>需要 schema、权限和验证</td></tr>
+                  <tr><td>多模态落地</td><td>把图像、音频、视频映射进上下文</td><td>token 成本和证据保真度困难</td></tr>
+                </tbody>
+              </table>
+              <p>
+                LLM 领域变化很快，但底层问题相当稳定：表示是什么？每个 token 能看见什么信息？知识存在于哪里：权重、prompt、检索、记忆还是工具？什么目标函数塑造了行为？答案由什么证据支持？当模型不确定、被攻击或离开训练分布时会怎样？这些问题能防止技术被产品名和热词冲成一团。
+              </p>
+              <p>
+                因此，学习路线也应分层推进。第一，亲手实现一个极小的 decoder-only Transformer，并逐行检查每个张量形状；第二，训练或观察一个 tokenizer，比较不同分词如何改变序列长度和语义边界；第三，用 LoRA 微调一个小型开源模型，并与只写 prompt 的效果比较；第四，搭建一个小型 RAG 系统，记录检索失败、证据不足和引用错位；第五，加入一个带严格 schema 的工具，并专门测试 prompt injection。这样的练习能把架构、数据、训练、检索、工具和安全连成一条线，而不是停留在概念名词表。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">一张耐用的心智地图</span>
+                <p>
+                  LLM 是嵌入在更大系统中的 Transformer 概率模型。预训练给予广泛语言和世界结构；后训练教会交互规范；检索与工具提供新证据和行动能力；推理工程让系统足够快；评估与策略把行为限制在可接受范围内。我们体验到的智能，来自整个技术栈共同作用。
+                </p>
+              </div>
+              <div class="chapter-divider">第二章完</div>
+            </section>
+
+            <footer class="article-end">
+              <h2>始终看见完整技术栈。</h2>
+              <p>
+                当模型架构、数据、训练目标、推理、工具、检索、安全与产品约束被放在同一张图上时，大语言模型才真正变得可理解。
+              </p>
+              <a class="article-next" href="index.html#library">返回知识地图 <span>↗</span></a>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <p data-i18n="footerCopy">Notes forged through curiosity, rigor, and revision.</p>
+      <a href="https://github.com/JiaXtian/MindForge" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </footer>
+  </body>
+</html>
