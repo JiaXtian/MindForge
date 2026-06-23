@@ -15,6 +15,13 @@ const articles = [
     minEnglishWords: 6500,
     minChineseCharacters: 12000,
   },
+  {
+    file: "probability.html",
+    label: "Probability Theory for Machine Learning",
+    sections: 12,
+    minEnglishWords: 7300,
+    minChineseCharacters: 12000,
+  },
 ];
 
 function countMatches(content, pattern) {

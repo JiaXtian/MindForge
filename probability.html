@@ -1,0 +1,1552 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A bilingual MindForge chapter explaining probability theory for machine learning, from random variables and Bayes classifiers to information theory, graphical models, sampling, generative models, and uncertainty."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Probability Theory for Machine Learning — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="article.css" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"]]
+        },
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body
+    data-page="article"
+    data-title-en="Probability Theory for Machine Learning — MindForge"
+    data-title-zh="机器学习中的概率论 — MindForge"
+  >
+    <div class="reading-progress" aria-hidden="true"><span></span></div>
+    <div class="noise" aria-hidden="true"></div>
+    <a class="skip-link" href="#article" data-i18n="skip">Skip to content</a>
+    <header class="site-header article-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html#library" data-i18n="navLibrary">Library</a>
+        <a href="index.html#principles" data-i18n="navPrinciples">Principles</a>
+        <a href="index.html#journey" data-i18n="navJourney">Journey</a>
+        <a href="probability.html" data-i18n="navLatest">Latest note</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span>
+          <span class="language-divider"></span>
+          <span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="article">
+      <header class="article-hero">
+        <span class="article-index" aria-hidden="true">03</span>
+        <p class="eyebrow reveal" data-i18n="probKicker">Probability · 150 min read</p>
+        <h1 class="reveal">
+          <span data-i18n="probHeroOne">Probability Theory</span>
+          <em data-i18n="probHeroTwo">for Machine Learning</em>
+        </h1>
+        <p class="article-deck reveal" data-i18n="probDeck">
+          A first-principles guide to uncertainty: how probability describes data-generating processes, how Bayes
+          rules update belief, how classifiers make decisions, and how modern models use likelihood, entropy,
+          sampling, and calibration.
+        </p>
+        <div class="article-meta reveal">
+          <span data-i18n="probMetaUpdated">Updated June 2026</span>
+          <span data-i18n="probMetaLevel">Foundations → Probabilistic ML</span>
+          <span data-i18n="probMetaTopics">12 chapters · 13 key equations</span>
+        </div>
+      </header>
+
+      <div class="article-layout">
+        <aside class="article-sidebar">
+          <p class="toc-label" data-i18n="tocLabel">On this page</p>
+          <nav class="toc" data-lang-content="en" aria-label="Article contents">
+            <a href="#en-1">01 · Uncertainty language</a>
+            <a href="#en-2">02 · Random variables</a>
+            <a href="#en-3">03 · Conditional probability</a>
+            <a href="#en-4">04 · Distributions</a>
+            <a href="#en-5">05 · Estimation and posterior</a>
+            <a href="#en-6">06 · Bayes classifiers</a>
+            <a href="#en-7">07 · Information theory</a>
+            <a href="#en-8">08 · Graphical models</a>
+            <a href="#en-9">09 · Sampling and inference</a>
+            <a href="#en-10">10 · Generative models</a>
+            <a href="#en-11">11 · Uncertainty in deep learning</a>
+            <a href="#en-12">12 · Evaluation and practice</a>
+          </nav>
+          <nav class="toc" data-lang-content="zh" aria-label="文章目录" hidden>
+            <a href="#zh-1">01 · 不确定性语言</a>
+            <a href="#zh-2">02 · 随机变量</a>
+            <a href="#zh-3">03 · 条件概率</a>
+            <a href="#zh-4">04 · 常见分布</a>
+            <a href="#zh-5">05 · 估计与后验</a>
+            <a href="#zh-6">06 · 贝叶斯分类器</a>
+            <a href="#zh-7">07 · 信息论</a>
+            <a href="#zh-8">08 · 图模型</a>
+            <a href="#zh-9">09 · 采样与推断</a>
+            <a href="#zh-10">10 · 生成模型</a>
+            <a href="#zh-11">11 · 深度学习中的不确定性</a>
+            <a href="#zh-12">12 · 评估与实践</a>
+          </nav>
+        </aside>
+
+        <article class="article-content">
+          <details class="toc-panel">
+            <summary data-i18n="tocLabel">On this page</summary>
+            <nav class="toc" data-lang-content="en" aria-label="Article contents">
+              <a href="#en-1">01 · Uncertainty language</a>
+              <a href="#en-2">02 · Random variables</a>
+              <a href="#en-3">03 · Conditional probability</a>
+              <a href="#en-4">04 · Distributions</a>
+              <a href="#en-5">05 · Estimation and posterior</a>
+              <a href="#en-6">06 · Bayes classifiers</a>
+              <a href="#en-7">07 · Information theory</a>
+              <a href="#en-8">08 · Graphical models</a>
+              <a href="#en-9">09 · Sampling and inference</a>
+              <a href="#en-10">10 · Generative models</a>
+              <a href="#en-11">11 · Uncertainty in deep learning</a>
+              <a href="#en-12">12 · Evaluation and practice</a>
+            </nav>
+            <nav class="toc" data-lang-content="zh" aria-label="文章目录" hidden>
+              <a href="#zh-1">01 · 不确定性语言</a>
+              <a href="#zh-2">02 · 随机变量</a>
+              <a href="#zh-3">03 · 条件概率</a>
+              <a href="#zh-4">04 · 常见分布</a>
+              <a href="#zh-5">05 · 估计与后验</a>
+              <a href="#zh-6">06 · 贝叶斯分类器</a>
+              <a href="#zh-7">07 · 信息论</a>
+              <a href="#zh-8">08 · 图模型</a>
+              <a href="#zh-9">09 · 采样与推断</a>
+              <a href="#zh-10">10 · 生成模型</a>
+              <a href="#zh-11">11 · 深度学习中的不确定性</a>
+              <a href="#zh-12">12 · 评估与实践</a>
+            </nav>
+          </details>
+
+          <div data-lang-content="en">
+            <p class="article-intro">
+              Probability theory is the language machine learning uses when data is incomplete, noisy, sampled,
+              biased, or generated by a process we cannot observe directly. It explains why a loss function can
+              be interpreted as likelihood, why a classifier should output calibrated uncertainty, why Bayesian
+              reasoning updates belief rather than chasing certainty, and why modern generative models are
+              ultimately stories about distributions. This chapter builds probability from first principles and
+              then connects it to classification, estimation, information theory, graphical models, sampling,
+              deep learning, and practical evaluation.
+            </p>
+
+            <section class="article-section" id="en-1">
+              <span class="section-number">01 / LANGUAGE</span>
+              <h2>Probability as the language of uncertainty in learning systems</h2>
+              <p>
+                Machine learning begins when observations do not fully determine the answer. The same image may
+                be ambiguous, the same symptom may come from several diseases, the same user behavior may imply
+                different intentions, and the same training set may be only a small sample from a larger
+                population. Probability gives us a disciplined way to talk about these possibilities. It does not
+                say the world is random in a philosophical sense; it gives a calculus for reasoning when our
+                information is incomplete.
+              </p>
+              <p>
+                The important shift is to see probability as a modeling discipline rather than a bag of formulas.
+                Every probability statement names a world of possible outcomes, the information already observed,
+                and the assumptions that connect evidence to prediction. Once those pieces are explicit, a model's
+                output is no longer just a number. It becomes a conditional claim about what may happen next and how
+                strongly the data supports it. This habit makes later topics such as likelihood, calibration, and
+                uncertainty monitoring feel like extensions of one idea rather than disconnected techniques.
+              </p>
+              <p>
+                A probability model starts with a sample space \(\Omega\), events \(A\subseteq\Omega\), and a
+                function \(P\) assigning numbers to events. The axioms are simple: probabilities are nonnegative,
+                the whole space has probability one, and disjoint events add. From these rules come almost every
+                model we use in machine learning. The subtle part is not manipulating symbols; it is deciding what
+                the sample space represents, what information is observed, and which assumptions connect hidden
+                causes to visible data.
+              </p>
+              <h3>Frequentist and Bayesian readings</h3>
+              <p>
+                In a frequentist reading, probability describes long-run frequencies under repeated sampling. A
+                classifier's error rate is the fraction of future examples it will misclassify under the data
+                distribution. In a Bayesian reading, probability describes degrees of belief conditioned on
+                information. A parameter can have a posterior distribution because we are uncertain about it after
+                seeing finite data. The two views often use the same algebra but answer different questions.
+              </p>
+              <p>
+                Machine learning uses both viewpoints constantly. Cross-validation estimates future frequency of
+                success; Bayesian inference represents uncertainty about parameters; calibration asks whether
+                predicted probabilities match empirical frequencies; decision theory turns beliefs into actions.
+                Treating these views as enemies is usually unhelpful. A good practitioner asks which uncertainty
+                is being represented: data noise, sampling variation, parameter uncertainty, model uncertainty, or
+                decision risk.
+              </p>
+              <h3>Data-generating processes and assumptions</h3>
+              <p>
+                A dataset is not merely a table. It is evidence produced by some process: people clicking links,
+                sensors measuring signals, patients entering clinics, annotators labeling images, or simulators
+                producing trajectories. A probability model is a simplified story about that process. It may say
+                that examples are independent and identically distributed, that labels depend on features through
+                a conditional distribution, or that hidden variables generate observations.
+              </p>
+              <p>
+                The assumptions matter because probability statements are conditional on them. If training data
+                and deployment data differ, an estimated probability may fail. If labels are biased, the model can
+                be well-calibrated to the label process but wrong about the real target. If examples are
+                dependent, uncertainty estimates based on independence can be overconfident. Probability theory
+                does not remove assumptions; it forces them into the open where they can be tested.
+              </p>
+              <p>
+                A useful habit is to write the modeling story before writing code. For a spam classifier, the
+                story may be “messages are sampled from future email traffic, each message has a true class, and
+                words are noisy evidence.” For a demand forecast, it may be “sales are generated by seasonality,
+                price, promotions, and random shocks.” Such stories are simplified, but they tell us what would
+                count as data leakage, which variables are available at prediction time, and where uncertainty
+                should be reported.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-2">
+              <span class="section-number">02 / RANDOM VARIABLES</span>
+              <h2>Random variables, distributions, expectation, and variance</h2>
+              <p>
+                A random variable is a function from outcomes to values. It converts a possibly complicated event
+                into a number, vector, class label, text token, or structured object we can model. In machine
+                learning, features \(X\), labels \(Y\), model parameters \(\theta\), losses \(L\), and predictions
+                \(\hat{Y}\) can all be treated as random variables. This perspective is powerful because it lets
+                us compare algorithms through the distributions of quantities they produce.
+              </p>
+              <p>
+                A distribution tells us how probability mass or density is arranged. Discrete variables have
+                probability mass functions, continuous variables have densities, and mixed objects may require
+                more care. The notation \(p(x)\) often hides this distinction, but the idea is consistent: a
+                distribution is a rule for assigning probability to regions of possible values. In learning, we
+                rarely know the true distribution. We see samples and build approximations.
+              </p>
+              <h3>Expectation is an average under a distribution</h3>
+              <p>
+                The expectation of a function \(g(X)\) is the distribution-weighted average:
+              </p>
+              <div class="equation">\[\mathbb{E}[g(X)] = \sum_x g(x)p(x)\quad\text{or}\quad \int g(x)p(x)\,dx\]<span class="equation-number">(1)</span></div>
+              <p>
+                Many machine-learning objectives are expectations. The true risk of a predictor is
+                \(\mathbb{E}_{(X,Y)\sim P}[\ell(f(X),Y)]\), an average loss over the unknown population
+                distribution. The empirical risk replaces that expectation with an average over training data.
+                Generalization is the question of when the empirical average is a trustworthy estimate of the
+                population average.
+              </p>
+              <h3>Variance measures spread and instability</h3>
+              <p>
+                Variance is \(\operatorname{Var}(X)=\mathbb{E}[(X-\mathbb{E}X)^2]\). It measures how much a
+                quantity fluctuates around its mean. In learning systems, variance appears everywhere: an
+                estimator changes across sampled datasets, a stochastic gradient changes across mini-batches, a
+                prediction changes across model initializations, and an online metric changes across users.
+                Lower variance is not automatically better, because overly stable estimators can be biased.
+              </p>
+              <p>
+                Covariance extends variance to pairs of variables. Positive covariance means two quantities tend
+                to move together; negative covariance means one tends to rise as the other falls. The covariance
+                matrix of features controls PCA, Gaussian models, whitening, uncertainty ellipses, and many
+                optimization approximations. It is the probabilistic companion to the geometry of linear algebra.
+              </p>
+              <h3>Law of large numbers and central limit theorem</h3>
+              <p>
+                The law of large numbers says sample averages converge to expectations under suitable conditions.
+                This is why training loss, validation accuracy, and Monte Carlo estimates can be meaningful. The
+                central limit theorem says many standardized sums approach a Gaussian distribution, explaining
+                why normal approximations appear throughout statistics. These results justify common estimates,
+                but they do not protect us from biased samples, dependence, heavy tails, or distribution shift.
+              </p>
+              <p>
+                In practice, the gap between theorem and dataset is where judgment lives. A million clicks from
+                one recommender system are not the same as a million independent samples from the future. A small
+                validation set can make metric changes look larger than they are. A heavy-tailed loss can make an
+                average unstable. Probability gives the language for asking how much evidence a number really
+                contains.
+              </p>
+              <p>
+                Random variables also help separate levels of variation. The individual label is random because
+                the example may be ambiguous; the training set is random because it is sampled; the fitted model is
+                random because it depends on the training set and optimization; the metric is random because it is
+                computed on a finite evaluation set. When these levels are mixed together, people often confuse
+                noise in the measurement with improvement in the model.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-3">
+              <span class="section-number">03 / CONDITIONING</span>
+              <h2>Conditional probability, independence, and Bayes' rule</h2>
+              <p>
+                Conditional probability is the mathematics of updating information. \(P(A\mid B)\) asks how likely
+                event \(A\) is after learning that \(B\) occurred. In machine learning, nearly every useful
+                statement is conditional: the probability of a label given features, the probability of a token
+                given previous tokens, the probability of a hidden cause given an observation, or the probability
+                of failure given a subgroup. Conditioning turns raw uncertainty into context-sensitive belief.
+              </p>
+              <p>
+                The definition is
+              </p>
+              <div class="equation">\[P(A\mid B)=\frac{P(A\cap B)}{P(B)},\qquad P(B)>0\]<span class="equation-number">(2)</span></div>
+              <p>
+                This formula looks simple, but conceptually it means we restrict attention to worlds where \(B\)
+                is true and renormalize. Conditional probability is not causal by itself. \(P(Y\mid X)\) describes
+                association under the data distribution; it does not necessarily tell us what happens if we
+                intervene and change \(X\). Causal reasoning needs additional assumptions beyond ordinary
+                conditioning.
+              </p>
+              <h3>Independence and conditional independence</h3>
+              <p>
+                Events \(A\) and \(B\) are independent when \(P(A,B)=P(A)P(B)\). Random variables are independent
+                when their joint distribution factors. Conditional independence means variables become
+                independent after observing another variable. In models, conditional independence is gold: it
+                reduces complexity, enables factorization, and makes inference possible. Naive Bayes, hidden
+                Markov models, Bayesian networks, and many graphical models are built by declaring which
+                dependencies matter and which can be ignored.
+              </p>
+              <p>
+                Independence assumptions are often approximations, not truths. Naive Bayes assumes features are
+                conditionally independent given the class, which is rarely exactly correct for text or images.
+                Yet it can work surprisingly well because the decision boundary may remain useful even when the
+                probability model is imperfect. A probability model should be judged by the task: density
+                estimation, calibrated prediction, ranking, classification, or causal interpretation may require
+                different fidelity.
+              </p>
+              <h3>Bayes' rule as belief revision</h3>
+              <p>
+                Bayes' rule follows from the symmetry of joint probability:
+              </p>
+              <div class="equation">\[P(H\mid D)=\frac{P(D\mid H)P(H)}{P(D)}\]<span class="equation-number">(3)</span></div>
+              <p>
+                The prior \(P(H)\) describes belief before seeing data, the likelihood \(P(D\mid H)\) describes how
+                compatible the data is with a hypothesis, the evidence \(P(D)\) normalizes across hypotheses, and
+                the posterior \(P(H\mid D)\) is updated belief. In machine learning, \(H\) might be a class label,
+                a parameter value, a latent cluster, a model family, or a hidden state. Bayes' rule is the common
+                grammar of diagnosis, classification, filtering, and Bayesian inference.
+              </p>
+              <p>
+                The most common mistake is to confuse \(P(D\mid H)\) with \(P(H\mid D)\). A disease may make a test
+                likely positive, while a positive test may still imply low disease probability if the disease is
+                rare. Base rates matter. This is not a philosophical detail; it determines spam filters, medical
+                screening, fraud detection, and any classifier deployed under class imbalance.
+              </p>
+              <p>
+                In supervised learning, conditioning also clarifies what the model is allowed to know. A feature
+                available after the outcome, such as “refund issued” when predicting fraud at checkout, belongs to
+                the wrong conditional distribution. It may create an excellent offline score and a useless
+                deployed model. Correct probability questions include time: probability of the target given the
+                information available at the decision moment.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-4">
+              <span class="section-number">04 / DISTRIBUTIONS</span>
+              <h2>Common distributions and the modeling assumptions they encode</h2>
+              <p>
+                Distributions are reusable assumptions. Choosing a Bernoulli distribution says an observation is
+                binary. Choosing a categorical distribution says exactly one class among several occurs. Choosing
+                a Gaussian says deviations are continuous, symmetric, and summarized by mean and covariance.
+                Choosing a Poisson says counts arise from a rate. The name of a distribution is shorthand for a
+                story about support, noise, and variability.
+              </p>
+              <p>
+                Machine learning often hides these assumptions inside losses. Squared error corresponds to
+                Gaussian observation noise with constant variance. Cross-entropy for classification corresponds
+                to categorical likelihood. Poisson regression models count data. Logistic regression models a
+                Bernoulli conditional probability. Understanding the distribution behind a loss helps us know
+                when the loss is appropriate and when it will distort the problem.
+              </p>
+              <h3>Discrete distributions</h3>
+              <p>
+                Bernoulli, binomial, categorical, and multinomial distributions handle binary events, repeated
+                binary trials, single class labels, and counts across categories. Text models use categorical
+                distributions over vocabularies. Naive Bayes for documents may use multinomial word counts.
+                Recommender systems may model clicks as Bernoulli events. In each case, the distribution defines
+                what outcomes are possible and how probabilities must sum.
+              </p>
+              <p>
+                The categorical distribution is especially central in deep learning. A classifier maps features
+                to logits, softmax transforms logits into class probabilities, and cross-entropy compares the
+                predicted categorical distribution with the observed label. A language model does the same over a
+                vocabulary at every position. Classification and next-token prediction are therefore
+                distribution prediction problems, not just label selection.
+              </p>
+              <h3>Continuous distributions</h3>
+              <p>
+                Gaussian distributions are everywhere because they are mathematically convenient, arise as
+                approximations to sums, and connect to least squares. A multivariate Gaussian
+                \(\mathcal{N}(\mu,\Sigma)\) is shaped by its mean and covariance. Diagonal covariance assumes
+                independent noise across coordinates; full covariance models correlations but requires more data.
+                Many algorithms are easiest to understand as Gaussian assumptions plus linear algebra.
+              </p>
+              <p>
+                Other continuous distributions matter when Gaussian assumptions break. Exponential distributions
+                model waiting times, Gamma distributions model positive rates or variances, Beta distributions
+                model probabilities, Dirichlet distributions model categorical probability vectors, and
+                Student-\(t\) distributions handle heavier tails. Choosing a distribution is a way of respecting
+                constraints: probabilities must stay between zero and one, variances must be positive, and counts
+                cannot be negative.
+              </p>
+              <h3>Exponential family and sufficient statistics</h3>
+              <p>
+                Many useful distributions belong to the exponential family:
+              </p>
+              <div class="equation">\[p(x\mid\eta)=h(x)\exp\left(\eta^\top T(x)-A(\eta)\right)\]<span class="equation-number">(4)</span></div>
+              <p>
+                Here \(T(x)\) are sufficient statistics, \(\eta\) are natural parameters, and \(A(\eta)\) is the
+                log-partition function that normalizes the distribution. This form unifies Bernoulli, categorical,
+                Gaussian, Poisson, Gamma, and many others. It also explains why gradients of log likelihood often
+                compare observed statistics with model-expected statistics.
+              </p>
+              <p>
+                Distribution choice should follow the object being modeled. A rating bounded between one and five
+                should not automatically be treated like an unconstrained Gaussian variable. A waiting time should
+                not be predicted with a model that can produce negative values. A probability vector should live
+                on a simplex. Many bad models begin by ignoring support constraints, then try to repair impossible
+                predictions after the fact.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-5">
+              <span class="section-number">05 / ESTIMATION</span>
+              <h2>Likelihood, maximum likelihood, MAP, and Bayesian posterior inference</h2>
+              <p>
+                Estimation asks how to learn unknown quantities from data. Suppose data \(D=\{x_i\}_{i=1}^n\) is
+                modeled by \(p_\theta(x)\). The likelihood \(p_\theta(D)\) treats the data as fixed and parameters
+                as the variable being evaluated. If examples are independent, likelihood factors:
+              </p>
+              <div class="equation">\[\mathcal{L}(\theta;D)=\prod_{i=1}^n p_\theta(x_i),\qquad \ell(\theta)=\sum_{i=1}^n\log p_\theta(x_i)\]<span class="equation-number">(5)</span></div>
+              <p>
+                We usually optimize log likelihood because products of many small probabilities underflow and
+                because sums are easier to differentiate. Maximum likelihood estimation chooses the parameter
+                that makes observed data most probable under the model. Many learning algorithms can be read as
+                MLE with a particular probability model.
+              </p>
+              <h3>MLE connects probability to loss functions</h3>
+              <p>
+                Linear regression with squared error is MLE under Gaussian noise. Logistic regression is MLE under
+                Bernoulli labels with a logistic link. Softmax classification is MLE under categorical labels.
+                Language-model pre-training is MLE under an autoregressive categorical distribution. This
+                connection is powerful because it turns arbitrary-looking losses into assumptions about how data
+                was generated.
+              </p>
+              <p>
+                MLE can be statistically efficient when the model is correct and data is abundant, but it can
+                overfit when parameters are flexible. A model can assign high likelihood to training data while
+                generalizing poorly. Regularization, priors, validation, early stopping, and data augmentation all
+                modify the estimation problem so that fitting observed data does not become memorizing observed
+                accidents.
+              </p>
+              <h3>MAP estimation adds a prior</h3>
+              <p>
+                Maximum a posteriori estimation chooses the parameter with highest posterior probability:
+              </p>
+              <div class="equation">\[\theta_{\text{MAP}}=\arg\max_\theta\left[\log p(D\mid\theta)+\log p(\theta)\right]\]<span class="equation-number">(6)</span></div>
+              <p>
+                The prior \(p(\theta)\) encodes preference before data. A Gaussian prior on weights corresponds to
+                \(L_2\) regularization; a Laplace prior corresponds to \(L_1\)-like sparsity pressure. MAP is
+                Bayesian in form but still returns a point estimate. Full Bayesian inference keeps the posterior
+                distribution, representing uncertainty over parameters rather than committing to a single value.
+              </p>
+              <h3>Posterior predictive distributions</h3>
+              <p>
+                The Bayesian predictive distribution averages predictions over posterior uncertainty:
+              </p>
+              <div class="equation">\[p(y_\ast\mid x_\ast,D)=\int p(y_\ast\mid x_\ast,\theta)p(\theta\mid D)\,d\theta\]<span class="equation-number">(7)</span></div>
+              <p>
+                This formula is beautiful and often intractable. Exact integration is possible for special
+                conjugate models but difficult for deep networks. Approximate inference, sampling, variational
+                methods, Laplace approximations, ensembles, and dropout-style approximations all try to capture
+                some of this uncertainty. The goal is not only to predict a label, but to know how much the system
+                should trust itself.
+              </p>
+              <p>
+                Estimation should therefore be read as a pipeline: choose a probabilistic story, collect data
+                under a sampling process, define a likelihood, add regularization or priors, optimize or infer,
+                and then check predictive behavior on data that mimics deployment. If any step is mismatched, the
+                final parameter estimate may look precise while answering the wrong question. Probability keeps
+                the estimate tied to the data story that produced it.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-6">
+              <span class="section-number">06 / CLASSIFICATION</span>
+              <h2>Bayes classifiers, generative models, discriminative models, and calibration</h2>
+              <p>
+                Classification is a decision problem under uncertainty. We observe features \(x\) and choose a
+                label \(y\). The ideal classifier under zero-one loss chooses the class with highest posterior
+                probability:
+              </p>
+              <div class="equation">\[\hat{y}(x)=\arg\max_y P(Y=y\mid X=x)\]<span class="equation-number">(8)</span></div>
+              <p>
+                This is the Bayes classifier. It is optimal if the true posterior is known and the cost of every
+                mistake is equal. Real models approximate it from finite data. When mistakes have unequal costs,
+                decision theory replaces the maximum posterior rule with minimum expected loss. In medicine,
+                fraud, moderation, and safety systems, thresholds should reflect cost, not only accuracy.
+              </p>
+              <p>
+                Geometrically, the Bayes classifier partitions the feature space into regions where different
+                posterior probabilities dominate. The boundary between two classes is the set of points where their
+                posterior probabilities are equal. If the class-conditional distributions are Gaussian with shared
+                covariance, this boundary is linear; if covariances differ, it becomes quadratic. Neural classifiers
+                can create much more flexible boundaries, but they are still trying to approximate the same posterior
+                ordering: which label should receive most probability at this location in feature space?
+              </p>
+              <p>
+                The prior \(P(Y=y)\) controls the baseline mass of each class before observing features. This matters
+                whenever classes are imbalanced. If a disease is rare, even a suspicious symptom pattern must overcome
+                a small prior; if fraud is rare, a classifier can achieve high accuracy by predicting "not fraud" too
+                often. Priors are not merely philosophical. They determine how evidence is converted into posterior
+                odds, and changing the deployment population changes the correct prior even when \(p(x\mid y)\) stays
+                similar.
+              </p>
+              <p>
+                The Bayes classifier also separates ranking from action. A model may rank cases well while its
+                probabilities are poorly calibrated; it may classify well under one threshold and fail under another.
+                For this reason practical classification should report not only accuracy but confusion matrices,
+                ROC/PR curves, calibration error, subgroup metrics, and threshold-specific expected cost. Probability
+                turns classification from a single score into a decision surface that can be inspected, questioned,
+                and adapted to the real consequences of mistakes.
+              </p>
+              <h3>Naive Bayes and the value of a wrong assumption</h3>
+              <p>
+                Naive Bayes uses Bayes' rule and assumes features are conditionally independent given the class:
+              </p>
+              <div class="equation">\[P(Y=y\mid x_1,\ldots,x_d)\propto P(Y=y)\prod_{j=1}^{d}P(x_j\mid Y=y)\]<span class="equation-number">(9)</span></div>
+              <p>
+                The assumption is usually false, especially for text where words are correlated. Yet the method
+                can work well because it estimates fewer parameters and often ranks classes correctly. It is a
+                lesson in modeling: a simplified probability model may be poor as a literal description of the
+                world and still useful for decisions. The danger is overinterpreting its probabilities as
+                calibrated truth.
+              </p>
+              <h3>Generative versus discriminative classifiers</h3>
+              <p>
+                A generative classifier models \(p(x\mid y)\) and \(p(y)\), then uses Bayes' rule to obtain
+                \(p(y\mid x)\). A discriminative classifier models \(p(y\mid x)\) directly or learns a decision
+                boundary without modeling feature generation. Naive Bayes and Gaussian discriminant analysis are
+                generative; logistic regression and many neural classifiers are discriminative. Generative models
+                can use unlabeled structure and handle missing data naturally, while discriminative models often
+                achieve better classification when enough labeled data is available.
+              </p>
+              <p>
+                The distinction is not absolute. Modern systems often combine both: a generative language model
+                may produce candidate answers, a discriminative reranker may score them, and a calibrated
+                classifier may decide whether to abstain. The probabilistic question is always the same: which
+                distribution is being modeled, and is that distribution the one needed for the decision?
+              </p>
+              <h3>Calibration and decision thresholds</h3>
+              <p>
+                A model is calibrated if, among examples assigned probability 0.8, roughly 80 percent are
+                correct. Calibration differs from accuracy. A highly accurate model can be overconfident, and a
+                less accurate model can express uncertainty honestly. Calibration matters when probabilities drive
+                triage, ranking, risk scores, or human review. Temperature scaling, isotonic regression, Platt
+                scaling, and validation-based threshold tuning are practical tools.
+              </p>
+              <p>
+                Class imbalance makes calibration and thresholds especially important. In rare-event detection, a
+                high accuracy can be meaningless because always predicting the majority class already looks good.
+                Precision, recall, ROC curves, precision-recall curves, expected cost, and subgroup calibration
+                provide a fuller picture. Probability is valuable because it lets us separate scoring from
+                decision making: estimate risk first, then choose an action using the right cost model.
+              </p>
+              <p>
+                Bayes classifiers also show why the same score can require different actions in different
+                products. A 5 percent fraud probability may be enough to request extra verification but not enough
+                to block a payment. A 5 percent disease probability may require another test if the treatment is
+                cheap and the disease is serious. The posterior probability is only an input to the decision; the
+                loss function, available interventions, and human consequences complete the rule.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-7">
+              <span class="section-number">07 / INFORMATION</span>
+              <h2>Entropy, cross-entropy, KL divergence, and mutual information</h2>
+              <p>
+                Information theory measures uncertainty and distribution mismatch. Entropy quantifies the average
+                surprise of a random variable:
+              </p>
+              <div class="equation">\[H(P)=-\sum_x P(x)\log P(x)\]<span class="equation-number">(10)</span></div>
+              <p>
+                A deterministic variable has zero entropy because there is no surprise. A uniform distribution
+                over many outcomes has high entropy because many outcomes are plausible. In machine learning,
+                entropy appears in decision trees, active learning, exploration, regularization, generative
+                modeling, and uncertainty visualization.
+              </p>
+              <h3>Cross-entropy as prediction loss</h3>
+              <p>
+                Cross-entropy between a true distribution \(P\) and a model distribution \(Q\) is
+                \(H(P,Q)=-\mathbb{E}_{x\sim P}\log Q(x)\). Classification loss is cross-entropy where the observed
+                label is treated as a one-hot empirical distribution. Language modeling loss is cross-entropy at
+                every token. Minimizing cross-entropy encourages the model to place high probability on observed
+                outcomes, but it also penalizes overconfidence on the wrong outcome strongly.
+              </p>
+              <p>
+                Cross-entropy is not merely a convenient loss. It is the number of extra nats or bits needed when
+                encoding data from \(P\) using a code optimized for \(Q\). This compression view explains why
+                predictive modeling and representation learning are connected. A model that assigns shorter codes
+                to real data has captured structure in the data-generating process.
+              </p>
+              <h3>KL divergence and distribution mismatch</h3>
+              <p>
+                KL divergence is
+              </p>
+              <div class="equation">\[D_{\mathrm{KL}}(P\|Q)=\sum_x P(x)\log\frac{P(x)}{Q(x)}\]<span class="equation-number">(11)</span></div>
+              <p>
+                It measures how costly it is to use \(Q\) when data comes from \(P\). KL is nonnegative but not
+                symmetric, so the direction matters. Variational inference, diffusion models, RL policy updates,
+                language-model alignment, and domain adaptation all use KL-like penalties. Different directions
+                produce different behavior: one may cover all modes, another may focus on one high-density mode.
+              </p>
+              <h3>Mutual information and useful representation</h3>
+              <p>
+                Mutual information measures how much knowing one variable reduces uncertainty about another. A
+                feature representation should retain information about the target while discarding nuisance
+                variation. This idea appears in representation learning, contrastive learning, feature selection,
+                and information bottleneck methods. The challenge is that mutual information is hard to estimate
+                reliably in high dimensions, so practical algorithms use bounds and proxies.
+              </p>
+              <p>
+                Information-theoretic language is powerful, but it can become vague if detached from estimators
+                and assumptions. When someone says a model “maximizes information,” ask which variables, which
+                distribution, which estimator, and which bound. Otherwise, the phrase may hide more than it
+                explains. Good probability practice keeps the measurable quantity visible.
+              </p>
+              <p>
+                Information theory also explains regularization intuitively. A representation that preserves
+                every detail of the input may memorize nuisance variation; a representation that discards too
+                much cannot predict the target. Learning often searches for a compression that keeps the useful
+                bits and throws away irrelevant ones. This is why noise injection, bottlenecks, contrastive
+                objectives, and minimum description length ideas keep reappearing under different names.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-8">
+              <span class="section-number">08 / GRAPHICAL MODELS</span>
+              <h2>Graphical models, latent variables, and probabilistic structure</h2>
+              <p>
+                Graphical models use graphs to express factorization and conditional independence. Nodes are
+                random variables; edges describe direct probabilistic dependence under the model. A directed
+                Bayesian network factors a joint distribution into local conditionals:
+              </p>
+              <div class="equation">\[p(x_1,\ldots,x_d)=\prod_{j=1}^{d}p(x_j\mid \operatorname{pa}(x_j))\]<span class="equation-number">(12)</span></div>
+              <p>
+                This factorization can turn an impossible joint distribution into manageable pieces. It also
+                makes assumptions explicit. If a node has only a few parents, the model says that all other
+                variables influence it only through those parents. This is the probabilistic counterpart of
+                modular design.
+              </p>
+              <h3>Latent variables explain hidden structure</h3>
+              <p>
+                Latent variables are unobserved causes or summaries used to explain observed data. A mixture
+                model uses a hidden cluster assignment; topic models use hidden topic proportions; hidden Markov
+                models use hidden states; factor analysis uses hidden continuous factors. Latent variables are
+                useful because they let a model explain complicated observations through simpler hidden
+                structure, but they also introduce identifiability and inference challenges.
+              </p>
+              <p>
+                In machine learning, latent variables often act like compressed explanations. A cluster label
+                summarizes a group, a representation vector summarizes an input, and a state variable summarizes
+                history. The probabilistic question is whether the latent variable has a clear generative role,
+                whether it is identifiable from data, and whether downstream decisions require interpreting it or
+                only using it predictively.
+              </p>
+              <h3>EM algorithm: alternating between hidden assignments and parameters</h3>
+              <p>
+                The Expectation-Maximization algorithm handles models with latent variables by alternating two
+                steps. The E-step computes or approximates the posterior over hidden variables under current
+                parameters. The M-step updates parameters to maximize expected complete-data log likelihood. For
+                Gaussian mixture models, this means estimating soft cluster memberships, then updating cluster
+                means, covariances, and weights.
+              </p>
+              <p>
+                EM is not magic and not guaranteed to find the global optimum. It can get stuck in local optima,
+                depend on initialization, and overfit with too many components. Its value is conceptual: when data
+                has hidden structure, learning often alternates between explaining observations with hidden
+                variables and improving the explanation model. Variational inference and many modern latent
+                models generalize this idea.
+              </p>
+              <h3>Probabilistic programming and model transparency</h3>
+              <p>
+                Probabilistic programming languages let users write generative models and delegate inference to
+                algorithms. This separates model specification from inference machinery. Such tools are useful
+                when domain assumptions are important: epidemiology, forecasting, causal modeling, scientific
+                measurement, and decision support. They make uncertainty explicit and inspectable, but still
+                require careful checking of priors, likelihoods, convergence, and model fit.
+              </p>
+              <p>
+                Deep learning often learns representations automatically, while graphical models ask us to
+                specify structure. The two are complementary. A neural network can parameterize a conditional
+                distribution inside a graphical model; a probabilistic model can impose structure around neural
+                components. The frontier is not choosing one worldview, but combining flexible function
+                approximation with explicit uncertainty and dependency structure.
+              </p>
+              <p>
+                Graphical thinking is especially useful for debugging leakage and spurious correlation. Drawing
+                nodes for data source, annotation process, user group, time, feature, label, and prediction often
+                reveals paths that should not exist. If a hospital ID predicts disease because one hospital serves
+                sicker patients, the graph helps distinguish useful medical signal from deployment-fragile
+                shortcut. The picture does not solve the problem, but it makes the assumption visible.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-9">
+              <span class="section-number">09 / INFERENCE</span>
+              <h2>Sampling, Monte Carlo, MCMC, and variational inference</h2>
+              <p>
+                Many probabilistic questions require expectations or posterior distributions that cannot be
+                computed exactly. The integral may be high-dimensional, the normalizing constant unknown, or the
+                model too complex. Approximate inference is the art of replacing impossible exact computation
+                with controlled approximations. Machine learning uses these methods for Bayesian models,
+                generative models, reinforcement learning, uncertainty estimation, and simulation.
+              </p>
+              <p>
+                Monte Carlo methods approximate expectations using samples:
+              </p>
+              <div class="equation">\[\mathbb{E}_{p}[f(X)]\approx \frac{1}{S}\sum_{s=1}^{S}f(x^{(s)}),\qquad x^{(s)}\sim p\]<span class="equation-number">(13)</span></div>
+              <p>
+                The approximation error decreases like \(1/\sqrt{S}\) under broad conditions, independent of
+                dimension in a formal sense, though getting good samples can become very hard in high dimensions.
+                This is why sampling quality, not just sample count, matters. Correlated or biased samples can
+                make an estimate look precise while being wrong.
+              </p>
+              <h3>MCMC samples from distributions known up to a constant</h3>
+              <p>
+                Markov Chain Monte Carlo constructs a chain whose stationary distribution is the target
+                posterior. It is useful when we can evaluate an unnormalized density but cannot compute the
+                normalizing constant. Metropolis-Hastings proposes moves and accepts them with a probability that
+                corrects for the proposal. Hamiltonian Monte Carlo uses gradient information to move efficiently
+                through continuous parameter spaces.
+              </p>
+              <p>
+                MCMC diagnostics matter. A chain may mix slowly, remain trapped in one mode, or appear stable
+                while missing important regions. Multiple chains, effective sample size, trace plots, and domain
+                checks help. The central lesson is that sampling is computation with uncertainty. The output is
+                not a single number but an approximation whose reliability must itself be assessed.
+              </p>
+              <h3>Variational inference turns inference into optimization</h3>
+              <p>
+                Variational inference chooses an approximating family \(q_\phi(z)\) and finds the member closest
+                to the true posterior, often by maximizing an evidence lower bound. It is usually faster and more
+                scalable than MCMC, but introduces approximation bias. The approximating family may be too simple
+                and underestimate uncertainty. In deep learning, VAEs, amortized inference, and many latent
+                variable models rely on variational ideas.
+              </p>
+              <p>
+                The tradeoff between MCMC and variational inference mirrors a broader pattern. Sampling may be
+                more faithful but expensive; optimization may be scalable but biased. A practical ML system often
+                chooses the approximation that is good enough for the decision being made. If uncertainty drives
+                medical triage or scientific claims, approximation quality matters more than if uncertainty only
+                ranks low-risk recommendations.
+              </p>
+              <p>
+                Simulation is another form of probabilistic thinking. Before deploying a model, we can simulate
+                label noise, missing data, class imbalance, drift, delayed feedback, or rare events, then observe
+                how the training pipeline responds. A simulation is not proof that reality will behave the same
+                way, but it is a controlled laboratory for finding which assumptions the system silently depends
+                on.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-10">
+              <span class="section-number">10 / GENERATION</span>
+              <h2>Generative models: from mixture models to VAEs, autoregression, and diffusion</h2>
+              <p>
+                Generative modeling asks for a distribution over data. A classifier estimates \(p(y\mid x)\); a
+                generative model tries to represent \(p(x)\), \(p(x,y)\), or a conditional distribution such as
+                \(p(x\mid c)\). This allows sampling, imputation, denoising, simulation, compression, anomaly
+                detection, and conditional creation. The model is judged not only by whether it predicts labels,
+                but by whether it captures the structure of the data itself.
+              </p>
+              <p>
+                Older generative models include Gaussian mixtures, hidden Markov models, topic models, and factor
+                analysis. They are still valuable because their assumptions are explicit and inference can be
+                interpretable. Modern neural generative models use deep networks to parameterize distributions
+                while retaining probabilistic objectives. The vocabulary changed, but the central question
+                remains: how is probability mass assigned to possible observations?
+              </p>
+              <h3>Autoregressive models factor complex objects into sequences</h3>
+              <p>
+                Autoregressive models decompose a joint distribution using the chain rule:
+                \(p(x_{1:T})=\prod_t p(x_t\mid x_{<t})\). Language models, PixelCNN-style image models, and some
+                audio models use this idea. The advantage is exact likelihood evaluation under the factorization.
+                The cost is sequential generation and sensitivity to ordering. The model can only generate the
+                next piece after earlier pieces have been chosen.
+              </p>
+              <p>
+                The autoregressive view explains why LLMs are probabilistic generators. They do not retrieve a
+                fixed answer from a table; they repeatedly sample from conditional distributions. Decoding
+                settings such as temperature and top-\(p\) sampling modify how those probabilities are turned into
+                text. Reliability therefore depends on the learned distribution, the prompt, and the sampling
+                policy.
+              </p>
+              <h3>VAEs and latent-variable generation</h3>
+              <p>
+                Variational autoencoders introduce a latent variable \(z\), a decoder \(p_\theta(x\mid z)\), and
+                an approximate encoder \(q_\phi(z\mid x)\). Training maximizes a lower bound balancing
+                reconstruction quality with a KL penalty that keeps latent codes near a prior. The result is a
+                smooth latent space from which new samples can be generated. VAEs make the probability model
+                explicit, though samples may be blurrier than adversarial or diffusion models in some domains.
+              </p>
+              <p>
+                Latent variables are useful when observations have hidden factors: style, topic, pose, speaker,
+                cluster, or environment. A good latent model separates meaningful variation from noise. But
+                disentanglement is not guaranteed by wishing for it. It depends on architecture, objective,
+                supervision, inductive biases, and data. Probability tells us what is being optimized, not which
+                human concept the latent axes must represent.
+              </p>
+              <h3>Diffusion models as learned denoising processes</h3>
+              <p>
+                Diffusion models gradually corrupt data with noise, then train a neural network to reverse the
+                process. Generation starts from noise and repeatedly denoises. Probabilistically, the model learns
+                transitions that move from an easy prior distribution toward the data distribution. This framework
+                has become central in image, audio, video, and increasingly multimodal generation.
+              </p>
+              <p>
+                Diffusion highlights a recurring theme: complex distributions can be learned by breaking them into
+                many simpler conditional steps. Autoregressive models generate token by token; diffusion models
+                denoise step by step; normalizing flows transform simple distributions through invertible maps.
+                Different generative families choose different ways to make probability computation tractable.
+              </p>
+              <p>
+                Generative models should be evaluated according to purpose. If the goal is realistic images,
+                perceptual quality and diversity matter. If the goal is anomaly detection, likelihood ranking and
+                false alarms matter. If the goal is scientific simulation, calibrated uncertainty and conservation
+                laws may matter more than visual appeal. A model can produce impressive samples while assigning
+                poor probabilities, or good likelihood while generating dull samples. The distributional question
+                must match the use case.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-11">
+              <span class="section-number">11 / UNCERTAINTY</span>
+              <h2>Uncertainty in deep learning: aleatoric, epistemic, ensembles, and conformal prediction</h2>
+              <p>
+                Deep networks often output probabilities, but a softmax score is not automatically a trustworthy
+                uncertainty estimate. The model may be confident on out-of-distribution inputs, adversarial
+                examples, corrupted sensors, or groups underrepresented in training. Probability in deep learning
+                therefore has two jobs: define training objectives and express uncertainty in deployment. The
+                second job is harder because it requires knowing what the model does not know.
+              </p>
+              <p>
+                Aleatoric uncertainty is irreducible noise in the data: a blurry image, random user behavior, or
+                genuinely ambiguous label. Epistemic uncertainty is uncertainty about the model due to limited
+                data or insufficient knowledge. More data can reduce epistemic uncertainty but not aleatoric
+                uncertainty. Separating them matters. If uncertainty is aleatoric, the system may need human
+                review or better sensors; if epistemic, it may need more data in that region.
+              </p>
+              <h3>Ensembles and approximate Bayesian thinking</h3>
+              <p>
+                Ensembles train multiple models and compare their predictions. Agreement suggests stability;
+                disagreement signals uncertainty. Deep ensembles are simple and often strong, though expensive.
+                Dropout at inference, Laplace approximations, stochastic weight averaging, and Bayesian neural
+                networks all try to represent parameter uncertainty more directly or cheaply. None is perfect, but
+                each is a tool for moving beyond a single overconfident prediction.
+              </p>
+              <p>
+                The practical question is calibration under the deployment distribution. An ensemble calibrated
+                on a validation set may still be miscalibrated after a domain shift. Monitoring must track not
+                only average accuracy but confidence, subgroup performance, drift, and abstention behavior. A
+                probability output is a promise about frequency; production data tests whether the promise is
+                kept.
+              </p>
+              <h3>Conformal prediction gives distribution-light coverage guarantees</h3>
+              <p>
+                Conformal prediction builds prediction sets with coverage guarantees under exchangeability. For a
+                classifier, instead of returning one label, it may return a set of plausible labels. The set is
+                small when the model is confident and larger when uncertain. The guarantee is about long-run
+                coverage, not whether every individual set contains the truth. It is attractive because it wraps
+                around many existing models.
+              </p>
+              <p>
+                Like all guarantees, conformal prediction depends on assumptions. If calibration data and future
+                data are not exchangeable, coverage can fail. If groups differ, average coverage can hide poor
+                subgroup coverage. Still, the method embodies a valuable probabilistic habit: when a single
+                prediction is not reliable enough, return a structured uncertainty statement that downstream
+                decisions can use.
+              </p>
+              <h3>Out-of-distribution detection and abstention</h3>
+              <p>
+                A model trained on one distribution may face another. OOD detection tries to identify inputs that
+                differ from training data enough that predictions should be distrusted. Methods include density
+                scores, feature-space distances, energy scores, ensembles, reconstruction errors, and specialized
+                detectors. The difficulty is that high-dimensional density and semantic novelty are not the same:
+                a strange-looking input may be harmless, while a natural-looking input may be outside the task.
+              </p>
+              <p>
+                Abstention is a decision, not an embarrassment. A system that knows when to defer can be safer
+                than one that always answers. Probability supports abstention by estimating confidence, expected
+                cost, and value of information. In high-stakes ML, the best action may be to ask for more data,
+                call a tool, route to a human, or decline to decide.
+              </p>
+              <p>
+                Uncertainty estimates must also be communicated. A user may not know how to interpret a score of
+                0.73, but may understand “high risk, needs review” or “prediction set contains three plausible
+                labels.” The interface should preserve probabilistic meaning without pretending that the number
+                is more precise than the data supports. Good uncertainty design is both statistical and human.
+              </p>
+            </section>
+
+            <section class="article-section" id="en-12">
+              <span class="section-number">12 / PRACTICE</span>
+              <h2>Evaluation, leakage, fairness, and a practical probability checklist</h2>
+              <p>
+                Probability becomes useful when it changes how we evaluate systems. Accuracy alone rarely tells
+                enough. We need uncertainty intervals, calibration curves, cost-sensitive metrics, subgroup
+                metrics, drift monitoring, and error analysis. A model is deployed into a stream of future cases,
+                not into the training spreadsheet. Evaluation should approximate the decisions the system will
+                support and the population it will face.
+              </p>
+              <p>
+                Data leakage is a probabilistic failure: information from the future, validation set, or target
+                leaks into training features. The result is an evaluation distribution easier than deployment.
+                Leakage can enter through preprocessing, duplicate records, time windows, target-derived features,
+                user-level splits, or global statistics. The cure is to define the prediction time, available
+                information, sampling unit, and split rule before modeling.
+              </p>
+              <h3>Probability across the machine-learning workflow</h3>
+              <p>
+                A complete machine-learning project can be read as a chain of conditional probability questions.
+                Data collection asks which population the sample represents: \(p_{\text{train}}(x,y)\) is never the
+                world itself, only the part of the world made visible by instruments, logging rules, incentives,
+                missingness, and selection. Feature construction asks which variables are observed before the
+                decision and which variables leak future information. Modeling asks which conditional distribution is
+                useful enough: \(p(y\mid x)\) for prediction, \(p(x,y)\) for generation and diagnosis, or
+                \(p(z\mid x)\) when hidden structure must be inferred. Training asks which criterion makes the
+                proposed distribution close to the empirical evidence, and deployment asks whether the same
+                conditional relationships survive outside the dataset.
+              </p>
+              <p>
+                This view explains why probability is not an isolated prerequisite but the grammar of the whole
+                system. A regression model usually estimates a conditional mean, \(E[Y\mid X=x]\), and hides
+                assumptions about noise around that mean. A classifier estimates or approximates class probabilities
+                and later turns them into actions through thresholds. A recommender estimates uncertain preferences
+                from sparse observations. A reinforcement-learning policy samples actions from a state-conditioned
+                distribution and updates it using delayed rewards. A language model estimates a next-token
+                distribution, then decoding transforms that distribution into one concrete text. Different fields
+                appear different because their objects differ, but the repeated pattern is the same: observe partial
+                evidence, represent uncertainty, update beliefs, and choose an action under cost.
+              </p>
+              <p>
+                Geometry and probability also meet in a concrete way. A distribution over vectors is a cloud of
+                possible points; its mean is the center of mass, its covariance ellipsoid describes preferred
+                directions of variation, and a density contour marks regions of equal plausibility. Learning changes
+                this geometry. PCA rotates the coordinate system toward directions with high variance. Gaussian
+                discriminant analysis compares class ellipsoids. Logistic regression bends a linear score into a
+                probability through the sigmoid. Neural networks repeatedly transform the data cloud until the final
+                representation makes useful conditional probabilities easier to express. Thus the physical picture is
+                not only randomness; it is mass moving through representation space.
+              </p>
+              <p>
+                In training, probabilistic assumptions become gradients. The negative log-likelihood says that
+                examples assigned low probability exert large corrective force. Cross-entropy pushes probability mass
+                toward the observed label. KL divergence penalizes one distribution for placing mass where another
+                says little should exist. Variational inference and diffusion training optimize bounds or denoising
+                losses that are probabilistic in origin but implemented as ordinary differentiable objectives. This is
+                why probability and optimization cannot be cleanly separated in modern ML: probability defines what
+                should be true, and optimization supplies the path by which parameters are moved.
+              </p>
+              <p>
+                Probability also clarifies the difference between prediction and decision. The probability \(0.8\) is
+                not automatically an action; it becomes an action only after we specify utilities, costs, constraints,
+                and the value of more information. In medical triage, a low threshold may be justified because missing
+                a dangerous case is costly. In content ranking, calibration and long-term feedback may matter more
+                than single-step accuracy. In fraud detection, a prediction may trigger human review rather than an
+                automatic rejection. Decision theory makes this explicit: choose the action \(a\) that minimizes
+                expected risk \(E[L(a,Y)\mid x]\), not merely the label with the largest probability.
+              </p>
+              <p>
+                Finally, deployment turns every probability model into a monitoring problem. The training distribution
+                is historical, while the deployment distribution is alive. Users change behavior, data pipelines
+                change, sensors drift, policies alter incentives, and the model's own decisions can reshape future
+                data. A probabilistic ML system therefore needs drift checks, calibration monitoring, uncertainty
+                summaries, subgroup analysis, and human escalation paths. The practical question is not whether the
+                model once fit a dataset, but under which conditions its probability statements are still trustworthy
+                enough for the decisions attached to them.
+              </p>
+              <h3>Fairness and subgroup uncertainty</h3>
+              <p>
+                A model can have good average performance and poor performance for a subgroup. Probability helps
+                reveal this by estimating metrics with uncertainty for each group and by checking calibration
+                separately. However, fairness criteria can conflict: equalized odds, demographic parity,
+                predictive parity, and calibration may not all hold simultaneously. The right criterion depends
+                on the decision context and social cost, not only mathematics.
+              </p>
+              <p>
+                Small subgroups create wide uncertainty intervals. A measured gap may be noisy, while a real gap
+                may be hidden by insufficient data. Responsible evaluation reports both estimates and uncertainty.
+                It also examines data collection, label quality, historical bias, and feedback loops. Probability
+                cannot decide values for us, but it can prevent false precision.
+              </p>
+              <h3>A checklist for probabilistic machine learning</h3>
+              <table class="comparison-table">
+                <thead><tr><th>Question</th><th>Why it matters</th><th>Typical tool</th></tr></thead>
+                <tbody>
+                  <tr><td>What is random?</td><td>Defines the sample space and uncertainty</td><td>Data-generating story</td></tr>
+                  <tr><td>What is conditioned on?</td><td>Separates observation from target</td><td>Conditional distribution</td></tr>
+                  <tr><td>What assumptions factorize the model?</td><td>Controls complexity and bias</td><td>Independence graph</td></tr>
+                  <tr><td>What loss matches the likelihood?</td><td>Connects optimization to modeling</td><td>MLE or MAP</td></tr>
+                  <tr><td>Are probabilities calibrated?</td><td>Makes decisions trustworthy</td><td>Reliability diagram</td></tr>
+                  <tr><td>What changes at deployment?</td><td>Detects distribution shift</td><td>Monitoring and drift tests</td></tr>
+                </tbody>
+              </table>
+              <p>
+                The checklist is deliberately basic because most failures are basic. People optimize the wrong
+                loss, split data incorrectly, ignore class imbalance, treat softmax scores as confidence, average
+                away subgroup failures, or forget that a probability is conditional on assumptions. Sophisticated
+                models do not forgive unclear probabilistic thinking. They often amplify the consequences.
+              </p>
+              <h3>A learning map for probability and ML</h3>
+              <p>
+                A durable path begins with sample spaces, random variables, expectation, variance, conditioning,
+                Bayes' rule, and common distributions. Next come likelihood, estimation, Bayesian inference,
+                entropy, KL divergence, graphical models, and sampling. In machine learning, connect these ideas
+                to classification, regression, calibration, generative models, uncertainty estimation, and
+                evaluation under shift. Each concept should be practiced with small simulations, not only read as
+                a formula.
+              </p>
+              <div class="insight-box">
+                <span class="box-label">The central habit</span>
+                <p>
+                  Whenever a model produces a number, ask: probability of what, under which conditioning
+                  information, according to which model, estimated from which data, and used for which decision?
+                  This single question turns probability from a chapter of mathematics into an engineering
+                  discipline for learning systems.
+                </p>
+              </div>
+              <p>
+                A practical study routine is to build tiny experiments. Simulate biased sampling and watch
+                accuracy fail. Train naive Bayes and logistic regression on the same text data and compare
+                calibration. Fit a Gaussian mixture and inspect EM sensitivity to initialization. Estimate an
+                expectation by Monte Carlo and plot error versus sample count. Calibrate a neural classifier with
+                temperature scaling. These exercises make probability visible as behavior, not only notation.
+              </p>
+              <div class="chapter-divider">End of chapter 03</div>
+            </section>
+
+            <footer class="article-end">
+              <h2>Let uncertainty stay visible.</h2>
+              <p>
+                Probability is not the opposite of rigor. It is the way rigorous systems admit noise, limited
+                evidence, changing worlds, and decisions that must be made before certainty arrives.
+              </p>
+              <a class="article-next" href="index.html#library">Return to the knowledge map <span>↗</span></a>
+            </footer>
+          </div>
+
+          <div data-lang-content="zh" hidden>
+            <p class="article-intro">
+              概率论是机器学习在面对不完整、含噪、有偏、抽样得到、或由不可直接观察过程产生的数据时使用的语言。它解释了为什么损失函数可以被理解为似然，为什么分类器不应只输出标签而应输出可校准的不确定性，为什么贝叶斯推理强调更新信念而不是追逐绝对确定，以及为什么现代生成模型本质上都在讲述分布的故事。本章从概率论第一性原理出发，再连接到分类、估计、信息论、图模型、采样、深度学习和实际评估。
+            </p>
+
+            <section class="article-section" id="zh-1">
+              <span class="section-number">01 / 语言</span>
+              <h2>概率是学习系统描述不确定性的语言</h2>
+              <p>
+                机器学习之所以需要概率，是因为观察通常不能唯一决定答案。同一张图片可能含糊，同一种症状可能来自多种疾病，同一段用户行为可能代表不同意图，同一个训练集也只是更大总体中的一个样本。概率给我们一套有纪律的方式讨论这些可能性。它并不一定宣称世界在哲学意义上随机，而是在信息不完整时提供一套推理演算。
+              </p>
+              <p>
+                最重要的转变，是把概率看成一种建模纪律，而不是一袋公式。每一个概率陈述都在说明可能结果构成的世界、已经观察到的信息，以及把证据连接到预测的假设。只要这些部分被说清楚，模型输出就不再只是一个数字，而是一个关于“接下来可能发生什么、数据在多大程度上支持它”的条件化主张。这个习惯会让后面的似然、校准和不确定性监控都显得像同一个思想的自然延伸，而不是彼此孤立的技巧。
+              </p>
+              <p>
+                一个概率模型从样本空间 \(\Omega\)、事件 \(A\subseteq\Omega\) 和概率函数 \(P\) 开始。公理很简单：概率非负，整个空间概率为一，互斥事件概率可加。机器学习中的大多数模型都能从这些规则展开。真正困难的不是符号运算，而是决定样本空间代表什么、哪些信息被观察到、以及哪些假设把隐藏原因与可见数据连接起来。
+              </p>
+              <h3>频率派与贝叶斯解释</h3>
+              <p>
+                在频率派解释中，概率描述重复抽样下的长期频率。分类器的错误率，就是未来样本中被错分的比例。在贝叶斯解释中，概率描述给定信息后的信念程度。参数可以拥有后验分布，因为有限数据之后我们仍然不确定它。两种观点常使用同一套代数，却回答不同问题。
+              </p>
+              <p>
+                机器学习实际上同时使用这两种视角。交叉验证估计未来成功频率；贝叶斯推断表示参数不确定性；校准检验预测概率是否匹配经验频率；决策论把信念转化为行动。把两种观点当成敌人通常没有帮助。更好的做法是追问：当前表示的是哪一种不确定性，数据噪声、抽样波动、参数不确定性、模型不确定性，还是决策风险？
+              </p>
+              <h3>数据生成过程与假设</h3>
+              <p>
+                数据集不只是表格，而是某个过程留下的证据：用户点击链接，传感器测量信号，患者进入诊所，标注员给图片贴标签，模拟器生成轨迹。概率模型是关于这个过程的简化故事。它可能假设样本独立同分布，标签通过某个条件分布依赖特征，或者隐藏变量先产生观察。
+              </p>
+              <p>
+                假设之所以重要，是因为概率陈述都以假设为条件。如果训练数据和部署数据不同，估计出的概率可能失效；如果标签本身有偏，模型可能对标签过程校准，却偏离真实目标；如果样本之间相关，却按独立样本计算不确定性，就会过度自信。概率论不会消除假设，它会把假设推到明处，让我们可以检验。
+              </p>
+              <p>
+                一个非常实用的习惯，是先写建模故事，再写代码。对垃圾邮件分类器，故事可以是“邮件来自未来流量，每封邮件有真实类别，词语是有噪证据”；对需求预测，故事可以是“销量由季节、价格、促销和随机冲击共同产生”。这些故事当然是简化的，但它会告诉我们什么算数据泄漏，哪些变量在预测时可用，以及不确定性应在哪里报告。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-2">
+              <span class="section-number">02 / 随机变量</span>
+              <h2>随机变量、分布、期望与方差</h2>
+              <p>
+                随机变量是从结果到数值或对象的函数。它把复杂事件转化成我们可以建模的数字、向量、类别、文本 token 或结构化对象。在机器学习中，特征 \(X\)、标签 \(Y\)、模型参数 \(\theta\)、损失 \(L\)、预测 \(\hat{Y}\) 都可以看作随机变量。这个视角很强，因为它让我们能通过算法产生的量的分布来比较算法。
+              </p>
+              <p>
+                分布告诉我们概率质量或密度如何安排。离散变量有概率质量函数，连续变量有密度，混合对象则需要更谨慎。记号 \(p(x)\) 经常隐藏这些差别，但核心一致：分布是给可能值区域分配概率的规则。在学习中，我们几乎从不知道真实分布。我们看到样本，并构建近似。
+              </p>
+              <h3>期望是分布下的平均</h3>
+              <p>
+                函数 \(g(X)\) 的期望是按分布加权的平均：
+              </p>
+              <div class="equation">\[\mathbb{E}[g(X)] = \sum_x g(x)p(x)\quad\text{or}\quad \int g(x)p(x)\,dx\]<span class="equation-number">(1)</span></div>
+              <p>
+                许多机器学习目标都是期望。预测器的真实风险是
+                \(\mathbb{E}_{(X,Y)\sim P}[\ell(f(X),Y)]\)，即未知总体分布上的平均损失。经验风险用训练数据平均替代这个期望。泛化问题本质上就是：什么时候经验平均可以可信地估计总体平均？
+              </p>
+              <h3>方差衡量波动与不稳定</h3>
+              <p>
+                方差是 \(\operatorname{Var}(X)=\mathbb{E}[(X-\mathbb{E}X)^2]\)，衡量一个量围绕均值波动多少。在学习系统中，方差无处不在：估计量会随抽样数据集变化，随机梯度会随 mini-batch 变化，预测会随模型初始化变化，在线指标会随用户样本变化。低方差不必然更好，因为过于稳定的估计可能带有偏差。
+              </p>
+              <p>
+                协方差把方差扩展到变量对。正协方差表示两个量倾向一起升降，负协方差表示一个升高时另一个倾向降低。特征协方差矩阵控制 PCA、高斯模型、白化、不确定性椭圆和许多优化近似。它是线性代数几何视角的概率伙伴。
+              </p>
+              <h3>大数定律与中心极限定理</h3>
+              <p>
+                大数定律说，在合适条件下，样本平均会收敛到期望。这就是训练损失、验证准确率和 Monte Carlo 估计有意义的原因。中心极限定理说，许多标准化后的和会接近高斯分布，解释了为什么正态近似在统计中频繁出现。这些结果支撑常见估计，但不能保护我们免受有偏样本、依赖关系、重尾分布或分布漂移的影响。
+              </p>
+              <p>
+                实践中，定理和数据集之间的缝隙正是判断力所在。来自同一个推荐系统的一百万次点击，不等于未来总体中的一百万个独立样本。小验证集会让指标变化看起来比真实更大。重尾损失会让平均值不稳定。概率提供了一套语言，让我们追问一个数字到底含有多少证据。
+              </p>
+              <p>
+                随机变量还帮助我们区分不同层级的波动。单个标签是随机的，因为样本可能含糊；训练集是随机的，因为它来自抽样；拟合出的模型是随机的，因为它依赖训练集和优化过程；评估指标也是随机的，因为它在有限测试集上计算。若把这些层级混在一起，人们就很容易把测量噪声误当成模型进步，或者把模型不稳定误认为数据本身不可预测。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-3">
+              <span class="section-number">03 / 条件化</span>
+              <h2>条件概率、独立性与贝叶斯公式</h2>
+              <p>
+                条件概率是更新信息的数学。\(P(A\mid B)\) 询问在知道 \(B\) 已发生之后，事件 \(A\) 有多可能。在机器学习中，几乎所有有用陈述都是条件陈述：给定特征的标签概率、给定前文的下一个 token 概率、给定观察的隐藏原因概率、给定群体的失败概率。条件化把原始不确定性变成依赖上下文的信念。
+              </p>
+              <p>
+                定义为
+              </p>
+              <div class="equation">\[P(A\mid B)=\frac{P(A\cap B)}{P(B)},\qquad P(B)>0\]<span class="equation-number">(2)</span></div>
+              <p>
+                这个公式看起来简单，概念上意味着我们把注意力限制在 \(B\) 为真的世界里，并重新归一化。条件概率本身不是因果。\(P(Y\mid X)\) 描述数据分布中的关联，并不必然说明如果我们主动改变 \(X\) 会发生什么。因果推理需要普通条件化之外的额外假设。
+              </p>
+              <h3>独立与条件独立</h3>
+              <p>
+                当 \(P(A,B)=P(A)P(B)\) 时，事件 \(A\) 和 \(B\) 独立。随机变量独立时，联合分布可以分解。条件独立表示在观察某个变量之后，另外两个变量变得独立。在建模中，条件独立极其宝贵：它降低复杂度、允许因式分解，并让推断成为可能。朴素贝叶斯、隐马尔可夫模型、贝叶斯网络和许多图模型，都是通过声明哪些依赖重要、哪些可忽略来构建的。
+              </p>
+              <p>
+                独立性假设通常是近似而非真理。朴素贝叶斯假设特征在给定类别后条件独立，这对文本和图像几乎从不完全正确。但它仍可能很好用，因为即使概率模型不完美，决策边界也可能有用。评价概率模型时必须看任务：密度估计、校准预测、排序、分类或因果解释，对模型逼真度的要求并不相同。
+              </p>
+              <h3>贝叶斯公式是信念修正</h3>
+              <p>
+                贝叶斯公式来自联合概率的对称性：
+              </p>
+              <div class="equation">\[P(H\mid D)=\frac{P(D\mid H)P(H)}{P(D)}\]<span class="equation-number">(3)</span></div>
+              <p>
+                先验 \(P(H)\) 表示看到数据前的信念，似然 \(P(D\mid H)\) 表示假设与数据的相容程度，证据 \(P(D)\) 在假设之间归一化，后验 \(P(H\mid D)\) 是更新后的信念。在机器学习中，\(H\) 可以是类别、参数值、潜在簇、模型族或隐藏状态。贝叶斯公式是诊断、分类、滤波和贝叶斯推断的共同语法。
+              </p>
+              <p>
+                最常见错误是混淆 \(P(D\mid H)\) 和 \(P(H\mid D)\)。疾病会让检测呈阳性的概率很高，但如果疾病非常罕见，阳性检测后患病概率仍可能不高。基础率很重要。这不是哲学细节，而会决定垃圾邮件过滤、医学筛查、欺诈检测和任何部署在类别不平衡环境中的分类器。
+              </p>
+              <p>
+                在监督学习中，条件化也澄清了模型被允许知道什么。预测支付时欺诈概率，如果特征包含“是否已退款”这类结果之后才知道的信息，就属于错误的条件分布。它可能制造极高离线分数，却部署无用。正确的概率问题必须带有时间：在决策时刻可用信息给定时，目标发生的概率是多少？
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-4">
+              <span class="section-number">04 / 分布</span>
+              <h2>常见分布及其编码的建模假设</h2>
+              <p>
+                分布是可复用的假设。选择 Bernoulli 分布，表示观察是二值的；选择 categorical 分布，表示多个类别中恰有一个发生；选择 Gaussian 分布，表示偏差连续、对称，并由均值和协方差概括；选择 Poisson 分布，表示计数来自某个率。分布名称是对支持集、噪声和变异方式的一段简写故事。
+              </p>
+              <p>
+                机器学习常把这些假设藏在损失函数里。平方误差对应常方差高斯观测噪声；分类交叉熵对应 categorical 似然；Poisson 回归建模计数；logistic 回归建模 Bernoulli 条件概率。理解损失背后的分布，能帮助我们判断损失何时合适，何时会扭曲问题。
+              </p>
+              <h3>离散分布</h3>
+              <p>
+                Bernoulli、binomial、categorical、multinomial 分别处理二值事件、重复二值试验、单个类别标签和多类别计数。文本模型在词表上使用 categorical 分布。文档朴素贝叶斯可能使用 multinomial 词频。推荐系统可能把点击建成 Bernoulli 事件。每一种情形中，分布都规定了哪些结果可能出现，以及概率如何求和为一。
+              </p>
+              <p>
+                categorical 分布在深度学习中尤其核心。分类器把特征映射成 logits，softmax 把 logits 转成类别概率，交叉熵比较预测 categorical 分布与观察标签。语言模型在每个位置对词表做同样事情。因此，分类和下一个 token 预测都是分布预测问题，而不仅仅是标签选择。
+              </p>
+              <h3>连续分布</h3>
+              <p>
+                高斯分布无处不在，因为它数学方便、可作为许多和的近似，并与最小二乘紧密相连。多元高斯
+                \(\mathcal{N}(\mu,\Sigma)\) 由均值和协方差塑造。对角协方差假设坐标噪声独立；完整协方差可以建模相关性，但需要更多数据。许多算法最容易理解为高斯假设加线性代数。
+              </p>
+              <p>
+                当高斯假设失效时，其他连续分布很重要。Exponential 分布建模等待时间，Gamma 分布建模正的率或方差，Beta 分布建模概率，Dirichlet 分布建模 categorical 概率向量，Student-\(t\) 分布处理更重的尾部。选择分布也是尊重约束：概率必须在零和一之间，方差必须为正，计数不能为负。
+              </p>
+              <h3>指数族与充分统计量</h3>
+              <p>
+                许多常用分布属于指数族：
+              </p>
+              <div class="equation">\[p(x\mid\eta)=h(x)\exp\left(\eta^\top T(x)-A(\eta)\right)\]<span class="equation-number">(4)</span></div>
+              <p>
+                其中 \(T(x)\) 是充分统计量，\(\eta\) 是自然参数，\(A(\eta)\) 是保证归一化的 log-partition function。这个形式统一了 Bernoulli、categorical、Gaussian、Poisson、Gamma 等分布，也解释了为什么对数似然梯度经常是在比较“观察到的统计量”和“模型期望的统计量”。
+              </p>
+              <p>
+                分布选择应跟被建模对象一致。一个限制在一到五之间的评分，不应自动当成无界高斯变量；等待时间不应由可能输出负数的模型预测；概率向量应生活在单纯形上。很多糟糕模型从忽略支持集约束开始，然后再试图在事后修补不可能的预测。概率建模的第一步，就是尊重变量能取什么值。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-5">
+              <span class="section-number">05 / 估计</span>
+              <h2>似然、最大似然、MAP 与贝叶斯后验推断</h2>
+              <p>
+                估计关心如何从数据中学习未知量。设数据 \(D=\{x_i\}_{i=1}^n\) 由 \(p_\theta(x)\) 建模。似然 \(p_\theta(D)\) 把数据视为固定，把参数视为被评价的变量。如果样本独立，似然可以因式分解：
+              </p>
+              <div class="equation">\[\mathcal{L}(\theta;D)=\prod_{i=1}^n p_\theta(x_i),\qquad \ell(\theta)=\sum_{i=1}^n\log p_\theta(x_i)\]<span class="equation-number">(5)</span></div>
+              <p>
+                我们通常优化对数似然，因为许多小概率相乘会数值下溢，而求和更容易微分。最大似然估计选择让观察数据在模型下最可能的参数。很多学习算法都可以理解为在某个概率模型下做 MLE。
+              </p>
+              <h3>MLE 把概率与损失函数连接起来</h3>
+              <p>
+                带平方误差的线性回归，是高斯噪声假设下的 MLE；logistic 回归，是带 logistic link 的 Bernoulli 标签 MLE；softmax 分类，是 categorical 标签的 MLE；语言模型预训练，是自回归 categorical 分布的 MLE。这个连接很强，因为它把看似任意的损失函数转化为关于数据如何生成的假设。
+              </p>
+              <p>
+                当模型正确且数据充足时，MLE 可能统计效率很高；但参数灵活时也容易过拟合。模型可以给训练数据很高似然，却泛化很差。正则化、先验、验证、早停和数据增强，都是在修改估计问题，防止“拟合观察数据”退化为“记住观察偶然性”。
+              </p>
+              <h3>MAP 估计加入先验</h3>
+              <p>
+                最大后验估计选择后验概率最高的参数：
+              </p>
+              <div class="equation">\[\theta_{\text{MAP}}=\arg\max_\theta\left[\log p(D\mid\theta)+\log p(\theta)\right]\]<span class="equation-number">(6)</span></div>
+              <p>
+                先验 \(p(\theta)\) 表示看到数据之前的偏好。权重上的高斯先验对应 \(L_2\) 正则化；Laplace 先验对应类似 \(L_1\) 的稀疏压力。MAP 形式上是贝叶斯的，但仍然返回一个点估计。完整贝叶斯推断保留后验分布，用参数不确定性代替单一取值承诺。
+              </p>
+              <h3>后验预测分布</h3>
+              <p>
+                贝叶斯预测分布会在后验不确定性上平均：
+              </p>
+              <div class="equation">\[p(y_\ast\mid x_\ast,D)=\int p(y_\ast\mid x_\ast,\theta)p(\theta\mid D)\,d\theta\]<span class="equation-number">(7)</span></div>
+              <p>
+                这个公式很漂亮，也常常不可精确计算。某些共轭模型可以精确积分，但深度网络通常不行。近似推断、采样、变分方法、Laplace 近似、集成和 dropout 风格近似，都试图捕捉其中一部分不确定性。目标不只是预测标签，而是知道系统应该多信任自己。
+              </p>
+              <p>
+                因此，估计应被看成一条管线：选择概率故事，在某种抽样过程中收集数据，定义似然，加入正则或先验，优化或推断，再在尽量模拟部署的数据上检查预测行为。如果其中任何一步错配，最终参数估计可能看起来很精确，却回答了错误问题。概率让估计始终和产生数据的故事绑在一起。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-6">
+              <span class="section-number">06 / 分类</span>
+              <h2>贝叶斯分类器、生成式模型、判别式模型与校准</h2>
+              <p>
+                分类是在不确定性下做决策。我们观察特征 \(x\)，选择标签 \(y\)。在零一损失下，理想分类器会选择后验概率最大的类别：
+              </p>
+              <div class="equation">\[\hat{y}(x)=\arg\max_y P(Y=y\mid X=x)\]<span class="equation-number">(8)</span></div>
+              <p>
+                这就是贝叶斯分类器。如果真实后验已知且所有错误代价相同，它是最优的。真实模型只能从有限数据近似它。当错误代价不相等时，决策论会把最大后验规则替换成最小期望损失规则。在医疗、欺诈、内容审核和安全系统中，阈值应反映代价，而不只是准确率。
+              </p>
+              <p>
+                从几何上看，贝叶斯分类器会把特征空间划分成若干区域，每个区域由某个后验概率占优的类别控制。两个类别之间的边界，是它们后验概率相等的点集。如果各类别条件分布是协方差共享的高斯分布，边界通常是线性的；如果协方差不同，边界会变成二次曲面。神经分类器可以形成更灵活的边界，但目标仍然是在逼近同一个后验排序：特征空间的这个位置，哪个标签应获得最多概率质量？
+              </p>
+              <p>
+                先验 \(P(Y=y)\) 表示观察特征之前每个类别的基础概率质量，在类别不平衡时尤其重要。如果某种疾病很罕见，即使症状模式看起来可疑，也必须克服很小的先验；如果欺诈本来很少，一个分类器可能频繁预测“非欺诈”而获得很高准确率。先验并不只是哲学立场，它决定证据如何转化为后验 odds；当部署人群发生变化时，即使 \(p(x\mid y)\) 近似不变，正确先验也可能需要重新估计。
+              </p>
+              <p>
+                贝叶斯分类器还把“排序”和“行动”分开。模型可能很会排列风险高低，但概率校准很差；也可能在某个阈值下分类很好，换一个阈值就失败。因此实际分类不应只报告准确率，还应报告混淆矩阵、ROC/PR 曲线、校准误差、子群指标和特定阈值下的期望代价。概率把分类从一个单一分数，变成可以检查、质疑并根据错误后果调整的决策曲面。
+              </p>
+              <h3>朴素贝叶斯与错误假设的价值</h3>
+              <p>
+                朴素贝叶斯使用贝叶斯公式，并假设特征在给定类别后条件独立：
+              </p>
+              <div class="equation">\[P(Y=y\mid x_1,\ldots,x_d)\propto P(Y=y)\prod_{j=1}^{d}P(x_j\mid Y=y)\]<span class="equation-number">(9)</span></div>
+              <p>
+                这个假设通常是假的，尤其在文本中词与词之间高度相关。但方法仍可能表现很好，因为它估计的参数少，且常常能正确排列类别。这给建模一个重要教训：一个简化概率模型可能不是世界的真实描述，却仍对决策有用。危险在于把它输出的概率过度解释成校准真理。
+              </p>
+              <h3>生成式分类器与判别式分类器</h3>
+              <p>
+                生成式分类器建模 \(p(x\mid y)\) 和 \(p(y)\)，再用贝叶斯公式得到 \(p(y\mid x)\)。判别式分类器则直接建模 \(p(y\mid x)\)，或直接学习决策边界而不建模特征生成。朴素贝叶斯和高斯判别分析是生成式的；logistic 回归和许多神经分类器是判别式的。生成式模型能利用未标注结构，也更自然处理缺失数据；判别式模型在标注数据充足时常有更好分类表现。
+              </p>
+              <p>
+                这个区分并非绝对。现代系统常把二者结合：生成式语言模型产生候选答案，判别式 reranker 评分，校准分类器决定是否拒答。概率问题始终相同：正在建模的是哪个分布，而这个分布是否正是当前决策需要的分布？
+              </p>
+              <h3>校准与决策阈值</h3>
+              <p>
+                如果模型在给出 0.8 概率的一组样本中大约有 80% 正确，它就是校准的。校准不同于准确率。高准确模型可能过度自信，较低准确模型也可能诚实表达不确定性。当概率驱动分诊、排序、风险分或人工复核时，校准非常重要。温度缩放、isotonic regression、Platt scaling 和基于验证集的阈值调优都是实用工具。
+              </p>
+              <p>
+                类别不平衡让校准和阈值更加关键。在罕见事件检测中，高准确率可能毫无意义，因为永远预测多数类已经看起来不错。Precision、recall、ROC 曲线、PR 曲线、期望代价和分组校准能提供更完整图景。概率有价值，是因为它让评分和决策分离：先估计风险，再根据正确代价模型选择行动。
+              </p>
+              <p>
+                贝叶斯分类器也说明，同一个分数在不同产品里可能对应不同动作。5% 的欺诈概率也许足以要求额外验证，却不足以直接阻断支付；5% 的患病概率如果疾病严重、复查便宜，就可能足以安排下一次检测。后验概率只是决策输入；损失函数、可用干预和对人的影响共同完成最终规则。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-7">
+              <span class="section-number">07 / 信息</span>
+              <h2>熵、交叉熵、KL 散度与互信息</h2>
+              <p>
+                信息论度量不确定性和分布不匹配。熵刻画随机变量的平均惊讶程度：
+              </p>
+              <div class="equation">\[H(P)=-\sum_x P(x)\log P(x)\]<span class="equation-number">(10)</span></div>
+              <p>
+                确定变量熵为零，因为没有惊讶；许多结果等可能的均匀分布熵较高，因为很多结果都合理。在机器学习中，熵出现在决策树、主动学习、探索、正则化、生成建模和不确定性可视化中。
+              </p>
+              <h3>交叉熵作为预测损失</h3>
+              <p>
+                真实分布 \(P\) 与模型分布 \(Q\) 的交叉熵是
+                \(H(P,Q)=-\mathbb{E}_{x\sim P}\log Q(x)\)。分类损失就是把观察标签看成 one-hot 经验分布后的交叉熵；语言模型损失则是在每个 token 位置上的交叉熵。最小化交叉熵鼓励模型给观察结果高概率，同时也会强烈惩罚在错误结果上的过度自信。
+              </p>
+              <p>
+                交叉熵不只是方便的损失。它也表示当数据来自 \(P\)，却使用为 \(Q\) 优化的编码时所需的额外 nats 或 bits。这个压缩视角解释了为什么预测建模和表示学习相互连接。能给真实数据更短编码的模型，捕捉到了数据生成过程中的结构。
+              </p>
+              <h3>KL 散度与分布不匹配</h3>
+              <p>
+                KL 散度为
+              </p>
+              <div class="equation">\[D_{\mathrm{KL}}(P\|Q)=\sum_x P(x)\log\frac{P(x)}{Q(x)}\]<span class="equation-number">(11)</span></div>
+              <p>
+                它衡量当数据来自 \(P\) 却使用 \(Q\) 时的代价。KL 非负但不对称，因此方向很重要。变分推断、扩散模型、强化学习策略更新、语言模型对齐和领域自适应都使用 KL 或类似惩罚。不同方向会产生不同行为：一个方向可能覆盖所有模式，另一个方向可能集中在单个高密度模式。
+              </p>
+              <h3>互信息与有用表示</h3>
+              <p>
+                互信息衡量知道一个变量能减少多少另一个变量的不确定性。好的特征表示应保留关于目标的信息，同时丢弃无关扰动。这一思想出现在表示学习、对比学习、特征选择和信息瓶颈方法中。困难在于，高维互信息很难可靠估计，因此实际算法常使用下界和代理目标。
+              </p>
+              <p>
+                信息论语言很强，但如果脱离估计器和假设，也会变得含糊。当有人说模型“最大化信息”时，应追问是哪两个变量、哪个分布、哪个估计器、哪个界。否则，这句话可能遮蔽的东西比解释的更多。好的概率实践会让可测量的量始终可见。
+              </p>
+              <p>
+                信息论还直观解释了正则化。一个保留输入所有细节的表示，可能把无关扰动也记住；一个压缩过度的表示，又无法预测目标。学习常常是在寻找一种压缩：保留有用 bits，丢弃无关 bits。这就是为什么噪声注入、瓶颈、对比目标和最小描述长度思想会以不同名字反复出现。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-8">
+              <span class="section-number">08 / 图模型</span>
+              <h2>图模型、潜变量与概率结构</h2>
+              <p>
+                图模型用图表达因式分解和条件独立。节点是随机变量，边表示模型中的直接概率依赖。有向贝叶斯网络把联合分布分解成局部条件分布：
+              </p>
+              <div class="equation">\[p(x_1,\ldots,x_d)=\prod_{j=1}^{d}p(x_j\mid \operatorname{pa}(x_j))\]<span class="equation-number">(12)</span></div>
+              <p>
+                这种分解可以把不可管理的联合分布拆成可处理的局部片段，也让假设显式化。如果一个节点只有少数父节点，模型就声明其他变量只能通过这些父节点影响它。这是模块化设计在概率中的对应物。
+              </p>
+              <h3>潜变量解释隐藏结构</h3>
+              <p>
+                潜变量是用于解释观察数据的未观察原因或摘要。混合模型使用隐藏簇分配，主题模型使用隐藏主题比例，隐马尔可夫模型使用隐藏状态，因子分析使用隐藏连续因子。潜变量有用，是因为它们允许模型用较简单的隐藏结构解释复杂观察，但也带来可识别性和推断困难。
+              </p>
+              <p>
+                在机器学习中，潜变量常像压缩解释。簇标签概括一个群体，表示向量概括一个输入，状态变量概括历史。概率问题是：潜变量是否有清晰生成角色，它是否能从数据中识别，下游决策是否需要解释它，还是只需把它作为预测中间量使用？
+              </p>
+              <h3>EM 算法：在隐藏分配和参数之间交替</h3>
+              <p>
+                Expectation-Maximization 算法通过两个步骤处理含潜变量模型。E 步在当前参数下计算或近似隐藏变量后验；M 步更新参数以最大化期望完整数据对数似然。对高斯混合模型而言，这意味着先估计软簇成员资格，再更新簇均值、协方差和权重。
+              </p>
+              <p>
+                EM 不是魔法，也不保证找到全局最优。它可能陷入局部最优，依赖初始化，并在组件过多时过拟合。它的价值在于概念：当数据有隐藏结构时，学习常常在“用隐藏变量解释观察”和“改进解释模型”之间交替。变分推断和许多现代潜变量模型都推广了这一思想。
+              </p>
+              <h3>概率编程与模型透明性</h3>
+              <p>
+                概率编程语言允许用户写出生成模型，并把推断交给算法。这把模型说明与推断机制分离。在流行病学、预测、因果建模、科学测量和决策支持中，当领域假设重要时，这类工具非常有用。它们让不确定性显式可检查，但仍要求认真检查先验、似然、收敛和模型拟合。
+              </p>
+              <p>
+                深度学习常自动学习表示，图模型则要求我们指定结构。二者互补。神经网络可以作为图模型中条件分布的参数化器；概率模型也可以在神经模块外加入结构。前沿方向不是二选一，而是把灵活函数近似与显式不确定性、依赖结构结合起来。
+              </p>
+              <p>
+                图模型思维对调试泄漏和伪相关尤其有用。把数据来源、标注过程、用户群体、时间、特征、标签和预测都画成节点，常能暴露本不该存在的路径。如果医院 ID 能预测疾病，是因为某医院服务了更重症患者，那么图能帮助区分真实医疗信号和部署时脆弱的捷径。图本身不能解决问题，但能让假设可见。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-9">
+              <span class="section-number">09 / 推断</span>
+              <h2>采样、Monte Carlo、MCMC 与变分推断</h2>
+              <p>
+                许多概率问题需要计算无法精确得到的期望或后验分布。积分可能是高维的，归一化常数可能未知，模型也可能太复杂。近似推断就是用受控近似替代不可能的精确计算。机器学习在贝叶斯模型、生成模型、强化学习、不确定性估计和模拟中都使用这些方法。
+              </p>
+              <p>
+                Monte Carlo 方法用样本近似期望：
+              </p>
+              <div class="equation">\[\mathbb{E}_{p}[f(X)]\approx \frac{1}{S}\sum_{s=1}^{S}f(x^{(s)}),\qquad x^{(s)}\sim p\]<span class="equation-number">(13)</span></div>
+              <p>
+                在广泛条件下，近似误差按 \(1/\sqrt{S}\) 下降，形式上与维度无关；但在高维中获得好样本可能非常困难。因此，采样质量不只是样本数更重要。相关或有偏样本会让估计看起来精确却错误。
+              </p>
+              <h3>MCMC 从只差常数的分布中采样</h3>
+              <p>
+                Markov Chain Monte Carlo 构造一个平稳分布为目标后验的马尔可夫链。当我们能计算未归一化密度，却不能计算归一化常数时，它非常有用。Metropolis-Hastings 提出移动，并用接受概率修正 proposal；Hamiltonian Monte Carlo 使用梯度信息，在连续参数空间中更高效移动。
+              </p>
+              <p>
+                MCMC 诊断很重要。链可能混合缓慢，被困在某个模式中，或看起来稳定却错过重要区域。多条链、有效样本量、轨迹图和领域检查都能帮助判断。核心教训是：采样本身也是带不确定性的计算。输出不是单个数字，而是一个需要评估可靠性的近似。
+              </p>
+              <h3>变分推断把推断变成优化</h3>
+              <p>
+                变分推断选择一个近似族 \(q_\phi(z)\)，并寻找其中最接近真实后验的成员，常通过最大化 evidence lower bound 实现。它通常比 MCMC 更快、更可扩展，但会引入近似偏差。近似族可能太简单，从而低估不确定性。在深度学习中，VAE、amortized inference 和许多潜变量模型都依赖变分思想。
+              </p>
+              <p>
+                MCMC 与变分推断的取舍反映了更普遍模式。采样可能更忠实但昂贵，优化可能可扩展但有偏。实际 ML 系统通常选择“对当前决策足够好”的近似。如果不确定性决定医疗分诊或科学结论，近似质量就比只用于低风险推荐排序时重要得多。
+              </p>
+              <p>
+                模拟也是概率思维的一种形式。部署前，我们可以模拟标签噪声、缺失数据、类别不平衡、漂移、延迟反馈或罕见事件，然后观察训练管线如何反应。模拟不能证明现实一定如此，但它是一个受控实验室，可以发现系统默默依赖了哪些假设，以及这些假设被破坏时会怎样。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-10">
+              <span class="section-number">10 / 生成</span>
+              <h2>生成模型：从混合模型到 VAE、自回归与扩散</h2>
+              <p>
+                生成建模试图学习数据上的分布。分类器估计 \(p(y\mid x)\)，生成模型则试图表示 \(p(x)\)、\(p(x,y)\) 或 \(p(x\mid c)\) 等条件分布。这允许采样、补全、去噪、模拟、压缩、异常检测和条件创造。评价生成模型时，不只看它是否预测标签，还看它是否捕捉数据本身的结构。
+              </p>
+              <p>
+                较早的生成模型包括高斯混合、隐马尔可夫模型、主题模型和因子分析。它们依然有价值，因为假设显式，推断可解释。现代神经生成模型用深度网络参数化分布，同时保留概率目标。词汇变了，但核心问题仍然是：概率质量如何分配到可能观察上？
+              </p>
+              <h3>自回归模型把复杂对象分解成序列</h3>
+              <p>
+                自回归模型用链式法则分解联合分布：
+                \(p(x_{1:T})=\prod_t p(x_t\mid x_{<t})\)。语言模型、PixelCNN 风格图像模型和一些音频模型都使用这个思想。优点是在给定分解下可以精确计算似然；代价是生成顺序化，并且对顺序敏感。模型必须先选定前面的部分，才能生成下一个部分。
+              </p>
+              <p>
+                自回归视角解释了为什么 LLM 是概率生成器。它们不是从表中取出固定答案，而是不断从条件分布采样。温度、top-\(p\) 等解码设置会改变概率如何转化为文本。因此，可靠性取决于学习到的分布、提示和采样策略。
+              </p>
+              <h3>VAE 与潜变量生成</h3>
+              <p>
+                变分自编码器引入潜变量 \(z\)、解码器 \(p_\theta(x\mid z)\) 和近似编码器 \(q_\phi(z\mid x)\)。训练会最大化一个下界，在重建质量和把潜代码拉近先验的 KL 惩罚之间平衡。结果是一个平滑潜空间，可以从中生成新样本。VAE 让概率模型显式，但在某些领域中样本可能比对抗模型或扩散模型更模糊。
+              </p>
+              <p>
+                当观察背后有隐藏因素时，潜变量很有用：风格、主题、姿态、说话人、簇或环境。好的潜变量模型会把有意义变化与噪声分开。但 disentanglement 不会靠愿望自动发生，它依赖架构、目标、监督、归纳偏置和数据。概率告诉我们正在优化什么，却不能保证潜轴天然对应人类概念。
+              </p>
+              <h3>扩散模型作为学习到的去噪过程</h3>
+              <p>
+                扩散模型逐步向数据加噪，再训练神经网络反转这个过程。生成从噪声开始，反复去噪。概率上，模型学习一系列从简单先验分布走向数据分布的转移。这一框架已经成为图像、音频、视频和越来越多多模态生成的核心方法。
+              </p>
+              <p>
+                扩散强调一个反复出现的主题：复杂分布可以被拆成许多简单条件步骤来学习。自回归模型逐 token 生成，扩散模型逐步去噪，normalizing flow 通过可逆映射变换简单分布。不同生成模型家族选择了不同方式，让概率计算变得可处理。
+              </p>
+              <p>
+                生成模型也必须按用途评估。如果目标是真实图像，感知质量和多样性重要；如果目标是异常检测，似然排序和误报率重要；如果目标是科学模拟，校准不确定性和守恒规律可能比视觉吸引力更重要。模型可能生成惊艳样本却给出糟糕概率，也可能似然很好但样本无趣。分布问题必须匹配使用场景。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-11">
+              <span class="section-number">11 / 不确定性</span>
+              <h2>深度学习中的不确定性：偶然、认知、集成与 conformal prediction</h2>
+              <p>
+                深度网络经常输出概率，但 softmax 分数并不自动等于可信不确定性。模型可能对分布外输入、对抗样本、损坏传感器或训练中代表不足的群体过度自信。因此，概率在深度学习中有两项工作：定义训练目标，以及在部署中表达不确定性。第二项更难，因为它要求模型知道自己不知道什么。
+              </p>
+              <p>
+                Aleatoric uncertainty 是数据中的不可约噪声：模糊图片、随机用户行为或确实含糊的标签。Epistemic uncertainty 是由于数据有限或知识不足造成的模型不确定性。更多数据可以减少认知不确定性，却不能消除偶然不确定性。区分二者很重要：如果不确定性来自数据噪声，系统可能需要人工复核或更好传感器；如果来自认知不足，则可能需要该区域更多数据。
+              </p>
+              <h3>集成与近似贝叶斯思维</h3>
+              <p>
+                集成训练多个模型并比较预测。预测一致表示稳定，不一致提示不确定。深度集成简单且常很强，但成本较高。推理时 dropout、Laplace 近似、stochastic weight averaging 和贝叶斯神经网络，都试图更直接或更便宜地表示参数不确定性。它们都不完美，但都帮助我们走出单一过度自信预测。
+              </p>
+              <p>
+                实际问题是部署分布上的校准。一个在验证集校准的集成，分布漂移后仍可能失准。监控不应只看平均准确率，还要看置信度、分组表现、漂移和拒答行为。概率输出是一种关于频率的承诺；生产数据会检验这个承诺是否兑现。
+              </p>
+              <h3>Conformal prediction 提供较少分布假设的覆盖保证</h3>
+              <p>
+                Conformal prediction 在 exchangeability 条件下构造具有覆盖保证的预测集合。对分类器来说，它不只返回一个标签，而是返回一组可能标签。模型越确定，集合越小；越不确定，集合越大。保证关注长期覆盖率，不保证每个单独集合一定包含真值。它有吸引力，因为可以包裹许多已有模型。
+              </p>
+              <p>
+                和所有保证一样，conformal prediction 依赖假设。如果校准数据和未来数据不可交换，覆盖可能失败；如果群体差异明显，平均覆盖可能隐藏某些子群覆盖不足。即便如此，这个方法体现了很好的概率习惯：当单个预测不够可靠时，返回一个下游决策可使用的结构化不确定性陈述。
+              </p>
+              <h3>分布外检测与拒答</h3>
+              <p>
+                在一个分布上训练的模型可能面对另一个分布。OOD 检测试图识别与训练数据差异足够大的输入，使其预测不应被信任。方法包括密度分数、特征空间距离、energy score、集成、重建误差和专门检测器。难点在于，高维密度和语义新颖性并不相同：看起来奇怪的输入可能无害，看起来自然的输入也可能离开任务分布。
+              </p>
+              <p>
+                拒答是一种决策，不是丢脸。知道何时延迟判断的系统，可能比永远回答的系统更安全。概率通过估计置信度、期望代价和信息价值支持拒答。在高风险 ML 中，最佳行动可能是索要更多数据、调用工具、转给人类，或拒绝做出判断。
+              </p>
+              <p>
+                不确定性还必须被正确沟通。用户未必知道 0.73 的分数意味着什么，却可能理解“高风险，需要复核”或“预测集合包含三个可能标签”。界面既要保留概率含义，又不能假装数字比数据所支持的更精确。好的不确定性设计同时是统计问题和人与系统交互问题。
+              </p>
+            </section>
+
+            <section class="article-section" id="zh-12">
+              <span class="section-number">12 / 实践</span>
+              <h2>评估、泄漏、公平性与概率机器学习检查表</h2>
+              <p>
+                概率真正有用，是因为它改变我们评估系统的方式。准确率通常远远不够。我们需要不确定性区间、校准曲线、代价敏感指标、分组指标、漂移监控和错误分析。模型部署后面对的是未来案例流，而不是训练表格。评估应尽量近似系统将支持的决策和将面对的人群。
+              </p>
+              <p>
+                数据泄漏是一种概率失败：来自未来、验证集或目标的信息进入训练特征，使评估分布比部署分布更容易。泄漏可能来自预处理、重复记录、时间窗口、由目标派生的特征、用户级切分或全局统计量。解决方法是在建模前定义预测时间、可用信息、抽样单位和切分规则。
+              </p>
+              <h3>贯穿机器学习工作流的概率视角</h3>
+              <p>
+                一个完整的机器学习项目，可以被看成一串条件概率问题。数据收集阶段要问样本代表哪个总体：\(p_{\text{train}}(x,y)\) 从来不是世界本身，只是由传感器、日志规则、平台激励、缺失机制和选择偏差共同暴露出来的那一部分世界。特征构造阶段要问哪些变量在决策前可见，哪些变量其实泄漏了未来信息。建模阶段要问哪一种条件分布足够有用：预测任务常关心 \(p(y\mid x)\)，生成和诊断任务常关心 \(p(x,y)\)，存在隐藏结构时还要推断 \(p(z\mid x)\)。训练阶段要问什么准则能让提出的分布接近经验证据，部署阶段则要问这些条件关系离开数据集之后是否仍然成立。
+              </p>
+              <p>
+                这个视角解释了为什么概率论不是一个孤立的先修章节，而是整个系统的语法。回归模型通常估计条件均值 \(E[Y\mid X=x]\)，同时隐含均值周围的噪声假设。分类器估计或近似类别概率，再通过阈值把概率转成行动。推荐系统从稀疏观察中估计不确定的偏好。强化学习策略从依赖状态的分布中采样动作，并用延迟奖励更新分布。语言模型估计下一个 token 的分布，解码过程再把这个分布变成一段具体文本。不同领域看起来不同，是因为对象不同；但重复出现的模式相同：观察不完整证据，表示不确定性，更新信念，并在代价约束下选择行动。
+              </p>
+              <p>
+                几何和概率也会以非常具体的方式相遇。向量上的分布是一团可能点构成的云；均值是这团云的质心，协方差椭球描述主要波动方向，密度等高线标出同等可信的区域。学习会改变这种几何。PCA 把坐标系旋转到高方差方向；高斯判别分析比较不同类别的椭球；logistic 回归把线性分数通过 sigmoid 弯成概率；神经网络反复变换数据云，直到最终表示能更容易表达有用的条件概率。因此概率的物理图像不只是“随机”，还包括概率质量在表示空间中的移动、压缩、分离与重新分配。
+              </p>
+              <p>
+                在训练过程中，概率假设会变成梯度。负对数似然意味着被模型赋予低概率的样本会产生更大的纠正力量。交叉熵把概率质量推向观测标签。KL 散度惩罚一个分布把质量放在另一个分布认为不应出现的位置。变分推断和扩散模型训练优化的下界、去噪损失，来源上都是概率对象，但实现时表现为普通的可微目标函数。这也是为什么现代机器学习中概率与优化无法完全分开：概率定义“什么应当为真”，优化则给出参数如何移动到那里的路径。
+              </p>
+              <p>
+                概率还让“预测”和“决策”的区别更加清楚。概率 \(0.8\) 本身不是行动；只有在指定效用、代价、约束和额外信息价值之后，它才会变成行动。在医疗分诊中，因为漏掉危险病例代价很高，较低阈值可能更合理。在内容排序中，校准和长期反馈可能比单步准确率更重要。在欺诈检测中，一个预测可能触发人工复核，而不是自动拒绝。决策论把这一点写成明确形式：选择使条件期望风险 \(E[L(a,Y)\mid x]\) 最小的动作 \(a\)，而不只是选择概率最大的标签。
+              </p>
+              <p>
+                最后，部署会把每一个概率模型变成监控问题。训练分布是历史的，部署分布却是活的。用户行为会变，数据管道会变，传感器会漂移，政策会改变激励，模型自己的决策也可能重塑未来数据。因此概率机器学习系统需要漂移检查、校准监控、不确定性摘要、子群分析和人工升级路径。真正实用的问题不是“模型是否曾经拟合过一个数据集”，而是“在什么条件下，它给出的概率陈述仍然足够可信，可以支撑绑定在其后的决策”。
+              </p>
+              <h3>公平性与子群不确定性</h3>
+              <p>
+                模型可以平均表现很好，却在某个子群表现很差。概率通过估计每个群体指标及其不确定性，并分别检查校准，帮助揭示这一点。但公平性标准可能冲突：equalized odds、demographic parity、predictive parity 和 calibration 不一定能同时满足。正确标准取决于决策场景和社会代价，而不只是数学形式。
+              </p>
+              <p>
+                小子群会带来宽不确定区间。测得的差距可能只是噪声，真实差距也可能因数据不足被隐藏。负责任评估同时报告估计和不确定性，也检查数据收集、标签质量、历史偏差和反馈循环。概率不能替我们决定价值，但可以防止虚假的精确感。
+              </p>
+              <h3>概率机器学习检查表</h3>
+              <table class="comparison-table">
+                <thead><tr><th>问题</th><th>为什么重要</th><th>常用工具</th></tr></thead>
+                <tbody>
+                  <tr><td>什么是随机的？</td><td>定义样本空间和不确定性</td><td>数据生成故事</td></tr>
+                  <tr><td>条件化在什么信息上？</td><td>区分观察与目标</td><td>条件分布</td></tr>
+                  <tr><td>哪些假设使模型分解？</td><td>控制复杂度和偏差</td><td>独立性图</td></tr>
+                  <tr><td>损失是否匹配似然？</td><td>连接优化和建模</td><td>MLE 或 MAP</td></tr>
+                  <tr><td>概率是否校准？</td><td>让决策可信</td><td>可靠性图</td></tr>
+                  <tr><td>部署时什么会变化？</td><td>发现分布漂移</td><td>监控与漂移测试</td></tr>
+                </tbody>
+              </table>
+              <p>
+                这个检查表刻意基础，因为大多数失败也很基础。人们会优化错误损失，错误切分数据，忽略类别不平衡，把 softmax 分数当置信度，用平均值掩盖子群失败，或忘记概率总是以假设为条件。复杂模型不会原谅含糊的概率思维，反而常会放大后果。
+              </p>
+              <h3>概率与机器学习的学习地图</h3>
+              <p>
+                稳固路线应从样本空间、随机变量、期望、方差、条件化、贝叶斯公式和常见分布开始。之后进入似然、估计、贝叶斯推断、熵、KL 散度、图模型和采样。进入机器学习后，应把这些概念连接到分类、回归、校准、生成模型、不确定性估计和分布漂移下的评估。每个概念都应通过小型模拟练习，而不只是作为公式阅读。
+              </p>
+              <div class="insight-box">
+                <span class="box-label">核心习惯</span>
+                <p>
+                  每当模型输出一个数字，都应追问：这是关于什么的概率，条件化在哪些信息上，来自哪个模型，由哪些数据估计，并将用于什么决策？这个问题能把概率论从数学章节变成学习系统中的工程纪律。
+                </p>
+              </div>
+              <p>
+                实践学习应多做小实验。模拟有偏抽样，观察准确率如何失效；在同一文本数据上训练朴素贝叶斯和 logistic 回归，比较校准；拟合高斯混合并观察 EM 对初始化的敏感性；用 Monte Carlo 估计期望并画出误差随样本数变化；用温度缩放校准神经分类器。这些练习会让概率成为可观察行为，而不只是纸面公式。
+              </p>
+              <div class="chapter-divider">第三章完</div>
+            </section>
+
+            <footer class="article-end">
+              <h2>让不确定性保持可见。</h2>
+              <p>
+                概率并不是严谨的反面。它是严谨系统承认噪声、有限证据、变化世界，以及必须在确定性到来之前做出决策的方式。
+              </p>
+              <a class="article-next" href="index.html#library">返回知识地图 <span>↗</span></a>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">M</span>
+        <span>MindForge</span>
+      </a>
+      <p data-i18n="footerCopy">Notes forged through curiosity, rigor, and revision.</p>
+      <a href="https://github.com/JiaXtian/MindForge" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </footer>
+  </body>
+</html>

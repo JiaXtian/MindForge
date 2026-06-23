@@ -25,6 +25,7 @@ MindForge is a personal, bilingual learning space for documenting ideas, notes, 
 | --- | --- | --- |
 | Home | Site introduction, learning collections, principles, and roadmap | [Open home](https://jiaxtian.github.io/MindForge/) |
 | Linear Algebra for Machine Learning | An 11-chapter guide covering foundations, machine-learning applications, geometry, and physical meaning | [Read the chapter](https://jiaxtian.github.io/MindForge/linear-algebra.html) |
+| Probability Theory for Machine Learning | A 12-chapter guide covering random variables, Bayes classifiers, likelihood, information theory, graphical models, sampling, generative models, uncertainty, calibration, and evaluation | [Read the chapter](https://jiaxtian.github.io/MindForge/probability.html) |
 | Large Language Models Explained | A 12-chapter guide covering Transformer architecture, GPT/BERT, pre-training, alignment, RAG, agents, multimodality, efficiency, safety, and frontier mechanisms | [Read the chapter](https://jiaxtian.github.io/MindForge/llm.html) |
 
 ## Knowledge Map
@@ -34,7 +35,7 @@ MindForge is a personal, bilingual learning space for documenting ideas, notes, 
 3. **Paper Notes** — distilled arguments, diagrams, questions, and lasting insights.
 4. **Lab Notebook** — experiments, implementation decisions, failed assumptions, and lessons learned.
 
-The first two long-form chapters are live. The remaining collections are intentionally reserved as the site grows.
+The first three long-form chapters are live. The remaining collections are intentionally reserved as the site grows.
 
 ## Linear Algebra Chapter
 
@@ -52,9 +53,26 @@ The first long-form chapter contains more than 17,000 Chinese characters and a c
 10. Connections among algebra, geometry, physics, and machine learning
 11. Numerical stability, implementation habits, and a continued learning map
 
+## Probability Chapter
+
+The third long-form chapter contains more than 12,000 Chinese characters and a synchronized English edition. Its 12 sections cover:
+
+1. Probability as the language of uncertainty in learning systems
+2. Random variables, distributions, expectation, and variance
+3. Conditional probability, independence, and Bayes' rule
+4. Common distributions and the modeling assumptions they encode
+5. Likelihood, maximum likelihood, MAP, and Bayesian posterior inference
+6. Bayes classifiers, generative models, discriminative models, and calibration
+7. Entropy, cross-entropy, KL divergence, and mutual information
+8. Graphical models, latent variables, EM, and probabilistic structure
+9. Sampling, Monte Carlo, MCMC, and variational inference
+10. Generative models from mixtures to VAEs, autoregression, and diffusion
+11. Aleatoric and epistemic uncertainty, ensembles, conformal prediction, and OOD detection
+12. Evaluation, leakage, fairness, monitoring, and a practical probability checklist
+
 ## LLM Chapter
 
-The second long-form chapter contains more than 12,000 Chinese characters and a synchronized English edition. Its 12 sections cover:
+The LLM long-form chapter contains more than 12,000 Chinese characters and a synchronized English edition. Its 12 sections cover:
 
 1. Tokenization, next-token prediction, embeddings, perplexity, and compression
 2. Transformer self-attention, multi-head routing, and positional information
@@ -83,6 +101,7 @@ MindForge/
 ├── index.html
 ├── linear-algebra.html
 ├── llm.html
+├── probability.html
 ├── styles.css
 ├── article.css
 ├── app.js

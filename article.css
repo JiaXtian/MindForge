@@ -450,13 +450,26 @@ html[lang="zh-CN"] .article-intro {
 
   .toc-panel {
     display: block;
-    margin-bottom: 60px;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 76px;
+    z-index: 12;
+    margin: -20px 0 60px;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--paper) 96%, transparent), color-mix(in srgb, var(--paper) 88%, transparent)),
+      var(--paper);
+    box-shadow: 0 18px 55px color-mix(in srgb, var(--ink) 10%, transparent);
+    backdrop-filter: blur(18px);
   }
 
   .toc-panel summary {
+    display: flex;
     padding: 18px 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     cursor: pointer;
     font-family: var(--mono);
     font-size: 10px;
@@ -465,12 +478,39 @@ html[lang="zh-CN"] .article-intro {
     text-transform: uppercase;
   }
 
+  .toc-panel summary::after {
+    display: inline-grid;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--accent);
+    content: "+";
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .toc-panel[open] summary::after {
+    content: "-";
+  }
+
   .toc-panel summary::-webkit-details-marker {
     display: none;
   }
 
   .toc-panel .toc {
+    max-height: min(52vh, 460px);
+    overflow-y: auto;
     padding-bottom: 18px;
+    overscroll-behavior: contain;
+  }
+
+  .toc-panel .toc a {
+    padding: 10px 0;
+    font-size: 11px;
   }
 }
 
@@ -501,6 +541,12 @@ html[lang="zh-CN"] .article-intro {
 
   .article-layout {
     padding: 0 24px 100px;
+  }
+
+  .toc-panel {
+    top: 70px;
+    margin-bottom: 48px;
+    border-radius: 20px;
   }
 
   .article-intro {
