@@ -149,6 +149,14 @@
               <span class="section-number">01 / FOUNDATIONS</span>
               <h2>From scalars and vectors to vector spaces: making data computable</h2>
               <p>
+                Read this section as the point where ordinary observations become mathematical objects. Before a
+                model can learn, we must decide what counts as one example, which measurements become coordinates,
+                and which operations preserve meaning. Scalars record one measurable quantity, vectors gather
+                related quantities into a position in a space, and vector spaces tell us which combinations of
+                examples or features are allowed. These opening concepts are therefore not vocabulary to memorize;
+                they define the contract between the real problem and the computation that will follow.
+              </p>
+              <p>
                 Linear algebra begins with a practical question: how can one mathematical language represent
                 information from many different systems? A temperature, probability, learning rate, or loss can
                 be represented by one number, called a <strong>scalar</strong>. When an object requires several
@@ -270,6 +278,14 @@
               <span class="section-number">02 / TRANSFORMATIONS</span>
               <h2>A matrix is not just a table: it is an action on space</h2>
               <p>
+                The central question of this section is what a matrix does to every possible input at once. If
+                vectors are positions, matrices are rules that move positions. Seeing a matrix as an action
+                prevents the common mistake of treating multiplication as a mechanical recipe with no meaning.
+                In machine learning, every layer, projection, embedding map, covariance transform, and attention
+                head can be read as a controlled deformation of a space. The details below show how that
+                deformation rotates, stretches, collapses, reflects, or mixes information.
+              </p>
+              <p>
                 A matrix \(A\in\mathbb{R}^{m\times n}\) has \(m\) rows and \(n\) columns, but its deeper
                 meaning is a function from \(\mathbb{R}^n\) to \(\mathbb{R}^m\). A linear transformation
                 satisfies \(A(\alpha x+\beta y)=\alpha Ax+\beta Ay\): transforming a combination is equivalent
@@ -370,6 +386,14 @@
             <section class="article-section" id="en-3">
               <span class="section-number">03 / STRUCTURE</span>
               <h2>Linear systems, column space, null space, and rank</h2>
+              <p>
+                This section explains what it means for data to contain enough information. A linear system asks
+                whether a target vector can be assembled from available columns; the column space is the set of
+                targets that can be explained, the null space is the set of parameter changes that leave the
+                output unchanged, and rank measures how many independent directions the system truly sees. These
+                ideas become practical whenever we fit parameters from observations: failure, ambiguity, and
+                overfitting often begin as questions about which directions are visible to the data.
+              </p>
               <p>
                 The system \(Ax=b\) appears to ask for unknown numbers, but geometrically it asks whether
                 \(b\) lies in the span of the columns of \(A\). Since every \(Ax\) is a column combination, an
@@ -482,6 +506,14 @@
               <span class="section-number">04 / GEOMETRY</span>
               <h2>Inner products turn numbers into length, angle, projection, and similarity</h2>
               <p>
+                After we know what space we are in, we still need to decide how to compare points inside it.
+                Inner products answer that question by defining length, angle, orthogonality, and projection.
+                This is where algebra becomes measurement. A search system, a clustering method, a classifier,
+                and a recommender can behave very differently depending on which notion of similarity they use.
+                The goal here is to see distance not as a fixed background fact, but as a modeling choice that
+                should match the semantics of the task.
+              </p>
+              <p>
                 The Euclidean inner product is \(x^\top y=\sum_i x_i y_i\). Geometrically,
                 \(x^\top y=\|x\|_2\|y\|_2\cos\theta\), so it contains both length and angle information. A
                 positive inner product indicates broadly aligned directions, a negative value indicates
@@ -569,6 +601,14 @@
               <span class="section-number">05 / INVARIANTS</span>
               <h2>Eigenvalues and eigenvectors reveal a transformation's preferred axes</h2>
               <p>
+                The intuition to carry through this section is simple: some directions pass through a
+                transformation without turning. Those directions are eigenvectors, and their scaling factors are
+                eigenvalues. Once we find them, a complicated transformation can be understood through its natural
+                axes. This matters in machine learning because repeated updates, Markov transitions, covariance
+                structure, graph diffusion, optimization curvature, and stability analysis all ask which
+                directions grow, shrink, persist, or disappear under repeated action.
+              </p>
+              <p>
                 For a square matrix \(A\), a nonzero vector \(v\) satisfying \(Av=\lambda v\) is an
                 eigenvector, and \(\lambda\) is its eigenvalue. Most directions change orientation under a
                 matrix, but an eigenvector remains on its own line. It may be enlarged, contracted, reversed, or
@@ -648,6 +688,14 @@
             <section class="article-section" id="en-6">
               <span class="section-number">06 / DECOMPOSITION</span>
               <h2>SVD and PCA: rotate, scale, and reveal structure inside noise</h2>
+              <p>
+                This section is about separating structure from coordinates. Singular value decomposition says
+                that any data matrix can be understood as a rotation of the input space, a set of independent
+                scalings, and a rotation of the output space. PCA then uses this idea to find directions where
+                data varies most. For learning, the lesson is not merely dimensionality reduction; many datasets
+                contain a few strong directions plus weaker noise-like directions, and good modeling often begins
+                by identifying that geometry.
+              </p>
               <p>
                 Eigendecomposition applies directly only to square matrices and may fail to produce a complete
                 eigenbasis. Singular value decomposition applies to every \(m\times n\) real matrix:
@@ -742,6 +790,14 @@
             <section class="article-section" id="en-7">
               <span class="section-number">07 / LEARNING</span>
               <h2>Gradients, Jacobians, and Hessians: local change is linear algebra</h2>
+              <p>
+                Calculus enters machine learning through a linear-algebraic doorway. Near a point, a smooth
+                function is approximated by its best local linear map: gradients describe the direction of
+                steepest scalar change, Jacobians describe how vector outputs change, and Hessians describe how
+                the gradient itself turns. Read this section as the bridge between formulas and training:
+                backpropagation is not magic, but repeated application of local linear approximations through a
+                computation graph.
+              </p>
               <p>
                 Machine learning adjusts parameters to reduce a scalar loss. For
                 \(f:\mathbb{R}^n\to\mathbb{R}\), the gradient collects first partial derivatives. A small
@@ -839,6 +895,14 @@
             <section class="article-section" id="en-8">
               <span class="section-number">08 / MODELS</span>
               <h2>Writing classical machine learning in matrix form</h2>
+              <p>
+                Matrix notation is useful because it exposes the whole dataset at once. Instead of thinking about
+                one example and one prediction, we can see how a design matrix encodes features, how coefficients
+                combine columns, how residuals form an error vector, and how regularization changes the geometry
+                of fitting. The models in this section may look classical, but the habit is modern: always ask
+                what object is being transformed, what space the parameters live in, and what assumptions are
+                hidden inside the matrix representation.
+              </p>
               <p>
                 Put \(n\) observations in the rows of \(X\in\mathbb{R}^{n\times d}\), parameters in
                 \(w\in\mathbb{R}^d\), and targets in \(y\in\mathbb{R}^n\). Linear regression predicts
@@ -945,6 +1009,14 @@
             <section class="article-section" id="en-9">
               <span class="section-number">09 / REPRESENTATION</span>
               <h2>Embeddings, tensors, convolutions, and attention still rest on linear algebra</h2>
+              <p>
+                Modern neural networks can look far removed from basic linear algebra because the notation becomes
+                high-dimensional and the software hides many operations. The underlying discipline is the same:
+                keep track of shapes, understand which axes are being mixed, and identify where a linear map is
+                followed by a nonlinearity. Embeddings, convolutions, tensor contractions, and attention are not
+                separate worlds. They are ways of organizing and reusing linear transformations so that models can
+                process structured data efficiently.
+              </p>
               <p>
                 An embedding matrix \(E\in\mathbb{R}^{V\times d}\) assigns each of \(V\) discrete items a learned
                 vector in \(d\) dimensions. Looking up token \(i\) is equivalent to multiplying by its one-hot
@@ -1077,6 +1149,14 @@
             <section class="article-section" id="en-10">
               <span class="section-number">10 / MEANING</span>
               <h2>Putting algebra, geometry, physics, and machine learning on one map</h2>
+              <p>
+                This section prevents the symbols from floating away from meaning. Algebra tells us how to
+                compute, geometry tells us what is happening in space, physics offers concrete analogies such as
+                energy and equilibrium, and machine learning turns these ideas into prediction and representation.
+                Whenever a formula feels abstract, translate it across these views: what moves, what stays fixed,
+                what is conserved, what is minimized, and which directions are invisible? That translation is the
+                core intuition of the chapter.
+              </p>
               <p>
                 Linear algebra reaches across so many fields because superposition is a first approximation to
                 complex systems. Small vibrations decompose into independent modes, light and sound into
@@ -1256,6 +1336,14 @@
               <span class="section-number">11 / PRACTICE</span>
               <h2>From symbolic formulas to reliable computation: shapes, stability, and a learning path</h2>
               <p>
+                The final section turns understanding into working habits. Knowing a theorem is not enough if an
+                implementation silently broadcasts the wrong dimension, solves an unstable normal equation, leaks
+                validation information, or interprets coefficients after inconsistent preprocessing. Read this
+                section as a practical checklist for moving from paper to code. The goal is to make every formula
+                pass three tests: the shapes agree, the numerical method is stable, and the interpretation still
+                matches the original problem.
+              </p>
+              <p>
                 Exact algebra and floating-point computation are not the same world. A mathematically nonzero
                 number may be indistinguishable from zero at machine precision; theoretically independent columns
                 may almost coincide; subtracting two huge nearby numbers may erase significant digits; and
@@ -1394,6 +1482,9 @@
               <span class="section-number">01 / 基础语言</span>
               <h2>从标量、向量到向量空间：数据如何成为可计算对象</h2>
               <p>
+                阅读这一节时，可以把它看成“普通观察如何变成数学对象”的入口。在模型学习之前，我们必须决定什么算一个样本，哪些测量值成为坐标，哪些运算不会破坏问题含义。标量记录一个可测量量，向量把相关量组织成空间中的位置，向量空间则规定哪些样本或特征组合是允许的。因此开头这些概念不是需要死记的术语，而是在真实问题和后续计算之间建立契约。
+              </p>
+              <p>
                 线性代数首先回答一个看似朴素的问题：怎样用统一的数学对象表示现实世界中的信息？一个温度、概率、学习率或损失值，可以用单个数表示，这样的数称为<strong>标量</strong>。当一个对象需要多个属性共同描述时，我们把这些数按确定顺序排列成向量
                 \(x=(x_1,x_2,\ldots,x_n)^\top\)。顺序不是装饰，它决定每个坐标的含义。例如
                 \(x=(身高,体重,年龄)\) 与 \(x=(年龄,身高,体重)\) 虽然包含相同数字，却不是同一个表示。
@@ -1460,6 +1551,9 @@
             <section class="article-section" id="zh-2">
               <span class="section-number">02 / 线性变换</span>
               <h2>矩阵不只是一张数字表：它是对空间采取的动作</h2>
+              <p>
+                这一节的核心问题是：一个矩阵会同时对所有可能输入做什么？如果向量是位置，那么矩阵就是移动位置的规则。把矩阵看成动作，可以避免常见误区：只把矩阵乘法当成无意义的机械步骤。在机器学习中，每一层、投影、嵌入映射、协方差变换和注意力头，都可以被看成对空间的受控形变。下面的细节展示这种形变如何旋转、拉伸、压缩、反射或混合信息。
+              </p>
               <p>
                 矩阵 \(A\in\mathbb{R}^{m\times n}\) 有 \(m\) 行、\(n\) 列。把它看成数字表格时，我们容易陷入机械计算；把它看成从 \(\mathbb{R}^n\) 到
                 \(\mathbb{R}^m\) 的函数时，许多规则会自然起来。线性变换满足
@@ -1531,6 +1625,9 @@
             <section class="article-section" id="zh-3">
               <span class="section-number">03 / 结构与可解性</span>
               <h2>线性方程组、列空间、零空间与秩是一件事的四个侧面</h2>
+              <p>
+                这一节解释“数据是否包含足够信息”到底是什么意思。线性方程组询问目标向量能否由已有列组合出来；列空间是所有可被解释的目标集合；零空间是改变参数但不改变输出的方向集合；秩衡量系统真正看见了多少个独立方向。这些思想在用观测拟合参数时会直接变成实践问题：失败、歧义和过拟合，往往首先是数据能看见哪些方向、看不见哪些方向的问题。
+              </p>
               <p>
                 方程组 \(Ax=b\) 表面上是在求未知数，几何上是在问：目标向量 \(b\) 是否位于矩阵列向量张成的空间中？因为
                 \(Ax\) 必然是列向量的线性组合，所以方程有解当且仅当 \(b\in\operatorname{Col}(A)\)。若列空间只是一张穿过原点的平面，而
@@ -1608,6 +1705,9 @@
               <span class="section-number">04 / 几何</span>
               <h2>内积把数字变成长度、角度、投影与相似性</h2>
               <p>
+                当我们知道自己处在哪个空间之后，还必须决定如何比较空间中的点。内积通过定义长度、角度、正交和投影来回答这个问题。这里代数开始成为测量。搜索系统、聚类方法、分类器和推荐系统，会因为采用不同相似度而表现完全不同。本节的目标是让你看到：距离不是固定背景事实，而是一种建模选择，它必须与任务语义相匹配。
+              </p>
+              <p>
                 两个向量的欧氏内积为 \(x^\top y=\sum_i x_i y_i\)。几何上，
                 \(x^\top y=\|x\|_2\|y\|_2\cos\theta\)，因此它同时编码长度与夹角。内积为正说明夹角小于 \(90^\circ\)，方向大体一致；为负说明方向相反；为零说明正交。物理中力与位移的内积是功，因为只有沿位移方向的力产生位移功；信号处理中，信号与某个基函数的内积衡量该模式在信号中出现多少。
               </p>
@@ -1665,6 +1765,9 @@
               <span class="section-number">05 / 不变方向</span>
               <h2>特征值与特征向量揭示变换自身偏爱的坐标轴</h2>
               <p>
+                贯穿这一节的直觉很简单：有些方向经过变换时不会转弯。这些方向就是特征向量，它们对应的缩放倍数就是特征值。找到它们之后，复杂变换就可以沿自己的天然坐标轴来理解。这在机器学习中很重要，因为重复更新、马尔可夫转移、协方差结构、图扩散、优化曲率和稳定性分析，都在询问哪些方向会增长、缩小、保持或消失。
+              </p>
+              <p>
                 对方阵 \(A\)，若非零向量 \(v\) 满足 \(Av=\lambda v\)，则 \(v\) 是特征向量，\(\lambda\) 是对应特征值。一般向量经过矩阵后会改变方向，而特征向量只会沿自身方向被缩放：\(|\lambda|>1\) 放大，\(0<|\lambda|<1\) 缩小，\(\lambda<0\) 还会反向，\(\lambda=0\) 则被压入零点。它们是变换最自然、最稳定的观察轴。
               </p>
               <div class="equation">\[Av=\lambda v,\qquad \det(A-\lambda I)=0,\qquad A=V\Lambda V^{-1}\]<span class="equation-number">(5)</span></div>
@@ -1720,6 +1823,9 @@
             <section class="article-section" id="zh-6">
               <span class="section-number">06 / 矩阵分解</span>
               <h2>SVD 与 PCA：旋转、缩放，并从噪声中显露结构</h2>
+              <p>
+                这一节讨论如何把结构从坐标中分离出来。奇异值分解说明，任何数据矩阵都可以理解为输入空间的一次旋转、一组彼此独立的缩放，以及输出空间的一次旋转。PCA 则利用这个思想寻找数据变化最大的方向。对机器学习来说，重点不只是降维，而是许多数据集都由少数强方向和较弱的噪声方向共同构成，好的建模常从识别这种几何开始。
+              </p>
               <p>
                 特征分解只直接适用于方阵且不一定总能得到完整特征基，奇异值分解则适用于任意
                 \(m\times n\) 矩阵。任何实矩阵都可写成 \(A=U\Sigma V^\top\)：先由 \(V^\top\) 在输入空间旋转或反射，再由对角矩阵
@@ -1782,6 +1888,9 @@
             <section class="article-section" id="zh-7">
               <span class="section-number">07 / 微分与优化</span>
               <h2>梯度、Jacobian 与 Hessian：局部变化仍然是线性代数</h2>
+              <p>
+                微积分进入机器学习时，走的是线性代数的门。一个光滑函数在某个点附近，可以由它最好的局部线性映射近似：梯度描述标量函数最快变化的方向，Jacobian 描述向量输出如何变化，Hessian 描述梯度本身如何转向。阅读这一节时，应把它看成公式与训练之间的桥梁：反向传播不是魔法，而是在计算图中反复应用局部线性近似。
+              </p>
               <p>
                 机器学习通过调整参数降低标量损失。对 \(f:\mathbb{R}^n\to\mathbb{R}\)，梯度
                 \(\nabla f=(\partial f/\partial x_1,\ldots,\partial f/\partial x_n)^\top\) 收集所有一阶偏导。微小扰动
@@ -1855,6 +1964,9 @@
               <span class="section-number">08 / 机器学习模型</span>
               <h2>把经典机器学习写成矩阵，模型结构会变得透明</h2>
               <p>
+                矩阵记号有用，是因为它能一次性暴露整个数据集的结构。我们不再只看一个样本和一个预测，而是能看见设计矩阵如何编码特征、系数如何组合列、残差如何形成误差向量、正则化如何改变拟合几何。本节中的模型看似经典，但习惯是现代的：始终追问什么对象正在被变换，参数生活在哪个空间，矩阵表示中隐藏了哪些假设。
+              </p>
+              <p>
                 将 \(n\) 个样本按行放入设计矩阵 \(X\in\mathbb{R}^{n\times d}\)，每行是一个样本，每列是一个特征；参数为
                 \(w\in\mathbb{R}^d\)，目标为 \(y\in\mathbb{R}^n\)。线性回归预测
                 \(\hat y=Xw\)，并最小化 \(\|Xw-y\|_2^2\)。从几何上看，所有可能预测都位于 \(X\) 的列空间中，训练就是把目标
@@ -1926,6 +2038,9 @@
               <span class="section-number">09 / 深度学习表示</span>
               <h2>嵌入、张量、卷积与注意力仍建立在线性代数之上</h2>
               <p>
+                现代神经网络看起来可能离基础线性代数很远，因为记号变成高维对象，软件也隐藏了许多操作。但底层纪律没有变：追踪形状，理解哪些轴被混合，识别哪里是线性映射、哪里接着非线性。嵌入、卷积、张量收缩和注意力并不是彼此分离的世界，而是组织和复用线性变换的不同方式，使模型能够高效处理结构化数据。
+              </p>
+              <p>
                 嵌入矩阵 \(E\in\mathbb{R}^{V\times d}\) 为 \(V\) 个离散对象各分配一个 \(d\) 维向量。输入一个词元编号，等价于用 one-hot 向量
                 \(e_i\) 左乘矩阵并取出对应行。训练并没有给每个坐标手工命名，而是根据预测目标调整整个空间：在相似上下文中发挥类似作用的对象，往往形成相近方向；某些关系可能表现为近似向量差，但这种结构是任务与数据共同塑造的，不应被误读为绝对语义真理。
               </p>
@@ -1995,6 +2110,9 @@
             <section class="article-section" id="zh-10">
               <span class="section-number">10 / 联系与物理意义</span>
               <h2>把代数、几何、物理与机器学习放回同一张图</h2>
+              <p>
+                这一节的作用，是防止符号离意义越来越远。代数告诉我们如何计算，几何告诉我们空间中发生了什么，物理提供能量和平衡等具体类比，机器学习则把这些思想转化为预测和表示。每当一个公式显得抽象，都可以把它翻译到这些视角中：什么在移动，什么保持不变，什么被守恒，什么被最小化，哪些方向不可见？这种翻译就是本章真正的直觉核心。
+              </p>
               <p>
                 线性代数之所以跨越如此多领域，是因为“叠加”是理解复杂系统的第一种近似。小振动可以分解成独立模态，光和声音可以分解成频率，图像可以分解成空间模式，数据变化可以分解成主成分，模型误差可以沿参数方向分解。只要系统在局部或整体近似满足叠加，向量与矩阵就能把复杂相互作用拆成可分析的方向。
               </p>
@@ -2088,6 +2206,9 @@
             <section class="article-section" id="zh-11">
               <span class="section-number">11 / 数值实践</span>
               <h2>从纸面公式走向可靠计算：形状、稳定性与学习路线</h2>
+              <p>
+                最后一节把理解转化为工作习惯。只知道定理还不够，因为实现可能悄悄广播了错误维度，求解了不稳定的正规方程，泄漏了验证集信息，或者在预处理不一致之后解释系数。阅读这一节时，可以把它当成从纸面走向代码的实践检查表。目标是让每个公式都通过三重检验：形状一致，数值方法稳定，解释仍然匹配原始问题。
+              </p>
               <p>
                 精确代数与浮点计算并不是同一个世界。数学上非零的数在机器精度下可能与零无法区分；理论上线性无关的列可能几乎重合；先做两个巨大数相减可能丢失有效位；相同公式的不同计算顺序会产生不同误差。数值线性代数关心的不只是“答案是什么”，还关心“输入略有扰动时答案是否剧烈变化”以及“算法是否额外放大误差”。
               </p>

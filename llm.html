@@ -163,6 +163,14 @@
               <span class="section-number">01 / LANGUAGE MODELING</span>
               <h2>From text to tokens: what a language model actually learns</h2>
               <p>
+                The first step is to remove a misleading picture: an LLM does not read text as humans read
+                sentences. It reads token IDs, maps them into vectors, and learns statistical regularities about
+                which tokens should follow which contexts. This section therefore begins at the interface between
+                language and computation. If tokenization, embeddings, and next-token probability are unclear,
+                later topics such as attention, pre-training, prompting, and hallucination will feel like isolated
+                tricks rather than consequences of one learning objective.
+              </p>
+              <p>
                 Human language arrives as characters, words, documents, conversations, code files, diagrams
                 described by markup, and many other artifacts. A neural model, however, consumes arrays of
                 integers. Tokenization is the bridge: it turns raw text into a sequence
@@ -240,6 +248,14 @@
               <span class="section-number">02 / TRANSFORMER CORE</span>
               <h2>Self-attention: the computation that made modern LLMs possible</h2>
               <p>
+                Self-attention answers a precise question: for each token position, which other positions should
+                influence its representation, and by how much? This is the mechanism that lets a model connect a
+                pronoun to a noun, a function call to its arguments, or an instruction to a later answer. Read the
+                section as a gradual unpacking of that routing problem. Queries ask what a position is looking for,
+                keys describe what other positions offer, and values carry the information that will be mixed into
+                the next representation.
+              </p>
+              <p>
                 Before Transformers, sequence models were often recurrent or convolutional. Recurrence processes
                 tokens one step at a time and carries a hidden state forward; convolution processes local windows
                 and stacks layers to expand the receptive field. The Transformer replaces both with self-attention:
@@ -311,6 +327,14 @@
               <span class="section-number">03 / BLOCKS</span>
               <h2>Inside a Transformer block: residual streams, normalization, and MLPs</h2>
               <p>
+                A Transformer block is easier to understand if we treat it as a repeated editing step on a shared
+                representation stream. Attention moves information between positions, the MLP transforms features
+                inside each position, normalization keeps scales manageable, and residual connections preserve a
+                path for information and gradients. The block is not a bag of components. It is a carefully balanced
+                circuit that lets thousands of small updates accumulate without destroying the signal learned by
+                earlier layers.
+              </p>
+              <p>
                 A Transformer layer is usually built around a residual stream. Each submodule reads the current
                 hidden state, computes an update, and adds that update back. In simplified pre-normalization
                 notation,
@@ -374,6 +398,14 @@
             <section class="article-section" id="en-4">
               <span class="section-number">04 / ARCHITECTURES</span>
               <h2>Encoder, decoder, encoder-decoder: BERT, GPT, and the architecture family</h2>
+              <p>
+                The architecture family is best understood by asking which information each position is allowed to
+                see. Encoder-only models look bidirectionally and build representations for understanding tasks.
+                Decoder-only models look left-to-right and generate continuations. Encoder-decoder models separate
+                source understanding from target generation. BERT and GPT are not arbitrary names in a timeline;
+                they are design choices about attention masks, training objectives, and what kind of problem the
+                model is expected to solve.
+              </p>
               <p>
                 Transformer architecture is a family, not one model. Encoder-only models let every token attend
                 bidirectionally to every other token and are strong for representation tasks. Decoder-only models
@@ -445,6 +477,14 @@
             <section class="article-section" id="en-5">
               <span class="section-number">05 / PRE-TRAINING</span>
               <h2>Pre-training at scale: data, optimization, and scaling laws</h2>
+              <p>
+                Pre-training turns a Transformer architecture into a broadly capable base model by exposing it to
+                enormous amounts of text and repeatedly asking it to reduce prediction error. The key idea is that
+                scale changes the nature of what is learned: many capabilities are not hand-coded but emerge from
+                compressing diverse patterns in data. This section connects the training objective, dataset quality,
+                compute budget, and scaling laws so that model capability is seen as the result of a system of
+                constraints rather than as a mysterious property of size alone.
+              </p>
               <p>
                 Pre-training is the stage where a model learns broad patterns from massive corpora. The data may
                 include web text, books, code, academic writing, dialogue, documentation, and filtered synthetic
@@ -520,6 +560,14 @@
               <span class="section-number">06 / ALIGNMENT</span>
               <h2>From pretrained model to assistant: instruction tuning and preference learning</h2>
               <p>
+                A pretrained model is not yet an assistant because it has learned to continue text, not necessarily
+                to follow instructions, respect user intent, or refuse harmful requests. Alignment methods reshape
+                behavior by showing the model examples of useful responses and by optimizing it toward human
+                preferences. The important distinction is between capability and controllability: pre-training
+                creates broad knowledge and skills, while instruction tuning, RLHF, DPO, and safety data decide
+                how those skills are expressed in interaction.
+              </p>
+              <p>
                 Instruction tuning teaches a base model to map user requests to desired responses. The data may
                 include human-written demonstrations, curated task examples, multi-turn conversations, tool-use
                 traces, and synthetic instructions filtered by quality. Supervised fine-tuning minimizes the
@@ -588,6 +636,14 @@
               <span class="section-number">07 / INFERENCE</span>
               <h2>Inference: decoding, context windows, KV cache, and serving constraints</h2>
               <p>
+                Inference is where the probability model becomes a product experience. At each step the model
+                outputs a distribution over the next token; decoding chooses how deterministic or diverse the
+                generation should be; the context window determines what evidence is visible; and the KV cache
+                determines how efficiently repeated attention can be served. This section is not only about
+                algorithms but about latency, memory, cost, and reliability, because deployed LLM behavior is
+                shaped by the serving system around the model.
+              </p>
+              <p>
                 Inference is where a trained model becomes an interactive system. For a decoder-only LLM, the
                 model receives a context, computes logits for the next token, chooses a token according to a
                 decoding strategy, appends it, and repeats. Training predicts all positions in parallel because
@@ -643,6 +699,14 @@
             <section class="article-section" id="en-8">
               <span class="section-number">08 / INTERACTION</span>
               <h2>Prompting, reasoning, tool use, and agents</h2>
+              <p>
+                Prompting should be understood as temporary program design for a probabilistic model. We provide
+                instructions, examples, constraints, intermediate scratch space, or tool schemas so that the model
+                is more likely to follow a useful computation path. Reasoning and agents add loops around this
+                basic interaction: propose, check, call a tool, observe, revise, and stop. The model remains a
+                language model, but the surrounding procedure can turn one-shot text prediction into a controlled
+                problem-solving workflow.
+              </p>
               <p>
                 Prompting is programming with natural language, examples, constraints, and context. A prompt
                 defines the task, supplies input data, sets style or format, and may include demonstrations.
@@ -710,6 +774,14 @@
               <span class="section-number">09 / RETRIEVAL</span>
               <h2>Retrieval, grounding, memory, and knowledge that lives outside the weights</h2>
               <p>
+                Retrieval-augmented generation is motivated by a simple limitation: model weights cannot contain
+                every current, private, or verifiable fact that a user may need. Retrieval adds an external evidence
+                channel. The model still generates text, but it is asked to condition on retrieved documents,
+                citations, or memory records. This shifts part of the problem from pure generation to information
+                architecture: what should be indexed, how similarity is measured, how evidence is ranked, and how
+                the answer is constrained by what was actually retrieved.
+              </p>
+              <p>
                 LLM parameters store a compressed, static trace of training data. This is useful but limited.
                 Facts change, private documents are not in the training set, and source attribution is difficult.
                 Retrieval-Augmented Generation addresses this by searching an external collection at inference
@@ -771,6 +843,14 @@
             <section class="article-section" id="en-10">
               <span class="section-number">10 / EFFICIENCY</span>
               <h2>Fine-tuning, LoRA, quantization, distillation, and sparse experts</h2>
+              <p>
+                Efficiency methods answer the practical question of how to adapt or serve powerful models under
+                limited compute, memory, and latency. Fine-tuning changes behavior for a domain, LoRA changes a
+                small set of low-rank adapter weights, quantization stores numbers with fewer bits, distillation
+                trains a smaller model to imitate a larger one, and sparse experts activate only part of the
+                network per token. These methods are different, but they share one goal: preserve useful behavior
+                while reducing the resources required to obtain it.
+              </p>
               <p>
                 Once a base or instruction model exists, adapting it to a domain can be much cheaper than
                 retraining from scratch. Full fine-tuning updates all parameters and can be powerful, but it is
@@ -841,6 +921,14 @@
               <span class="section-number">11 / MULTIMODAL</span>
               <h2>Multimodal LLMs, long context, and systems that perceive more than text</h2>
               <p>
+                Once the model accepts images, audio, video, or very long documents, the central challenge becomes
+                representation alignment. The system must translate different signal types into a common space
+                where language can reason about them, while preserving details that matter for the task. Long
+                context creates a related pressure: the model may have access to more tokens, but access is not the
+                same as reliable use. This section explains why perception, memory, attention cost, and grounding
+                become system-level problems rather than simple input-format changes.
+              </p>
+              <p>
                 Multimodal LLMs connect language with images, audio, video, actions, or structured observations.
                 A common pattern uses a modality-specific encoder to turn non-text input into vectors, then maps
                 those vectors into the language model’s embedding space. The LLM can then attend to visual or
@@ -903,6 +991,14 @@
             <section class="article-section" id="en-12">
               <span class="section-number">12 / EVALUATION</span>
               <h2>Evaluation, risks, and a frontier map for understanding LLM systems</h2>
+              <p>
+                Evaluation is the place where all previous layers meet reality. A model may look fluent yet be
+                factually wrong, helpful yet insecure, powerful yet poorly calibrated, or impressive on benchmarks
+                while failing in a specific workflow. The goal of this final section is to replace vague judgments
+                such as "good model" with concrete questions: what task, what data, what risk, what user, what
+                tool boundary, what failure mode, and what monitoring plan? Frontier mechanisms should be read
+                through that lens rather than as isolated buzzwords.
+              </p>
               <p>
                 Evaluating LLMs is difficult because they are general interfaces. A benchmark may test math,
                 coding, factual recall, long-context retrieval, tool use, safety, multilingual ability, or
@@ -1007,6 +1103,9 @@
               <span class="section-number">01 / 语言建模</span>
               <h2>从文本到 token：大语言模型究竟学到了什么</h2>
               <p>
+                第一步要先去掉一个误导性的想象：LLM 并不是像人一样直接阅读句子。它读取的是 token 编号，把这些编号映射成向量，并学习在某个上下文之后哪些 token 更可能出现。因此本节从语言和计算的接口开始。如果 tokenization、嵌入和下一个 token 概率没有讲清楚，后面的注意力、预训练、提示词和幻觉都会像互不相关的技巧，而不是同一个学习目标的自然后果。
+              </p>
+              <p>
                 人类看到的语言是字符、词语、段落、对话、代码、表格、网页标记和各种文档结构；神经网络真正接收的却是整数数组。分词器负责完成这次转换：把原始文本变成序列
                 \(x_1,x_2,\ldots,x_T\)，其中每个 \(x_t\) 是词表中的一个编号。这个编号可能对应一个词、一个子词片段、一个标点、一个字节序列，或者一个特殊控制符。模型并不直接看见“意义”，它看见的是 token 身份、位置，以及这些 token 在大量语料中共同出现的统计结构。
               </p>
@@ -1045,6 +1144,9 @@
               <span class="section-number">02 / TRANSFORMER 核心</span>
               <h2>自注意力：让现代大语言模型成为可能的计算</h2>
               <p>
+                自注意力回答的是一个非常具体的问题：对每个 token 位置来说，其他哪些位置应该影响它的表示，影响程度是多少？这个机制让模型能够把代词连到名词，把函数调用连到参数，把前面的指令连到后面的回答。阅读本节时，可以把它看成对“信息路由问题”的逐步拆解：query 表示当前位置在寻找什么，key 表示其他位置能提供什么，value 则携带真正要混入下一层表示的信息。
+              </p>
+              <p>
                 在 Transformer 之前，序列模型常依赖循环网络或卷积网络。循环网络逐步处理 token，把隐藏状态向后传递；卷积网络处理局部窗口，通过堆叠层数扩大感受野。Transformer 用自注意力替代了这两者：序列中每个位置的表示，都可以直接与其他位置的表示比较并交换信息。因此，它在训练时更容易并行，也能在较短路径中表达长距离依赖，而不必让信息穿过很长的循环链。
               </p>
               <p>
@@ -1079,6 +1181,9 @@
               <span class="section-number">03 / 模块</span>
               <h2>Transformer 块内部：残差流、归一化与 MLP</h2>
               <p>
+                理解 Transformer 块的好方法，是把它看成对共享表示流的一次次编辑。注意力在不同位置之间搬运信息，MLP 在每个位置内部转换特征，归一化让尺度保持可控，残差连接则保留信息和梯度的通路。一个 block 不是零散组件的堆叠，而是一个平衡好的计算电路，让成千上万次小更新可以积累起来，同时不破坏前面层已经学到的信号。
+              </p>
+              <p>
                 一个 Transformer 层通常围绕残差流构建。每个子模块读取当前隐藏状态，计算一个更新量，再把更新量加回原状态。用简化的 pre-norm 记号表示：
               </p>
               <div class="equation">\[Y=X+\operatorname{Attn}(\operatorname{LN}(X)),\qquad Z=Y+\operatorname{MLP}(\operatorname{LN}(Y))\]<span class="equation-number">(3)</span></div>
@@ -1111,6 +1216,9 @@
             <section class="article-section" id="zh-4">
               <span class="section-number">04 / 架构族</span>
               <h2>编码器、解码器、编码器-解码器：BERT、GPT 与架构家族</h2>
+              <p>
+                理解架构家族，最好从“每个位置被允许看见哪些信息”开始。编码器模型双向观察上下文，适合构建理解任务的表示；解码器模型从左到右观察上下文，适合生成续写；编码器-解码器模型则把源输入理解和目标输出生成分开。BERT 和 GPT 并不是时间线上的随意名字，而是关于 attention mask、训练目标和问题类型的设计选择。
+              </p>
               <p>
                 Transformer 不是单一模型，而是一整个架构家族。编码器-only 模型允许每个 token 双向关注所有 token，适合表示学习和理解任务；解码器-only 模型使用因果掩码，让每个位置只能关注过去，适合开放式生成；编码器-解码器模型先编码输入序列，再用交叉注意力解码输出序列。BERT、GPT、T5、翻译系统和对话助手之间的许多差异，都源自掩码和训练目标的选择。
               </p>
@@ -1150,6 +1258,9 @@
               <span class="section-number">05 / 预训练</span>
               <h2>大规模预训练：数据、优化与 scaling laws</h2>
               <p>
+                预训练把 Transformer 架构变成具备广泛能力的基础模型：它让模型接触海量文本，并反复要求模型降低预测误差。核心思想是规模会改变模型学到的东西：许多能力不是手写进去的，而是来自对多样数据模式的压缩。本节把训练目标、数据质量、算力预算和 scaling laws 连起来，让模型能力被理解为一组系统约束的结果，而不是单纯由“参数多”带来的神秘性质。
+              </p>
+              <p>
                 预训练是模型从海量语料中学习广泛模式的阶段。数据可能包括网页、书籍、代码、学术文本、对话、文档、过滤后的合成数据和人工示例。数据并非可以任意替换。质量、去重、语言比例、时间新鲜度、领域混合、版权约束、有害内容过滤和 benchmark contamination，都会影响模型行为。即使 token 更多，如果重复、低质或与使用场景不匹配，模型也可能更差。
               </p>
               <p>
@@ -1186,6 +1297,9 @@
               <span class="section-number">06 / 对齐</span>
               <h2>从预训练模型到助手：指令调优与偏好学习</h2>
               <p>
+                预训练模型还不是助手，因为它学到的是续写文本，而不一定是遵循指令、理解用户意图或拒绝有害请求。对齐方法通过展示有用回答样例，并根据人类偏好优化模型，来重塑模型行为。这里最重要的区别是能力和可控性：预训练创造广泛知识与技能，而指令调优、RLHF、DPO 和安全数据决定这些技能在交互中如何被表达。
+              </p>
+              <p>
                 指令调优教基础模型把用户请求映射成期望回答。数据可能包括人工示范、任务样例、多轮对话、工具使用轨迹，以及经质量过滤的合成指令。监督微调会在给定指令时最大化目标回答的似然。这个简单步骤往往极大改变用户体验：模型不再只是延续任意文本，而开始表现得像能识别请求的助手。
               </p>
               <p>
@@ -1219,6 +1333,9 @@
               <span class="section-number">07 / 推理</span>
               <h2>推理：解码、上下文窗口、KV cache 与服务约束</h2>
               <p>
+                推理阶段是概率模型变成产品体验的地方。每一步模型都会输出下一个 token 的概率分布；解码决定生成更确定还是更多样；上下文窗口决定模型能看见哪些证据；KV cache 决定重复注意力能否被高效服务。本节不只是算法问题，也涉及延迟、内存、成本和可靠性，因为部署后的 LLM 行为会被模型外部的服务系统共同塑造。
+              </p>
+              <p>
                 推理阶段，训练好的模型才成为可交互系统。对 decoder-only LLM 来说，模型接收上下文，计算下一个 token 的 logits，用某种解码策略选择 token，把它追加到上下文，再重复这个过程。训练时，由于真实前文已知，所有位置可并行预测；生成时，每个新 token 都依赖模型刚生成的 token，因此天然是序列过程。这一差异解释了为什么服务延迟和吞吐需要专门工程。
               </p>
               <p>
@@ -1247,6 +1364,9 @@
             <section class="article-section" id="zh-8">
               <span class="section-number">08 / 交互</span>
               <h2>提示、推理、工具调用与智能体</h2>
+              <p>
+                提示词可以被理解为给概率模型临时编写的程序。我们提供指令、示例、约束、中间草稿空间或工具 schema，让模型更可能沿着有用的计算路径前进。推理和智能体则在这个基本交互外面加上循环：提出方案、检查、调用工具、观察、修订并停止。模型仍然是语言模型，但外部流程可以把一次性的文本预测变成可控的问题求解工作流。
+              </p>
               <p>
                 提示工程可以理解为用自然语言、示例、约束和上下文编程。一个 prompt 定义任务，提供输入数据，规定风格或格式，也可能包含演示样例。由于 LLM 条件化于可见序列，prompt 设计会改变采样分布。清晰指令、明确标准、分隔符和示例能减少歧义。但提示不能替代模型能力：一个能力不足的模型，不会因为提示写得礼貌而稳定完成复杂任务。
               </p>
@@ -1280,6 +1400,9 @@
               <span class="section-number">09 / 检索</span>
               <h2>检索、落地、记忆与存在于权重之外的知识</h2>
               <p>
+                RAG 的动机来自一个简单限制：模型权重不可能包含用户需要的所有最新、私有或可验证事实。检索为模型增加外部证据通道。模型仍然生成文本，但会被要求在检索文档、引用或记忆记录的条件下回答。这会把问题的一部分从纯生成转移到信息架构：应该索引什么，相似度如何定义，证据如何排序，回答如何受实际检索内容约束。
+              </p>
+              <p>
                 LLM 参数保存的是训练数据的压缩静态痕迹。这很有用，但有明显限制：事实会变化，私有文档不在训练集中，来源归因也很困难。Retrieval-Augmented Generation 通过在推理时搜索外部资料，并把相关段落加入 prompt 来缓解这些问题。模型随后同时使用权重中的参数化知识和检索上下文中的非参数知识回答。
               </p>
               <p>
@@ -1312,6 +1435,9 @@
             <section class="article-section" id="zh-10">
               <span class="section-number">10 / 效率</span>
               <h2>微调、LoRA、量化、蒸馏与稀疏专家</h2>
+              <p>
+                效率方法回答的是实践问题：如何在有限算力、内存和延迟约束下适配或服务强模型。微调改变模型在某个领域的行为；LoRA 只训练一小组低秩适配权重；量化用更少 bit 存储数值；蒸馏训练小模型模仿大模型；稀疏专家让每个 token 只激活网络的一部分。这些方法各不相同，但目标一致：在降低资源需求的同时尽量保留有用行为。
+              </p>
               <p>
                 当基础模型或指令模型已经存在后，面向某个领域适配通常比从零训练便宜得多。全量微调会更新所有参数，能力强，但代价高，也可能在窄数据集上破坏通用能力。参数高效微调只更新少量新增参数，让大部分权重冻结。对于拥有数十亿参数且需要适配许多任务的模型，这一点尤其重要。
               </p>
@@ -1349,6 +1475,9 @@
               <span class="section-number">11 / 多模态</span>
               <h2>多模态 LLM、长上下文与能感知更多对象的系统</h2>
               <p>
+                当模型开始接收图像、音频、视频或超长文档时，核心挑战变成表示对齐。系统必须把不同信号类型转换到语言可以推理的共同空间，同时保留任务真正需要的细节。长上下文带来类似压力：模型能接触更多 token，并不等于能可靠使用这些 token。本节解释为什么感知、记忆、注意力成本和落地，都不只是输入格式变化，而是系统级问题。
+              </p>
+              <p>
                 多模态 LLM 把语言与图像、音频、视频、动作或结构化观察连接起来。常见做法是用特定模态编码器把非文本输入变成向量，再把这些向量映射到语言模型的 embedding 空间。这样，LLM 就可以把视觉 token 或音频 token 与文本 token 一起注意力计算。核心问题是对齐：哪些视觉特征应对应哪些词语、指令、空间关系或动作？
               </p>
               <p>
@@ -1380,6 +1509,9 @@
             <section class="article-section" id="zh-12">
               <span class="section-number">12 / 评估</span>
               <h2>评估、风险与理解大模型系统的前沿地图</h2>
+              <p>
+                评估是前面所有层次与现实相遇的地方。一个模型可能很流畅但事实错误，可能很有帮助却不安全，可能能力很强但校准很差，也可能在 benchmark 上亮眼却在具体流程中失败。本节的目标，是把“好模型”这种模糊判断换成具体问题：什么任务、什么数据、什么风险、什么用户、什么工具边界、什么失败模式、什么监控计划？前沿机制也应放在这个视角下理解，而不是当成孤立热词。
+              </p>
               <p>
                 评估 LLM 很困难，因为它们是通用接口。一个 benchmark 可能测试数学、代码、事实回忆、长上下文检索、工具使用、安全、多语言或偏好跟随，但没有一个数字能覆盖全部。benchmark 会饱和，会进入训练数据，会奖励表面风格，也会漏掉真实部署中的失败。人工评估更丰富，但更慢、更贵，也受评价说明影响。
               </p>
