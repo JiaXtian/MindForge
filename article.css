@@ -365,6 +365,30 @@ html[lang="zh-CN"] .article-intro {
   margin-bottom: 0;
 }
 
+.depth-note {
+  margin-top: 52px;
+  border-top-width: 3px;
+}
+
+.depth-note h3 {
+  margin: 0 0 20px;
+  font-family: var(--serif);
+  font-size: clamp(22px, 1.9vw, 29px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+html[lang="zh-CN"] .depth-note h3 {
+  font-family: var(--sans);
+  font-style: normal;
+}
+
+.depth-note .equation {
+  margin: 28px 0;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+}
+
 .comparison-table {
   width: 100%;
   margin: 35px 0;

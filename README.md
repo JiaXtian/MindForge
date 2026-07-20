@@ -39,7 +39,9 @@ The first three long-form chapters are live. The remaining collections are inten
 
 ## Linear Algebra Chapter
 
-The first long-form chapter contains more than 17,000 Chinese characters and a complete English edition. Its 11 sections cover:
+The first long-form chapter contains more than 20,000 Chinese characters and a complete English edition. Every
+section includes a formal result or mechanism, a derivation, a plain-language interpretation, and an explicit
+failure boundary. Its 11 sections cover:
 
 1. Scalars, vectors, vector spaces, basis, and coordinates
 2. Matrices as linear transformations
@@ -55,7 +57,9 @@ The first long-form chapter contains more than 17,000 Chinese characters and a c
 
 ## Probability Chapter
 
-The third long-form chapter contains more than 12,000 Chinese characters and a synchronized English edition. Its 12 sections cover:
+The third long-form chapter contains more than 15,000 Chinese characters and a synchronized English edition.
+Each section connects a theorem or guarantee to its assumptions, proof idea, practical meaning, and common
+misuse. Its 12 sections cover:
 
 1. Probability as the language of uncertainty in learning systems
 2. Random variables, distributions, expectation, and variance
@@ -72,7 +76,9 @@ The third long-form chapter contains more than 12,000 Chinese characters and a s
 
 ## LLM Chapter
 
-The LLM long-form chapter contains more than 12,000 Chinese characters and a synchronized English edition. Its 12 sections cover:
+The LLM long-form chapter contains more than 16,000 Chinese characters and a synchronized English edition.
+Each section grounds a model or systems claim in an objective, derivation, complexity argument, or probabilistic
+mechanism before translating it into plain language. Its 12 sections cover:
 
 1. Tokenization, next-token prediction, embeddings, perplexity, and compression
 2. Transformer self-attention, multi-head routing, and positional information
@@ -124,7 +130,7 @@ Then visit [http://localhost:8000](http://localhost:8000).
 Opening the HTML files directly also works, but a local server better matches GitHub Pages behavior.
 
 Before publishing article changes, verify that both language editions still contain matching sections,
-subsections, paragraphs, tables, and equations:
+subsections, paragraphs, tables, equations, and one rigorous checkpoint in every paired section:
 
 ```bash
 node scripts/check-content-parity.mjs

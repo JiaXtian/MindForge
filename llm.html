@@ -77,9 +77,9 @@
           practical AI systems.
         </p>
         <div class="article-meta reveal">
-          <span data-i18n="llmMetaUpdated">Updated June 2026</span>
+          <span data-i18n="llmMetaUpdated">Updated July 2026</span>
           <span data-i18n="llmMetaLevel">Transformer → Frontier Systems</span>
-          <span data-i18n="llmMetaTopics">12 chapters · 8 key equations</span>
+          <span data-i18n="llmMetaTopics">12 chapters · 20 core derivations</span>
         </div>
       </header>
 
@@ -151,12 +151,11 @@
 
           <div data-lang-content="en">
             <p class="article-intro">
-              A large language model is not a database that stores sentences, nor a hand-written reasoning
-              machine. It is a very large conditional probability model trained to predict and transform token
-              sequences, then shaped into an assistant through instruction data, preference learning, retrieval,
-              tools, and system design. This chapter begins with the Transformer, because almost every modern LLM
-              is a variation on that computation; it then follows the path from pre-training to deployment,
-              evaluation, safety, and frontier mechanisms.
+              This chapter explains an LLM as a chain of testable mechanisms rather than a list of fashionable
+              terms. Each major claim is tied to an objective, matrix operation, probabilistic factorization, or
+              systems constraint; each derivation is then translated into plain language and followed to its
+              failure boundary. The result is a working account of what Transformers compute, what post-training
+              changes, and what retrieval, tools, and deployment systems add beyond the weights.
             </p>
 
             <section class="article-section" id="en-1">
@@ -242,6 +241,15 @@
                 prompts, decoding, and evaluation. Understanding an LLM means tracking the whole pipeline, not
                 anthropomorphizing the final text.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Cross-entropy training is distribution matching, not sentence memorization</h3>
+                <p>Let \(p\) be the data distribution of the next token and \(q_\theta\) the model distribution. Expected negative log likelihood decomposes as \(H(p,q_\theta)=H(p)+D_{\mathrm{KL}}(p\|q_\theta)\). Since \(H(p)\) does not depend on \(\theta\) and KL divergence is nonnegative, the population optimum is \(q_\theta=p\) wherever the model family can represent \(p\).</p>
+                <div class="equation">\[-\mathbb{E}_{p}\log q_\theta(X)=H(p)+D_{\mathrm{KL}}(p\|q_\theta)\]</div>
+                <p>Every wrong probability assignment costs extra code length. Training repeatedly asks the model to compress the continuation distribution: predictable syntax is cheap, while uncertainty among several valid continuations must remain spread across them. Useful internal structure emerges because representing topic, syntax, reference, and intent reduces this coding cost across many contexts.</p>
+                <p>The theorem concerns the population distribution and a realizable optimum. Finite data, duplicated sources, model misspecification, and optimization error mean the learned \(q_\theta\) is not the true language distribution. Low average loss also permits confident local errors, so perplexity alone is not a guarantee of truth or reasoning.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-2">
@@ -321,6 +329,15 @@
                 compatible position handling, data, memory-efficient attention, and evaluation that checks whether
                 the model actually uses far-away information.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>The square-root scale keeps attention logits in a trainable range</h3>
+                <p>Assume query and key coordinates are independent, zero-mean, unit-variance random variables. Then \(q^\top k=\sum_{r=1}^{d_k}q_rk_r\) has variance \(d_k\). Dividing by \(\sqrt{d_k}\) makes the variance approximately one. Without scaling, logits grow with dimension, softmax saturates, and its Jacobian entries \(a_i(\delta_{ij}-a_j)\) approach zero.</p>
+                <div class="equation">\[\operatorname{Var}\!\left(\frac{q^\top k}{\sqrt{d_k}}\right)=\frac1{d_k}\sum_{r=1}^{d_k}\operatorname{Var}(q_rk_r)\approx1\]</div>
+                <p>The factor is not cosmetic. It keeps the competition among keys at a comparable temperature as head width changes. A saturated softmax behaves almost like a hard lookup before the model has learned a useful routing rule, leaving tiny gradients for alternatives.</p>
+                <p>The derivation uses simplifying independence and variance assumptions; trained representations do not obey them exactly. Normalization, initialization, and learned norms also affect logit scale. The result explains the design pressure, not a universal claim that every attention implementation must use precisely this factor.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-3">
@@ -393,6 +410,15 @@
                 may fit in a paper diagram, but the training run is a socio-technical system where data quality,
                 compute reliability, and measurement discipline are as important as the formula for attention.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Residual connections create an identity path for signals and gradients</h3>
+                <p>For a residual block \(x_{\ell+1}=x_\ell+F_\ell(x_\ell)\), its Jacobian is \(J_\ell=I+J_{F_\ell}\). Backpropagation multiplies gradients by products of these matrices. The identity term provides a direct path even when the learned branch is initially small; without it, repeated products of arbitrary Jacobians more readily shrink or explode.</p>
+                <div class="equation">\[\frac{\partial x_L}{\partial x_\ell}=\prod_{r=\ell}^{L-1}\left(I+J_{F_r}(x_r)\right)\]</div>
+                <p>The residual stream is a shared notebook. Each block reads the current state and writes a correction instead of rebuilding the representation from zero. This is why mechanistic descriptions often track information moving through the residual stream rather than assigning one complete meaning to each layer output.</p>
+                <p>An identity path does not guarantee stable deep training: if branch Jacobians are large or coherently amplify one direction, the product can still explode. Pre-normalization, initialization, optimizer settings, and residual scaling work together. Residual connections make optimization easier; they do not explain all learned computation.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-4">
@@ -472,6 +498,15 @@
                 encoder embeddings, a reranker may use a cross-encoder, and a decoder LLM may write the final
                 answer.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>GPT and BERT optimize different conditional factorizations</h3>
+                <p>A decoder models a normalized joint distribution by the chain rule, \(p(x_{1:T})=\prod_t p(x_t\mid x_{<t})\), using a causal mask. Masked-language modeling instead samples a mask set \(M\) and predicts masked tokens from visible tokens. Its usual factorized loss sums \(\log p(x_i\mid x_{\setminus M})\) for \(i\in M\), but does not by itself define the same left-to-right joint likelihood.</p>
+                <div class="equation">\[L_{\mathrm{GPT}}=-\sum_t\log p_\theta(x_t\mid x_{<t}),\qquad L_{\mathrm{BERT}}=-\mathbb{E}_M\sum_{i\in M}\log p_\theta(x_i\mid x_{\setminus M})\]</div>
+                <p>GPT learns to continue because every position practices prediction from the past. BERT learns context-sensitive representations because a missing token can use evidence from both sides. The architectural mask and training objective, not the names “encoder” and “decoder” alone, create these information flows.</p>
+                <p>Bidirectional context is advantageous for representation tasks but cannot be used unchanged for causal generation because it would reveal future tokens during training. Conversely, left-to-right training does not prevent a decoder from learning rich representations; it changes which conditionals are directly supervised.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-5">
@@ -554,6 +589,15 @@
                 instruction following, retrieval evidence, a tool result, or a rule imposed by the surrounding
                 application.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Compute-optimal scaling is a constrained allocation problem</h3>
+                <p>Suppose validation loss follows \(L(N,D)=L_\infty+aN^{-\alpha}+bD^{-\beta}\), where \(N\) is parameters and \(D\) training tokens, while compute is approximately \(C=kND\). Substituting \(D=C/(kN)\) and differentiating yields a power-law allocation: \(N\propto C^{\beta/(\alpha+\beta)}\) and \(D\propto C^{\alpha/(\alpha+\beta)}\).</p>
+                <div class="equation">\[N_*(C)\propto C^{\beta/(\alpha+\beta)},\qquad D_*(C)\propto C^{\alpha/(\alpha+\beta)}\]</div>
+                <p>A fixed compute budget can be spent on a larger model seeing fewer tokens or a smaller model seeing more. The optimum balances the marginal loss reduction from both. “Scale the model” is incomplete advice: undertraining an oversized network wastes capacity, while overtraining a tiny one eventually runs into a parameter bottleneck.</p>
+                <p>The exponents are empirical, regime-dependent summaries, not physical constants. Data quality, architecture, repeated tokens, inference requirements, and post-training can shift the economically best point. Smooth average scaling curves also do not imply every downstream capability improves smoothly or safely.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-6">
@@ -630,6 +674,15 @@
                 “better” in a single dimension. It is which deployment context, user population, and risk profile
                 the model is being optimized for, and how that optimization is measured after release.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>DPO is a likelihood model for pairwise preferences with a reference anchor</h3>
+                <p>Under the Bradley-Terry model, the probability that response \(y_w\) is preferred to \(y_l\) is \(\sigma(r(x,y_w)-r(x,y_l))\). KL-regularized reward maximization implies an optimal policy with \(r(x,y)=\beta\log(\pi(y\mid x)/\pi_{\mathrm{ref}}(y\mid x))+\text{constant}\). Substitution eliminates the explicit reward model and gives the DPO logistic objective.</p>
+                <div class="equation">\[L_{\mathrm{DPO}}=-\log\sigma\!\left(\beta\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\rm ref}(y_w\mid x)}-\beta\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\rm ref}(y_l\mid x)}\right)\]</div>
+                <p>DPO increases the preferred response's log-odds relative to a reference while decreasing the rejected response's. The reference acts like an elastic tether: it allows behavior to move but charges for drifting too far from the pretrained policy.</p>
+                <p>The derivation inherits assumptions about pairwise preference noise and the KL-regularized optimum. Preference labels can be inconsistent, culturally narrow, or reward superficial style. Optimizing their likelihood does not prove alignment with truth, long-term consequences, or every user's values.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-7">
@@ -694,6 +747,15 @@
                 notebooks, databases, and checklists rather than relying on raw memory. The art is deciding what
                 belongs in the prompt, what belongs in external storage, and what must be recomputed.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Autoregressive inference trades quadratic prefill for linear cached decoding per token</h3>
+                <p>For a sequence of length \(T\), full self-attention forms \(QK^\top\) and costs \(O(T^2d)\). During generation, past keys and values do not change, so caching them lets the new query attend to \(T\) stored positions in \(O(Td)\) work instead of recomputing the whole prefix. Memory grows as \(O(LThd_h)\) across layers and heads.</p>
+                <div class="equation">\[K_{\le t}=[K_{<t};k_t],\quad V_{\le t}=[V_{<t};v_t],\quad y_t=\operatorname{softmax}(q_tK_{\le t}^{\top}/\sqrt{d_h})V_{\le t}\]</div>
+                <p>Prefill reads the prompt in parallel; decoding then advances one token at a time. The KV cache is a computational memory of past attention inputs, not a semantic long-term memory. It saves repeated arithmetic but consumes substantial device memory, often limiting batch size before raw compute is exhausted.</p>
+                <p>Caching does not make attention constant-time in context length: each new query still reads the cache unless sparse or compressed mechanisms are used. Quantized caches, grouped-query attention, paging, and eviction change the systems tradeoff and may alter quality.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-8">
@@ -768,6 +830,15 @@
                 deploy. The frontier is less about a model “wanting” things and more about building reliable
                 control loops around probabilistic language-model decisions.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Tool-using agents are partially observed control loops</h3>
+                <p>An agent can be modeled with hidden environment state \(s_t\), observation \(o_t\), action \(a_t\), transition \(P(s_{t+1}\mid s_t,a_t)\), and utility. Because the model sees observations rather than full state, a sufficient decision statistic is a belief \(b_t(s)=P(s_t=s\mid o_{\le t},a_{<t})\), updated after each tool result.</p>
+                <div class="equation">\[b_{t+1}(s')\propto P(o_{t+1}\mid s')\sum_sP(s'\mid s,a_t)b_t(s)\]</div>
+                <p>A useful agent is not one enormous prompt. It is a loop that forms a provisional state estimate, chooses an action, observes the consequence, and revises the estimate. Tests, search results, compiler errors, and database rows matter because they change the belief state with external evidence.</p>
+                <p>Most LLM agents do not maintain an exact Bayesian belief or solve a POMDP; the formalism is a diagnostic ideal. Long loops can accumulate mistaken summaries, prompt injection, and irreversible actions. Verification and permission boundaries must be properties of the surrounding system, not hopes about fluent reasoning.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-9">
@@ -838,6 +909,15 @@
                 interface to memory, not the entire memory system. Durable knowledge belongs in systems that can
                 be inspected, updated, and governed.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Retrieval-augmented generation introduces a latent evidence variable</h3>
+                <p>Let \(z\) denote a retrieved passage. A probabilistic RAG model writes \(p(y\mid x)=\sum_z p_\eta(z\mid x)p_\theta(y\mid x,z)\). Retrieval ranks evidence, while generation conditions on it. In practice only a top-\(k\) subset is summed or concatenated, so the system uses a biased approximation to this marginal.</p>
+                <div class="equation">\[p(y\mid x)\approx\sum_{z\in\operatorname{TopK}(x)}p_\eta(z\mid x)\,p_\theta(y\mid x,z)\]</div>
+                <p>The retriever decides what the model gets a chance to know; the generator decides how to use it. A missing relevant document is a recall failure. A present document that is ignored, misread, or cited for an unsupported claim is a generation or attribution failure. Separating these stages makes debugging concrete.</p>
+                <p>More context is not monotonic improvement. Distractors can lower answer quality, embeddings may miss exact identifiers or negation, and retrieved text may be malicious. Grounding requires evidence-aware generation and citation checks; placing a passage in the prompt does not force faithfulness.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-10">
@@ -915,6 +995,15 @@
                 parallelism, batch shape, and routing distribution determine whether MoE is actually efficient in
                 a real serving environment.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>LoRA constrains the update, not the base transformation, to low rank</h3>
+                <p>For a frozen weight \(W_0\in\mathbb{R}^{d_{\rm out}\times d_{\rm in}}\), LoRA learns \(\Delta W=BA\) with \(B\in\mathbb{R}^{d_{\rm out}\times r}\), \(A\in\mathbb{R}^{r\times d_{\rm in}}\), and \(r\ll\min(d_{\rm in},d_{\rm out})\). The trainable count falls from \(d_{\rm out}d_{\rm in}\) to \(r(d_{\rm out}+d_{\rm in})\), while the adapted layer computes \(W_0x+BAx\).</p>
+                <div class="equation">\[\operatorname{rank}(\Delta W)\le r,\qquad \frac{\#\Delta W}{\#W_0}=\frac{r(d_{\rm out}+d_{\rm in})}{d_{\rm out}d_{\rm in}}\]</div>
+                <p>The adapter learns a small set of new input directions and how to write their effects into the output. It is effective when the task-specific change lives near a low-dimensional subspace, even though the frozen base matrix itself remains full rank and expressive.</p>
+                <p>Low-rank adaptation is a capacity assumption, not a theorem that every behavior change is low rank. Too small \(r\), poorly chosen target modules, or a large domain shift can underfit. Quantization is a separate approximation: it reduces numerical precision and memory, but its error can interact with adapter training.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-11">
@@ -986,6 +1075,15 @@
                 verification. The frontier is not a single monolithic brain but a stack of learned models and
                 engineered interfaces that coordinate under constraints.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Rotary position encoding makes relative displacement appear in a dot product</h3>
+                <p>RoPE applies an orthogonal rotation \(R_m\) determined by position \(m\) to each query and key. Because planar rotations satisfy \(R_m^\top R_n=R_{n-m}\), their dot product depends on relative displacement: \((R_mq)^\top(R_nk)=q^\top R_{n-m}k\). Different coordinate pairs rotate at different frequencies.</p>
+                <div class="equation">\[(R_mq)^\top(R_nk)=q^\top R_m^\top R_nk=q^\top R_{n-m}k\]</div>
+                <p>Position is not appended as a separate label; it changes the phase with which content directions meet. The same query-key pattern can therefore score differently at different separations, while the algebra naturally exposes relative distance.</p>
+                <p>RoPE does not guarantee reliable extrapolation beyond trained lengths. High-frequency phases wrap, attention may rely on absolute training ranges, and long contexts still face retrieval and optimization failures. Rescaling schemes change phase growth but must be evaluated, not assumed to create unlimited memory.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-12">
@@ -1082,6 +1180,15 @@
                 </p>
               </div>
               <div class="chapter-divider">End of chapter 02</div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Log loss is a strictly proper score, so honesty is optimal in expectation</h3>
+                <p>For an event with true probability \(p\) and reported probability \(q\), expected log loss is \(-p\log q-(1-p)\log(1-q)=H(p)+D_{\mathrm{KL}}(\operatorname{Bern}(p)\|\operatorname{Bern}(q))\). It is uniquely minimized at \(q=p\). Proper scoring rules reward calibrated probability reports rather than only correct top-one labels.</p>
+                <div class="equation">\[\mathbb{E}[\ell_{\log}(q,Y)]-\mathbb{E}[\ell_{\log}(p,Y)]=D_{\mathrm{KL}}(p\|q)\ge0\]</div>
+                <p>Accuracy treats 0.51 and 0.99 as the same prediction when both choose the same label. Log loss does not: confident errors are expensive. This matters for LLM routing, abstention, and safety because a system must distinguish “likely” from “barely preferred,” not merely emit a winner.</p>
+                <p>Properness is a population property and does not automatically calibrate a finite neural model under distribution shift. Token probabilities are also not direct probabilities that an entire answer is true. Evaluation must measure the unit of uncertainty that the product actually uses and include adversarial and subgroup slices.</p>
+              </div>
             </section>
 
             <footer class="article-end">
@@ -1096,7 +1203,7 @@
 
           <div data-lang-content="zh" hidden>
             <p class="article-intro">
-              大语言模型不是简单记住句子的数据库，也不是由人工写满规则的推理机器。它首先是一个巨大的条件概率模型：把文本切成 token，在高维空间里不断更新表示，并学习在给定上下文时下一个 token 应该如何分布；随后，它又通过指令数据、偏好学习、检索、工具、系统提示和安全策略，被塑造成可交互的 AI 助手。本章从 Transformer 出发，因为现代 LLM 的绝大多数关键机制都可以还原到这个计算骨架；之后再一路进入预训练、对齐、推理服务、RAG、智能体、多模态、效率优化、评估与前沿技术。
+              本章不把大语言模型写成一串流行术语，而是把它拆成一条可验证的机制链：每个关键结论都落到目标函数、矩阵运算、概率分解或系统约束上；每段推导随后转译成通俗语言，并继续追问它在什么条件下失效。最终要得到的是一份能用于分析真实系统的说明：Transformer 究竟计算什么，后训练改变什么，以及检索、工具与部署系统在模型权重之外补上了什么。
             </p>
 
             <section class="article-section" id="zh-1">
@@ -1138,6 +1245,15 @@
               <p>
                 说“大模型理解语言”容易产生误解，因为这句话可能暗示人类式体验、目标或意识。更稳妥的技术说法是：模型学习了对预测和转换语言有用的高维表示。这些表示可以支持翻译、摘要、编程、计划和类似推理的行为，但仍然高度依赖数据、提示、解码方式和评估环境。理解 LLM，不是把最终输出人格化，而是追踪从 token、表示、目标函数到系统设计的完整链条。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>交叉熵训练是在匹配分布，而不是背诵句子</h3>
+                <p>设 \(p\) 为真实的下一 token 分布，\(q_\theta\) 为模型分布。期望负对数似然可分解为 \(H(p,q_\theta)=H(p)+D_{\mathrm{KL}}(p\|q_\theta)\)。\(H(p)\) 与参数无关，KL 散度非负，所以当模型族能表示 \(p\) 时，总体最优解就是 \(q_\theta=p\)。</p>
+                <div class="equation">\[-\mathbb{E}_{p}\log q_\theta(X)=H(p)+D_{\mathrm{KL}}(p\|q_\theta)\]</div>
+                <p>每一次错误的概率分配都会增加编码长度。训练反复要求模型压缩后续分布：可预测的语法应使用更短编码，多个合理续写之间的不确定性则必须保留。主题、句法、指代与意图之所以形成内部结构，是因为它们能在大量上下文中共同降低编码代价。</p>
+                <p>定理讨论总体分布和可实现的最优点。有限数据、重复语料、模型设定错误与优化误差都会使学到的 \(q_\theta\) 偏离真实分布。平均 loss 很低也允许局部自信犯错，因此困惑度不等于事实性或推理能力保证。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-2">
@@ -1175,6 +1291,15 @@
               <p>
                 位置设计对长上下文尤其重要。绝对学习位置向量可能难以外推到训练长度之外；相对位置和旋转位置方法让距离关系更显式，常更适合扩展，但训练分布和注意力实现仍然关键。长上下文 LLM 不是简单把最大长度数字改大就能得到的；它需要匹配的位置机制、长文本数据、节省显存的注意力实现，以及能检验模型是否真的使用远处信息的评估。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>平方根缩放让注意力分数保持在可训练范围</h3>
+                <p>假设 query 与 key 各坐标独立、均值为零、方差为一，则 \(q^\top k=\sum_{r=1}^{d_k}q_rk_r\) 的方差为 \(d_k\)。除以 \(\sqrt{d_k}\) 后方差约为一。若不缩放，维度越大分数越大，softmax 趋于饱和，其 Jacobian 元素 \(a_i(\delta_{ij}-a_j)\) 接近零。</p>
+                <div class="equation">\[\operatorname{Var}\!\left(\frac{q^\top k}{\sqrt{d_k}}\right)=\frac1{d_k}\sum_{r=1}^{d_k}\operatorname{Var}(q_rk_r)\approx1\]</div>
+                <p>这个因子不是装饰，而是让不同 head 宽度下的 key 竞争保持相近温度。尚未学到有效路由规则时，饱和 softmax 已像硬查找，只给其他候选极小梯度，训练会困难。</p>
+                <p>推导使用了独立与方差假设，训练后的表示不会严格满足。归一化、初始化和学到的向量范数也影响分数尺度。它解释了设计压力，并不意味着所有注意力实现都必须机械使用同一因子。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-3">
@@ -1211,6 +1336,15 @@
               <p>
                 规模会让问题发生质变。小 Transformer 可以在单卡上训练，并像普通模型一样调试；前沿 LLM 则需要数据管线、容错机制、集群调度、数值监控、评估闸门和严密的 checkpoint 管理。架构图可能很简洁，但真正的训练运行是一个社会技术系统：数据质量、算力可靠性和度量纪律，和注意力公式本身同样重要。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>残差连接为信号和梯度建立恒等通路</h3>
+                <p>对残差块 \(x_{\ell+1}=x_\ell+F_\ell(x_\ell)\)，Jacobian 为 \(J_\ell=I+J_{F_\ell}\)。反向传播会连乘这些矩阵。恒等项在学习分支初始较小时仍提供直接路径；没有它，任意 Jacobian 的长连乘更容易持续缩小或爆炸。</p>
+                <div class="equation">\[\frac{\partial x_L}{\partial x_\ell}=\prod_{r=\ell}^{L-1}\left(I+J_{F_r}(x_r)\right)\]</div>
+                <p>可以把残差流看成共享笔记本：每个 block 读取当前状态并写入修正，而不是从零重建表示。因此分析模型机制时，追踪信息如何沿残差流移动，通常比给每一层指定一个完整含义更可靠。</p>
+                <p>恒等通路不保证深层训练必然稳定；若分支 Jacobian 很大或持续放大同一方向，乘积仍会爆炸。预归一化、初始化、优化器与残差缩放共同作用。残差连接降低优化难度，但不能解释全部学习机制。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-4">
@@ -1252,6 +1386,15 @@
               <p>
                 没有哪一类架构在所有场景中绝对更好。通用助手以 decoder-only 为主，是因为几乎所有交互都能转写成条件生成；编码器模型仍然适合 embedding、检索、重排和分类；编码器-解码器在输入和输出角色明显不同的任务中依然自然。真实系统常组合多种模型：用编码器做向量检索，用 cross-encoder 做重排，再由解码器 LLM 生成最终回答。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>GPT 与 BERT 优化的是不同条件分解</h3>
+                <p>decoder 用链式法则建立归一化联合分布 \(p(x_{1:T})=\prod_t p(x_t\mid x_{<t})\)，并用因果 mask 隐藏未来。遮蔽语言模型随机选择集合 \(M\)，根据可见 token 预测缺失位置；常见损失累加 \(\log p(x_i\mid x_{\setminus M})\)，但它本身并不定义与自回归相同的从左到右联合似然。</p>
+                <div class="equation">\[L_{\mathrm{GPT}}=-\sum_t\log p_\theta(x_t\mid x_{<t}),\qquad L_{\mathrm{BERT}}=-\mathbb{E}_M\sum_{i\in M}\log p_\theta(x_i\mid x_{\setminus M})\]</div>
+                <p>GPT 会续写，是因为每个位置都练习用过去预测下一步；BERT 产生上下文表示，是因为缺失 token 可同时利用左右证据。真正决定信息流的是 mask 与训练目标，而不只是“编码器”“解码器”名称。</p>
+                <p>双向上下文适合表示任务，却不能原样用于因果生成，否则训练时会偷看未来。反过来，从左到右训练也不妨碍 decoder 学到丰富表示；它改变的是哪些条件概率得到直接监督。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-5">
@@ -1291,6 +1434,15 @@
               <p>
                 这个区分非常关键。许多令人惊讶的助手行为，并不是预训练目标单独产生的。它们来自指令调优、偏好优化、安全策略、检索、解码设置和产品约束。评估 LLM 时，应追问某个行为来自栈的哪一层：基础模型知识、指令跟随能力、检索证据、工具结果，还是外围应用强加的规则。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>算力最优缩放本质上是受约束的资源分配</h3>
+                <p>假设验证损失满足 \(L(N,D)=L_\infty+aN^{-\alpha}+bD^{-\beta}\)，其中 \(N\) 是参数量、\(D\) 是 token 数，算力近似 \(C=kND\)。代入 \(D=C/(kN)\) 并求导，可得幂律分配：\(N\propto C^{\beta/(\alpha+\beta)}\)，\(D\propto C^{\alpha/(\alpha+\beta)}\)。</p>
+                <div class="equation">\[N_*(C)\propto C^{\beta/(\alpha+\beta)},\qquad D_*(C)\propto C^{\alpha/(\alpha+\beta)}\]</div>
+                <p>固定算力既可训练更大但少看数据的模型，也可让较小模型多看数据。最优点平衡两边的边际收益。只说“增大模型”并不完整：过大的模型训练不足会浪费容量，过小的模型重复看数据最终又受参数瓶颈限制。</p>
+                <p>指数是特定实验区间的经验摘要，不是物理常数。数据质量、架构、重复 token、推理成本与后训练都会改变经济最优点。平均 scaling 曲线平滑，也不表示每项下游能力都会平滑且安全地增长。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-6">
@@ -1327,6 +1479,15 @@
               <p>
                 这带来所谓对齐税：提升安全性的约束可能降低某些原始 benchmark 表现，或让模型不够直接；反过来，移除约束可能提升表面能力，却增加风险。正确问题不是“对齐是否让模型在单一维度上更好”，而是模型针对什么部署场景、用户群体和风险剖面优化，以及上线后如何持续测量这种优化。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>DPO 是带参考锚点的成对偏好似然模型</h3>
+                <p>Bradley–Terry 模型令 \(y_w\) 优于 \(y_l\) 的概率为 \(\sigma(r(x,y_w)-r(x,y_l))\)。带 KL 正则的奖励最大化给出 \(r(x,y)=\beta\log(\pi(y\mid x)/\pi_{\mathrm{ref}}(y\mid x))+\text{常数}\)。代回后可消去显式奖励模型，得到 DPO 的 logistic 目标。</p>
+                <div class="equation">\[L_{\mathrm{DPO}}=-\log\sigma\!\left(\beta\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\rm ref}(y_w\mid x)}-\beta\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\rm ref}(y_l\mid x)}\right)\]</div>
+                <p>DPO 提高偏好回答相对参考模型的对数优势，同时降低被拒回答。参考模型像一根弹性绳：允许行为移动，却对偏离预训练策略过远收取代价。</p>
+                <p>推导继承了成对偏好噪声与 KL 正则最优策略的假设。偏好标签可能互相矛盾、文化范围狭窄，或奖励表面风格。拟合偏好似然并不能证明模型已对齐事实、长期后果或所有用户价值。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-7">
@@ -1359,6 +1520,15 @@
               <p>
                 实际系统常显式管理上下文：总结旧对话、检索相关记忆、压缩工具输出、删除冗余文本，或在 prompt 外维护结构化状态。这不是 LLM 的弱点，而是系统设计原则。人类团队也依赖笔记、数据库和清单，而不只靠原始记忆。关键在于决定哪些信息放进 prompt，哪些放进外部存储，哪些必须重新计算。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>自回归推理用二次 prefill 换取逐 token 的线性缓存计算</h3>
+                <p>长度 \(T\) 的完整自注意力形成 \(QK^\top\)，代价为 \(O(T^2d)\)。生成时过去的 key 与 value 不再变化，缓存它们后，新 query 只需读取 \(T\) 个已存位置，工作量为 \(O(Td)\)，无需重算整个前缀；跨层与 head 的缓存内存约为 \(O(LThd_h)\)。</p>
+                <div class="equation">\[K_{\le t}=[K_{<t};k_t],\quad V_{\le t}=[V_{<t};v_t],\quad y_t=\operatorname{softmax}(q_tK_{\le t}^{\top}/\sqrt{d_h})V_{\le t}\]</div>
+                <p>prefill 并行读取提示，decode 再一次前进一步。KV cache 是过去注意力输入的计算记忆，不是语义上的长期记忆。它节省重复运算，却占用大量显存，往往先于算力限制批量大小。</p>
+                <p>缓存并未让注意力对上下文长度变成常数时间；除非使用稀疏或压缩机制，每个新 query 仍需读取缓存。量化缓存、分组 query 注意力、分页与淘汰策略会改变系统权衡，也可能影响质量。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-8">
@@ -1394,6 +1564,15 @@
               <p>
                 因此，好智能体需要脚手架：明确目标、预算、检查点、可逆操作、日志、权限边界和进度评估。自主性不是非黑即白。系统可以被允许读文件但不能删除，可以起草邮件但不能发送，可以运行测试但不能部署。前沿问题并不是模型是否“想做事”，而是如何围绕概率语言模型决策，构建可靠的控制循环。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>工具型智能体是一个部分可观测的控制循环</h3>
+                <p>可用隐藏环境状态 \(s_t\)、观测 \(o_t\)、动作 \(a_t\)、转移 \(P(s_{t+1}\mid s_t,a_t)\) 与效用描述智能体。模型只能看到观测而非完整状态，因此理想的决策统计量是信念 \(b_t(s)=P(s_t=s\mid o_{\le t},a_{<t})\)，并在每次工具结果后更新。</p>
+                <div class="equation">\[b_{t+1}(s')\propto P(o_{t+1}\mid s')\sum_sP(s'\mid s,a_t)b_t(s)\]</div>
+                <p>有效智能体不是一段无限长提示，而是形成暂时状态估计、选择动作、观察后果并修正估计的循环。测试、搜索结果、编译错误和数据库记录有价值，是因为它们用外部证据改变了信念状态。</p>
+                <p>多数 LLM 智能体并不维护精确贝叶斯信念，也不真正求解 POMDP；该形式是诊断理想。长循环会累积错误摘要、提示注入与不可逆操作。验证和权限边界必须由外围系统保证，不能寄希望于流畅推理。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-9">
@@ -1430,6 +1609,15 @@
               <p>
                 好记忆系统应提供控制。用户需要知道系统记住了什么，能够更新或删除它，也能理解它何时影响输出。技术上，记忆需要检索策略、摘要、冲突解决、保留规则和隐私边界。LLM 是记忆的接口，而不是整个记忆系统。持久知识应放在可检查、可更新、可治理的系统中。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>检索增强生成引入了一个潜在证据变量</h3>
+                <p>令 \(z\) 表示检索段落，概率化 RAG 可写成 \(p(y\mid x)=\sum_z p_\eta(z\mid x)p_\theta(y\mid x,z)\)。检索器排列证据，生成器在证据条件下作答。实际系统只对 top-\(k\) 子集求和或拼接，因此使用的是该边缘化的有偏近似。</p>
+                <div class="equation">\[p(y\mid x)\approx\sum_{z\in\operatorname{TopK}(x)}p_\eta(z\mid x)\,p_\theta(y\mid x,z)\]</div>
+                <p>检索器决定模型有机会知道什么，生成器决定怎样使用。相关文档缺失是召回失败；文档已经出现却被忽略、误读或用于不支持的引用，是生成或归因失败。分开两个阶段，调试才会具体。</p>
+                <p>上下文更多不一定更好。干扰文档会降低质量，向量检索可能漏掉精确编号或否定关系，检索文本还可能含恶意指令。可靠 grounding 需要证据感知生成与引用检查，把段落放入提示并不会强迫模型忠实。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-10">
@@ -1469,6 +1657,15 @@
               <p>
                 稀疏激活改变了我们讨论模型大小的方式。一个模型可能拥有数千亿总参数，但每个 token 只激活其中一部分。总参数代表存储容量，活跃参数代表每 token 计算量；二者都重要。显存、带宽、expert 并行、batch 形状和路由分布，共同决定 MoE 在真实服务环境中是否真的高效。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>LoRA 限制的是参数更新的秩，而不是基础变换的秩</h3>
+                <p>对冻结权重 \(W_0\in\mathbb{R}^{d_{\rm out}\times d_{\rm in}}\)，LoRA 学习 \(\Delta W=BA\)，其中 \(B\in\mathbb{R}^{d_{\rm out}\times r}\)、\(A\in\mathbb{R}^{r\times d_{\rm in}}\)，且 \(r\) 很小。可训练参数从 \(d_{\rm out}d_{\rm in}\) 降到 \(r(d_{\rm out}+d_{\rm in})\)，适配层计算 \(W_0x+BAx\)。</p>
+                <div class="equation">\[\operatorname{rank}(\Delta W)\le r,\qquad \frac{\#\Delta W}{\#W_0}=\frac{r(d_{\rm out}+d_{\rm in})}{d_{\rm out}d_{\rm in}}\]</div>
+                <p>适配器学习少量新的输入方向，以及如何把这些方向的影响写入输出。只要任务变化接近低维子空间，它就很有效；冻结的基础矩阵仍保持满秩表达能力。</p>
+                <p>低秩适配是一种容量假设，并非所有行为变化都低秩的定理。\(r\) 太小、目标模块选择不当或领域偏移很大都会欠拟合。量化是另一种近似：它降低数值精度和内存，其误差可能与适配训练相互作用。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-11">
@@ -1504,6 +1701,15 @@
               <p>
                 这些系统模糊了 LLM 与智能体的边界。语言模型提供灵活计划和解释，外部模块提供感知、控制、记忆和验证。前沿方向并不是一个单体大脑，而是在约束下协同工作的学习模型和工程接口栈。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>旋转位置编码让相对位移直接进入点积</h3>
+                <p>RoPE 对位置 \(m\) 的 query 和 key 施加正交旋转 \(R_m\)。平面旋转满足 \(R_m^\top R_n=R_{n-m}\)，因此点积只通过相对位移进入：\((R_mq)^\top(R_nk)=q^\top R_{n-m}k\)。不同坐标对使用不同旋转频率。</p>
+                <div class="equation">\[(R_mq)^\top(R_nk)=q^\top R_m^\top R_nk=q^\top R_{n-m}k\]</div>
+                <p>位置不是作为独立标签附加，而是改变内容方向相遇时的相位。同一 query-key 模式会因间距不同获得不同分数，同时代数结构自然显露相对距离。</p>
+                <p>RoPE 不保证超出训练长度后仍可靠。高频相位会绕回，注意力可能依赖训练时绝对范围，长上下文仍有检索与优化失败。缩放方案改变相位增长，但必须实测，不能假定它创造无限记忆。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-12">
@@ -1557,6 +1763,15 @@
                 </p>
               </div>
               <div class="chapter-divider">第二章完</div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>对数损失是严格 proper scoring rule，诚实报告在期望上最优</h3>
+                <p>事件真实概率为 \(p\)、报告为 \(q\) 时，期望对数损失是 \(-p\log q-(1-p)\log(1-q)=H(p)+D_{\mathrm{KL}}(\operatorname{Bern}(p)\|\operatorname{Bern}(q))\)，在且仅在 \(q=p\) 时最小。Proper scoring rule 奖励校准的概率报告，而不只奖励 top-one 标签正确。</p>
+                <div class="equation">\[\mathbb{E}[\ell_{\log}(q,Y)]-\mathbb{E}[\ell_{\log}(p,Y)]=D_{\mathrm{KL}}(p\|q)\ge0\]</div>
+                <p>准确率把都选对标签的 0.51 与 0.99 当成一样，对数损失不会：自信犯错代价很高。对 LLM 路由、拒答与安全而言，系统必须区分“很可能”和“勉强胜出”，而不是只输出赢家。</p>
+                <p>Properness 是总体性质，不会自动让有限神经模型在分布偏移下校准。token 概率也不等于整段回答为真的概率。评估必须针对产品实际使用的不确定性单位，并覆盖对抗样本与子群切片。</p>
+              </div>
             </section>
 
             <footer class="article-end">

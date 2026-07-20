@@ -48,10 +48,21 @@ function summarize(content, language) {
     tables: countMatches(content, /<table\b/g),
     tableRows: countMatches(content, /<tr\b/g),
     equations: countMatches(content, /class="equation"/g),
+    depthNotes: countMatches(content, /class="insight-box depth-note"/g),
     sectionIds: [...content.matchAll(new RegExp(`id="${language}-(\\d+)"`, "g"))].map(
       (match) => Number(match[1]),
     ),
   };
+}
+
+function extractSection(content, language, index) {
+  const marker = `<section class="article-section" id="${language}-${index}">`;
+  const start = content.indexOf(marker);
+  const end = content.indexOf("</section>", start);
+  if (start === -1 || end === -1) {
+    throw new Error(`Could not locate section ${language}-${index}`);
+  }
+  return content.slice(start, end);
 }
 
 function validateArticle(article) {
@@ -68,9 +79,37 @@ function validateArticle(article) {
   const chineseCharacters = countMatches(chinese.replace(/<[^>]+>/g, " "), /[\u4e00-\u9fff]/g);
   const errors = [];
 
-  for (const key of ["sections", "h2", "h3", "paragraphs", "tables", "tableRows", "equations"]) {
+  for (const key of [
+    "sections",
+    "h2",
+    "h3",
+    "paragraphs",
+    "tables",
+    "tableRows",
+    "equations",
+    "depthNotes",
+  ]) {
     if (en[key] !== zh[key]) {
       errors.push(`${key}: English ${en[key]}, Chinese ${zh[key]}`);
+    }
+  }
+
+  if (en.depthNotes !== article.sections || zh.depthNotes !== article.sections) {
+    errors.push(
+      `rigorous checkpoints: expected ${article.sections}, ` +
+        `English ${en.depthNotes}, Chinese ${zh.depthNotes}`,
+    );
+  }
+
+  for (let index = 1; index <= article.sections; index += 1) {
+    const enSection = summarize(extractSection(english, "en", index), "en");
+    const zhSection = summarize(extractSection(chinese, "zh", index), "zh");
+    for (const key of ["h3", "paragraphs", "tables", "tableRows", "equations", "depthNotes"]) {
+      if (enSection[key] !== zhSection[key]) {
+        errors.push(
+          `section ${index} ${key}: English ${enSection[key]}, Chinese ${zhSection[key]}`,
+        );
+      }
     }
   }
 
@@ -114,7 +153,8 @@ if (failures.length > 0) {
   for (const result of results) {
     console.log(
       `${result.article.label}: ${result.article.sections} sections, ` +
-        `${result.en.h3} subsections, ${result.en.paragraphs} paragraphs, ` +
+        `${result.en.h3} subsections, ${result.en.depthNotes} rigorous checkpoints, ` +
+        `${result.en.paragraphs} paragraphs, ` +
         `${result.englishWords} English words, ${result.chineseCharacters} Chinese characters.`,
     );
   }

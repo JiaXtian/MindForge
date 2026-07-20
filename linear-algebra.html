@@ -71,9 +71,9 @@
           space, decompositions reveal structure, and modern models turn geometry into learning.
         </p>
         <div class="article-meta reveal">
-          <span data-i18n="metaUpdated">Updated June 2026</span>
+          <span data-i18n="metaUpdated">Updated July 2026</span>
           <span data-i18n="metaLevel">Foundations → Advanced</span>
-          <span data-i18n="metaTopics">11 chapters · 40+ equations</span>
+          <span data-i18n="metaTopics">11 chapters · 24 core derivations</span>
         </div>
       </header>
 
@@ -141,8 +141,10 @@
 
           <div data-lang-content="en">
             <p class="article-intro">
-              Linear algebra is not merely a prerequisite for machine learning. It is the medium in which data,
-              models, and learning become visible.
+              This chapter treats each result twice: first as a mathematical claim whose assumptions and
+              derivation can be checked, then as a geometric or physical idea that can be pictured. The goal is
+              not to collect matrix formulas, but to know why they are true, what information they preserve, and
+              exactly where their machine-learning interpretation stops being valid.
             </p>
 
             <section class="article-section" id="en-1">
@@ -272,6 +274,15 @@
                   creates no information; it changes how clearly the existing structure can be seen.
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Why a basis gives one and only one coordinate vector</h3>
+                <p><strong>Basis representation theorem.</strong> If \(B=(b_1,\ldots,b_n)\) is a basis of \(V\), every \(x\in V\) has a unique representation \(x=\sum_i c_i b_i\). Existence follows from spanning. If both \(c\) and \(d\) represent \(x\), subtraction gives \(\sum_i(c_i-d_i)b_i=0\); linear independence forces every \(c_i-d_i=0\).</p>
+                <div class="equation">\[Bc=Bd\;\Longrightarrow\;B(c-d)=0\;\Longrightarrow\;c=d\]</div>
+                <p>A basis is a lossless measuring grid. Spanning says every point receives an address; independence says one point never receives two addresses. Without spanning, some objects cannot be described. Without independence, coefficients stop having an unambiguous meaning.</p>
+                <p>Feature coefficients inherit this condition. With collinear features, the data do not identify unique coefficients even when predictions barely change. The model has found several coordinate descriptions of almost the same direction, not two separately established causes.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-2">
@@ -380,6 +391,15 @@
                   reorganization with nonlinear folding until distinctions that were difficult in the original
                   space become simple in the new representation.
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>A linear map is determined by where it sends a basis</h3>
+                <p><strong>Determination theorem.</strong> Let \(T:V\to W\) be linear and \(B=(b_1,\ldots,b_n)\) a basis of \(V\). Once \(T(b_i)\) are fixed, \(T\) is fixed everywhere: for \(x=\sum_i c_i b_i\), linearity requires \(T(x)=\sum_i c_iT(b_i)\). Conversely, any assignment of basis images extends to exactly one linear map.</p>
+                <div class="equation">\[T\!\left(\sum_{i=1}^{n}c_i b_i\right)=\sum_{i=1}^{n}c_iT(b_i)\]</div>
+                <p>Matrix column \(i\) is the fate of coordinate axis \(i\). Once those few arrows are known, linearity forces the motion of the entire grid. Composition becomes matrix multiplication because the second map acts on every transformed basis vector and distributes over their combination.</p>
+                <p>A dense layer has exactly this rigidity: it applies one linear rule everywhere. Without a nonlinearity or input-dependent operation, it cannot bend different regions differently. Stacked linear layers add no expressive power because \(W_3W_2W_1\) is still one matrix.</p>
               </div>
             </section>
 
@@ -500,6 +520,15 @@
                   or SVD. In software, “divide by a matrix” should mean “solve a system.”
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Rank-nullity accounts for preserved and lost information</h3>
+                <p><strong>Rank-nullity theorem.</strong> For \(A:\mathbb{R}^n\to\mathbb{R}^m\), \(\dim\ker A+\dim\operatorname{im}A=n\). Choose a basis \(u_1,\ldots,u_k\) of the null space and extend it to an input basis with \(v_{k+1},\ldots,v_n\). The images \(Av_{k+1},\ldots,Av_n\) form a basis of the image, whose dimension is \(n-k\).</p>
+                <div class="equation">\[\underbrace{\operatorname{nullity}(A)}_{\text{invisible directions}}+\underbrace{\operatorname{rank}(A)}_{\text{observable directions}}=n\]</div>
+                <p>Projecting a three-dimensional object onto a wall preserves two independent directions and loses depth. Rank counts what survives; nullity counts motions the measurement cannot see. Together they account for every independent input direction.</p>
+                <p>If \(Xv=0\), parameters \(\beta\) and \(\beta+v\) produce identical training predictions. More optimization cannot distinguish them because the data contain no evidence along \(v\). Regularization chooses among equivalent solutions; it does not create missing information.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-4">
@@ -595,6 +624,15 @@
                   or gradient-based methods; it redefines the scale of the space.
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>The projection theorem turns approximation into orthogonality</h3>
+                <p><strong>Projection theorem.</strong> For a finite-dimensional subspace \(S\subseteq\mathbb{R}^n\) and any \(x\), there is a unique \(s^*\in S\) minimizing \(\|x-s\|_2\), characterized by \(x-s^*\perp S\). If \(Q\) is an orthonormal basis matrix for \(S\), then \(s^*=QQ^\top x\). For \(s=s^*+u\), Pythagoras gives \(\|x-s\|^2=\|x-s^*\|^2+\|u\|^2\).</p>
+                <div class="equation">\[x=\underbrace{QQ^\top x}_{\text{explained}}+\underbrace{(I-QQ^\top)x}_{\text{residual}},\qquad Q^\top(I-QQ^\top)x=0\]</div>
+                <p>The closest point is obtained by making the leftover error point in a direction the subspace cannot express. If the residual still had a component inside the subspace, that component could be removed. This is the geometric heart of least squares.</p>
+                <p>In regression, the fit lies in \(\operatorname{col}(X)\) and the residual is orthogonal to every feature column. This training-set fact does not prove causality or guarantee harmless residuals on new data.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-5">
@@ -683,6 +721,15 @@
                 Positive definiteness unifies the ideas that energy is nonnegative, distance is coherent, and
                 local optimization curvature points upward.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>The spectral theorem separates a quadratic form into independent energies</h3>
+                <p><strong>Spectral theorem.</strong> Every real symmetric matrix \(A=A^\top\) has an orthonormal eigenbasis and admits \(A=Q\Lambda Q^\top\). Eigenvectors \(u,v\) for distinct eigenvalues are orthogonal because \(u^\top Av=\lambda_vu^\top v\) and \((Au)^\top v=\lambda_uu^\top v\), so \((\lambda_v-\lambda_u)u^\top v=0\).</p>
+                <div class="equation">\[x^\top Ax=(Q^\top x)^\top\Lambda(Q^\top x)=\sum_{i=1}^{n}\lambda_i z_i^2,\qquad z=Q^\top x\]</div>
+                <p>In the eigenbasis, coupled cross-terms become independent one-dimensional contributions. Eigenvectors are the matrix's natural axes; eigenvalues measure energy, variance, or curvature along them. Positive definiteness means precisely that every eigenvalue is positive.</p>
+                <p>Covariance PCA, Hessians, precision matrices, and graph Laplacians exploit this view. Symmetry is essential: a nonsymmetric matrix may lack a full real eigenbasis or be unstable. SVD is the more reliable geometry for arbitrary rectangular maps.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-6">
@@ -784,6 +831,15 @@
                   causes or be dominated by outliers. It is an optimal linear coordinate under a stated
                   criterion, not a guarantee of causal meaning or human interpretability.
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Eckart-Young explains exactly why truncated SVD is optimal</h3>
+                <p><strong>Eckart-Young-Mirsky theorem.</strong> If \(A=U\operatorname{diag}(\sigma_1,\ldots,\sigma_r)V^\top\) with descending singular values, then among matrices \(B\) of rank at most \(k\), \(A_k=\sum_{i=1}^{k}\sigma_i u_iv_i^\top\) minimizes both spectral and Frobenius error. The unavoidable errors are \(\sigma_{k+1}\) and \(\sum_{i>k}\sigma_i^2\), respectively.</p>
+                <div class="equation">\[A_k=\arg\min_{\operatorname{rank}(B)\le k}\|A-B\|_F,\qquad \|A-A_k\|_F^2=\sum_{i=k+1}^{r}\sigma_i^2\]</div>
+                <p>SVD orders independent input-output patterns by strength. A rank-\(k\) model has only \(k\) channels, so assigning them to the largest singular values preserves the most squared signal. The theorem gives the best possible linear rank-\(k\) reconstruction and quantifies the loss.</p>
+                <p>The guarantee depends on the norm and linear reconstruction. Small Frobenius error need not preserve rare classes, causal variables, or downstream accuracy. PCA may discard a low-variance direction carrying the label; optimal compression is not automatically optimal representation.</p>
               </div>
             </section>
 
@@ -889,6 +945,15 @@
                   distributions, aiming for equal steps in predictive behavior rather than equal steps in raw
                   parameter coordinates.
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Taylor's theorem states what gradients and Hessians actually promise</h3>
+                <p><strong>Second-order Taylor expansion.</strong> If \(f:\mathbb{R}^d\to\mathbb{R}\) has continuous second derivatives near \(x\), then \(f(x+h)=f(x)+\nabla f(x)^\top h+\tfrac12h^\top H(x)h+o(\|h\|^2)\). The gradient represents every directional derivative; the Hessian gives the first-order change of the gradient.</p>
+                <div class="equation">\[D_uf(x)=\lim_{t\to0}\frac{f(x+tu)-f(x)}{t}=\nabla f(x)^\top u,\qquad \max_{\|u\|=1}D_uf(x)=\|\nabla f(x)\|\]</div>
+                <p>Cauchy-Schwarz gives \(\nabla f^\top u\le\|\nabla f\|\|u\|\), with equality when \(u\) follows the gradient, so the negative gradient is locally steepest descent. The Hessian says whether the local bowl is narrow, flat, or saddle-shaped.</p>
+                <p>These statements are local. A large learning rate can leave the Taylor neighborhood, and a positive semidefinite Hessian at one point does not make a neural loss globally convex. Optimization repeatedly rebuilds a local map; it does not possess the whole terrain.</p>
               </div>
             </section>
 
@@ -1004,6 +1069,15 @@
                 original column space. Linear algebra specifies the fitted subspace; statistics determines
                 whether that finite-sample subspace represents the population.
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>The normal equations expose both the solution and its weakness</h3>
+                <p><strong>Least-squares characterization.</strong> Minimizing \(L(\beta)=\|X\beta-y\|_2^2\) gives \(\nabla L=2X^\top(X\beta-y)=0\), hence \(X^\top X\beta=X^\top y\). Full column rank makes \(X^\top X\) positive definite and the minimizer unique. Otherwise the minimizers form an affine set and \(X^+y\) selects the minimum-norm member.</p>
+                <div class="equation">\[\hat\beta=(X^\top X)^{-1}X^\top y,\qquad \hat y=X\hat\beta=P_{\operatorname{col}(X)}y\]</div>
+                <p>Algebra and geometry are one argument: differentiation says the gradient vanishes; geometry says the residual is perpendicular to every column of \(X\). The fit is the shadow of \(y\) on the model's reachable subspace, while coefficients are coordinates used to produce it.</p>
+                <p>Computing the displayed inverse is poor numerical practice because \(\kappa(X^\top X)=\kappa(X)^2\). QR or SVD solves least squares more reliably and reveals rank deficiency. A symbolically correct formula can still suggest an unstable algorithm.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-9">
@@ -1143,6 +1217,15 @@
                   variation until the final layer needs only a simple hyperplane. Depth comes from repeatedly
                   reshaping space; learning comes from using error to decide how that space should be reshaped.
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Attention is a data-dependent mixing matrix with a rank bottleneck</h3>
+                <p>For one head, \(Q=XW_Q\), \(K=XW_K\), \(V=XW_V\), and \(A=\operatorname{softmax}(QK^\top/\sqrt{d_k})\) row-wise. Each row of \(A\) is nonnegative and sums to one, so \(AV\) forms convex combinations of value vectors. Before softmax, \(\operatorname{rank}(QK^\top)\le d_k\), regardless of sequence length.</p>
+                <div class="equation">\[Y=AV,\quad A_{ij}=\frac{e^{q_i^\top k_j/\sqrt{d_k}}}{\sum_{\ell}e^{q_i^\top k_\ell/\sqrt{d_k}}},\quad \sum_jA_{ij}=1\]</div>
+                <p>Content chooses the averaging rule. A fixed convolution reuses local weights; attention recomputes weights from the current query and all keys. Values carry candidate content, while query-key geometry determines how much enters the residual stream.</p>
+                <p>An attention weight is a routing coefficient, not automatically a causal explanation, because value directions and later layers alter its effect. One head also cannot represent an arbitrary score matrix when \(d_k\ll T\); multiple heads ease but do not erase this bottleneck.</p>
               </div>
             </section>
 
@@ -1330,6 +1413,15 @@
                   linear algebra and machine learning.
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>The graph Laplacian measures disagreement along edges</h3>
+                <p><strong>Laplacian energy identity.</strong> For an undirected weighted graph with \(W=W^\top\), \(D_{ii}=\sum_jw_{ij}\), and \(L=D-W\), every vertex signal satisfies \(x^\top Lx=\tfrac12\sum_{i,j}w_{ij}(x_i-x_j)^2\ge0\). Expansion proves the identity, so \(L\) is positive semidefinite and the constant vector belongs to its null space.</p>
+                <div class="equation">\[x^\top Lx=\frac12\sum_{i,j}w_{ij}(x_i-x_j)^2,\qquad L\mathbf1=0\]</div>
+                <p>A low-energy signal changes little across strong edges; a high-energy signal makes neighbors disagree. This defines geometry without coordinates. The second-smallest eigenvector gives the smoothest nonconstant split and underlies spectral clustering.</p>
+                <p>Graph regularization assumes connected nodes should have similar representations. It can fail under heterophily, where neighbors systematically differ. The identity remains true; the modeling story that edge proximity implies semantic similarity is what breaks.</p>
+              </div>
             </section>
 
             <section class="article-section" id="en-11">
@@ -1461,6 +1553,15 @@
                 process that generated the data.
               </p>
               <div class="chapter-divider">End of chapter 01</div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">Rigorous checkpoint</span>
+                <h3>Condition numbers quantify sensitivity, not matrix size</h3>
+                <p><strong>First-order perturbation bound.</strong> For nonsingular \(Ax=b\), a small right-hand-side perturbation gives \(\delta x=A^{-1}\delta b\). In spectral norm, \(\|\delta x\|/\|x\|\le\kappa_2(A)\|\delta b\|/\|b\|\), where \(\kappa_2(A)=\sigma_{\max}(A)/\sigma_{\min}(A)\). Combine the submultiplicative norm bounds to obtain the result.</p>
+                <div class="equation">\[\frac{\|\delta x\|_2}{\|x\|_2}\le\underbrace{\frac{\sigma_{\max}(A)}{\sigma_{\min}(A)}}_{\kappa_2(A)}\frac{\|\delta b\|_2}{\|b\|_2}\]</div>
+                <p>A matrix is ill-conditioned when it almost flattens one direction. Recovering that component requires division by a tiny singular value, amplifying noise. Large entries are not the issue; unequal action across directions is. An orthogonal matrix has condition number one.</p>
+                <p>This separates existence, uniqueness, and reliable computation from noisy finite-precision data. Regularization stops trying to invert the weakest directions, accepting a little bias for a large reduction in variance and numerical amplification.</p>
+              </div>
             </section>
 
             <footer class="article-end">
@@ -1475,7 +1576,7 @@
 
           <div data-lang-content="zh" hidden>
             <p class="article-intro">
-              线性代数并不只是机器学习之前必须跨过的一门先修课。它就是数据、模型与学习过程得以被描述、被计算、被看见的语言。本章从传统线性代数的定义、定理、推导与计算出发，再逐步进入回归、降维、优化、神经网络和注意力机制；阅读时请始终同时追问符号的形状、空间中的动作、计算的稳定性以及现实对象的含义，并用具体例子反复验证。
+              本章把每个核心结论讲两遍：先把它写成条件明确、推导可检查的数学命题，再把它还原成可以想象的几何或物理图景。目标不是收集矩阵公式，而是弄清公式为什么成立、保留了什么信息，以及它在机器学习中的解释究竟到哪里为止。
             </p>
 
             <section class="article-section" id="zh-1">
@@ -1545,6 +1646,15 @@
                 <p>
                   学习表示的过程，常常就是寻找更好的坐标系：在原坐标里纠缠复杂的数据，换一个基以后可能变得稀疏、分离或近似线性。坐标改变了，信息没有凭空产生；真正改变的是问题被看见的方式。
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>为什么一组基会给出唯一的坐标</h3>
+                <p><strong>基表示定理。</strong>若 \(B=(b_1,\ldots,b_n)\) 是 \(V\) 的一组基，则任意 \(x\in V\) 都存在唯一表示 \(x=\sum_i c_i b_i\)。存在性来自张成。若 \(c,d\) 都表示 \(x\)，两式相减得 \(\sum_i(c_i-d_i)b_i=0\)；线性无关迫使每个 \(c_i-d_i=0\)。</p>
+                <div class="equation">\[Bc=Bd\;\Longrightarrow\;B(c-d)=0\;\Longrightarrow\;c=d\]</div>
+                <p>基是一套不丢信息的测量网格。张成性保证每个点都能获得地址，线性无关保证同一个点不会有两套地址。缺少张成性，有些对象无法描述；缺少独立性，系数就不再具有明确含义。</p>
+                <p>特征系数的解释也依赖这个条件。当特征共线时，即使预测几乎不变，数据也无法识别唯一系数。模型不是发现了两个独立原因，而是找到了同一个方向的多种近似坐标写法。</p>
               </div>
             </section>
 
@@ -1619,6 +1729,15 @@
                   一层网络 \(h=\sigma(Wx+b)\) 中，\(W\) 对输入空间进行旋转、拉伸、混合或投影，偏置 \(b\) 将整个空间平移，非线性函数
                   \(\sigma\) 再把空间弯折。深度网络可以理解为“线性重组—非线性弯折”的反复叠加，最终让原本难以分开的类别在新表示中变得容易分开。
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>线性映射完全由它怎样移动一组基决定</h3>
+                <p><strong>确定性定理。</strong>设 \(T:V\to W\) 为线性映射，\(B=(b_1,\ldots,b_n)\) 是 \(V\) 的一组基。一旦 \(T(b_i)\) 被确定，\(T\) 在整个空间上的行为也被确定：对 \(x=\sum_i c_i b_i\)，必有 \(T(x)=\sum_i c_iT(b_i)\)。反过来，任意指定基向量的像，都唯一延拓成一个线性映射。</p>
+                <div class="equation">\[T\!\left(\sum_{i=1}^{n}c_i b_i\right)=\sum_{i=1}^{n}c_iT(b_i)\]</div>
+                <p>矩阵第 \(i\) 列就是第 \(i\) 根坐标轴的去向。只要这些箭头确定，整张网格的变形就被线性性强制确定。复合映射成为矩阵乘法，是因为后一个映射作用于每个已变换的基向量，并对线性组合进行分配。</p>
+                <p>全连接层正利用这种刚性：它在各处执行同一线性规则。没有非线性或输入依赖操作时，它无法让不同区域以不同方式弯曲，因此堆叠线性层不会增加表达能力，\(W_3W_2W_1\) 仍只是一个矩阵。</p>
               </div>
             </section>
 
@@ -1699,6 +1818,15 @@
                   推导中写出逆矩阵很方便，但程序中不应为了求解方程显式计算逆。QR、Cholesky、LU 或 SVD 分解通常更快、更稳定。特别是正规方程会把条件数平方，数据病态时应优先使用 QR 或 SVD。数学上的“除以矩阵”，在计算机里应被理解为“求解线性系统”。
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>秩—零度定理是保留信息与丢失信息的守恒账本</h3>
+                <p><strong>秩—零度定理。</strong>对 \(A:\mathbb{R}^n\to\mathbb{R}^m\)，有 \(\dim\ker A+\dim\operatorname{im}A=n\)。先取零空间的基 \(u_1,\ldots,u_k\)，再将其扩充为输入空间的基。其余基向量的像 \(Av_{k+1},\ldots,Av_n\) 构成像空间的一组基，故像空间维数为 \(n-k\)。</p>
+                <div class="equation">\[\underbrace{\operatorname{nullity}(A)}_{\text{不可见方向}}+\underbrace{\operatorname{rank}(A)}_{\text{可观测方向}}=n\]</div>
+                <p>把三维物体投影到墙面，会保留两个独立方向并丢掉深度。秩计算活下来的方向，零度计算测量完全看不到的运动；两者共同记清每一个输入自由度去了哪里。</p>
+                <p>若 \(Xv=0\)，参数 \(\beta\) 与 \(\beta+v\) 产生完全相同的训练预测。再多优化也无法区分它们，因为数据沿 \(v\) 没有证据。正则化只能在等价解中选择，不能创造缺失信息。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-4">
@@ -1759,6 +1887,15 @@
                   “两个样本是否相近”不是脱离任务的客观事实。选择内积、范数或距离，相当于声明哪些变化重要、哪些变化可以忽略。特征缩放会改变几何，所以在基于距离、内积或梯度的方法中，标准化并不是表面预处理，而是在重新规定空间的尺度。
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>投影定理把最佳近似转化为残差正交</h3>
+                <p><strong>投影定理。</strong>对有限维子空间 \(S\subseteq\mathbb{R}^n\) 和任意 \(x\)，存在唯一 \(s^*\in S\) 使 \(\|x-s\|_2\) 最小，且 \(x-s^*\perp S\)。若 \(Q\) 的列是 \(S\) 的标准正交基，则 \(s^*=QQ^\top x\)。对 \(s=s^*+u\)，勾股定理给出 \(\|x-s\|^2=\|x-s^*\|^2+\|u\|^2\)。</p>
+                <div class="equation">\[x=\underbrace{QQ^\top x}_{\text{可解释部分}}+\underbrace{(I-QQ^\top)x}_{\text{残差}},\qquad Q^\top(I-QQ^\top)x=0\]</div>
+                <p>最近点并非靠遍历子空间找到，而是让剩余误差指向子空间无法表达的方向。若残差仍有子空间内的分量，就还能继续消掉它。这正是最小二乘的几何核心。</p>
+                <p>在线性回归中，拟合向量位于 \(\operatorname{col}(X)\)，残差与每一列特征正交。但这只是训练集上的代数事实，不能证明因果关系，也不能保证新数据上的残差同样无害。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-5">
@@ -1818,6 +1955,15 @@
                 在核方法中，合法核生成的 Gram 矩阵必须半正定；在高斯分布中，协方差正定才能定义非退化密度；在线性回归中，
                 \(X^\top X\) 半正定，加入 \(\lambda I\) 后变为正定，从而获得唯一、稳定的岭回归解。正定性把“能量不能为负”“距离必须合理”“优化应向上弯”这些不同直觉连接成同一个代数条件。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>谱定理把耦合的二次型拆成独立能量</h3>
+                <p><strong>谱定理。</strong>任意实对称矩阵 \(A=A^\top\) 都有一组标准正交特征基，并可写成 \(A=Q\Lambda Q^\top\)。不同特征值对应的 \(u,v\) 正交，因为 \(u^\top Av=\lambda_vu^\top v\)，同时 \((Au)^\top v=\lambda_uu^\top v\)，故 \((\lambda_v-\lambda_u)u^\top v=0\)。</p>
+                <div class="equation">\[x^\top Ax=(Q^\top x)^\top\Lambda(Q^\top x)=\sum_{i=1}^{n}\lambda_i z_i^2,\qquad z=Q^\top x\]</div>
+                <p>换到特征基后，交叉耦合变成若干独立的一维贡献。特征向量是矩阵最自然的坐标轴，特征值衡量沿轴的能量、方差或曲率。正定就是每个特征值都为正。</p>
+                <p>协方差 PCA、Hessian、精度矩阵与图拉普拉斯都利用这个视角。但对称性是关键；一般非对称矩阵可能没有完整实特征基或数值不稳，任意矩形映射更适合用 SVD 描述。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-6">
@@ -1882,6 +2028,15 @@
                 <p>
                   PCA 只根据二阶统计与线性投影寻找方差方向。一个主成分可能混合多个现实因素，也可能由异常值主导。它提供的是最优线性坐标，不保证具有因果含义或天然可解释性。解释必须回到数据生成过程与具体任务。
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>Eckart–Young 定理说明截断 SVD 为何真正最优</h3>
+                <p><strong>Eckart–Young–Mirsky 定理。</strong>若 \(A=U\operatorname{diag}(\sigma_1,\ldots,\sigma_r)V^\top\)，奇异值降序排列，则在秩不超过 \(k\) 的矩阵中，\(A_k=\sum_{i=1}^{k}\sigma_i u_iv_i^\top\) 同时最小化谱范数与 Frobenius 范数误差；不可避免的误差分别为 \(\sigma_{k+1}\) 与 \(\sum_{i>k}\sigma_i^2\)。</p>
+                <div class="equation">\[A_k=\arg\min_{\operatorname{rank}(B)\le k}\|A-B\|_F,\qquad \|A-A_k\|_F^2=\sum_{i=k+1}^{r}\sigma_i^2\]</div>
+                <p>SVD 按强弱排列独立的输入—输出模式。秩为 \(k\) 的模型只有 \(k\) 条通道，把它们留给最大奇异值，就保留最多平方信号。定理给出所有线性秩 \(k\) 重建中的最优解，并精确计算损失。</p>
+                <p>保证依赖所选范数和线性重建。Frobenius 误差小，不代表稀有类别、因果变量或下游准确率被保留。PCA 可能删除方差很小却决定标签的方向；最优压缩不自动等于最优任务表示。</p>
               </div>
             </section>
 
@@ -1958,6 +2113,15 @@
                   “最陡方向”依赖于怎样定义步长。欧氏度量下得到普通梯度；若参数采用不同度量，最陡方向会改变。自然梯度利用 Fisher 信息矩阵衡量模型分布的实际变化，试图让相同步长代表相近的概率分布变化，而不是相近的参数坐标变化。
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>Taylor 定理说明梯度与 Hessian 究竟承诺什么</h3>
+                <p><strong>二阶 Taylor 展开。</strong>若 \(f:\mathbb{R}^d\to\mathbb{R}\) 在 \(x\) 附近有连续二阶导数，则 \(f(x+h)=f(x)+\nabla f(x)^\top h+\tfrac12h^\top H(x)h+o(\|h\|^2)\)。梯度表示全部方向导数，Hessian 给出梯度的一阶变化。</p>
+                <div class="equation">\[D_uf(x)=\lim_{t\to0}\frac{f(x+tu)-f(x)}{t}=\nabla f(x)^\top u,\qquad \max_{\|u\|=1}D_uf(x)=\|\nabla f(x)\|\]</div>
+                <p>Cauchy–Schwarz 给出 \(\nabla f^\top u\le\|\nabla f\|\|u\|\)，同向时取等号，所以负梯度是局部最陡下降方向。Hessian 再说明局部碗形是狭窄、平坦还是鞍形。</p>
+                <p>这些结论都是局部的。过大学习率会跳出 Taylor 模型有效邻域；某一点 Hessian 半正定，也不代表神经网络损失全局凸。优化是在每一步重建局部地图，而不是掌握整张地形。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-8">
@@ -2032,6 +2196,15 @@
               <p>
                 异方差不会自动让系数有偏，但会使常规标准误失真；遗漏与特征相关的重要变量会破坏条件均值为零；训练分布与部署分布不同会让原列空间中的关系失效。线性代数告诉我们模型拟合了哪个子空间，统计假设则告诉我们从有限样本得到的这个子空间能否代表总体。二者缺一不可。
               </p>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>正规方程同时暴露了解的结构与计算弱点</h3>
+                <p><strong>最小二乘刻画。</strong>最小化 \(L(\beta)=\|X\beta-y\|_2^2\)，由 \(\nabla L=2X^\top(X\beta-y)=0\) 得 \(X^\top X\beta=X^\top y\)。若 \(X\) 列满秩，\(X^\top X\) 正定且极小值唯一；否则极小值构成仿射集合，\(X^+y\) 选择最小范数解。</p>
+                <div class="equation">\[\hat\beta=(X^\top X)^{-1}X^\top y,\qquad \hat y=X\hat\beta=P_{\operatorname{col}(X)}y\]</div>
+                <p>代数与几何是同一论证：微分说梯度为零，几何说残差与 \(X\) 每一列垂直。拟合向量是 \(y\) 在模型可达子空间上的影子，系数只是生成该影子的坐标。</p>
+                <p>直接计算公式中的逆通常不稳，因为 \(\kappa(X^\top X)=\kappa(X)^2\)。QR 或 SVD 求解更可靠，也能显露秩缺失。符号上正确的公式仍可能暗示数值上糟糕的算法。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-9">
@@ -2104,6 +2277,15 @@
                 <p>
                   分类器未必需要在原始空间画出复杂边界。前面的网络可以不断变换坐标，把任务相关因素拉开，把无关变化压缩，使最后一层只需一个简单超平面。深度来自多次重塑空间，学习来自根据误差决定怎样重塑。
                 </p>
+              </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>注意力是受秩约束、由数据决定的混合矩阵</h3>
+                <p>对一个头，令 \(Q=XW_Q\)、\(K=XW_K\)、\(V=XW_V\)，并逐行计算 \(A=\operatorname{softmax}(QK^\top/\sqrt{d_k})\)。\(A\) 每行非负且和为一，所以 \(AV\) 是 value 向量的凸组合。在 softmax 前，\(\operatorname{rank}(QK^\top)\le d_k\)，与序列长度无关。</p>
+                <div class="equation">\[Y=AV,\quad A_{ij}=\frac{e^{q_i^\top k_j/\sqrt{d_k}}}{\sum_{\ell}e^{q_i^\top k_\ell/\sqrt{d_k}}},\quad \sum_jA_{ij}=1\]</div>
+                <p>内容自己选择加权平均规则。固定卷积复用局部权重；注意力根据当前 query 与所有 key 重算权重。value 携带候选内容，query-key 几何决定每份候选有多少进入残差流。</p>
+                <p>注意力权重只是路由系数，并不自动等于因果解释，因为 value 方向和后续层会改变作用。当 \(d_k\ll T\) 时，一个头也无法表达任意分数矩阵；多头能缓解但不能抹掉这个瓶颈。</p>
               </div>
             </section>
 
@@ -2201,6 +2383,15 @@
                   数据给出空间中的点；特征工程与表示学习选择坐标；矩阵把一个表示变成另一个表示；内积和范数规定怎样比较；损失定义哪些输出更好；梯度把输出误差拉回参数空间；优化器沿某种度量更新参数；分解方法揭示其中最重要、最稳定或最危险的方向。这就是线性代数与机器学习的完整连接。
                 </p>
               </div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>图拉普拉斯度量边上的不一致程度</h3>
+                <p><strong>拉普拉斯能量恒等式。</strong>对无向加权图，设 \(W=W^\top\)、\(D_{ii}=\sum_jw_{ij}\)、\(L=D-W\)，则任意顶点信号满足 \(x^\top Lx=\tfrac12\sum_{i,j}w_{ij}(x_i-x_j)^2\ge0\)。展开即可证明，所以 \(L\) 半正定，常数向量位于其零空间。</p>
+                <div class="equation">\[x^\top Lx=\frac12\sum_{i,j}w_{ij}(x_i-x_j)^2,\qquad L\mathbf1=0\]</div>
+                <p>低能量信号在强连接边两端变化很小；高能量信号让邻居明显分歧。这样没有欧氏坐标也能定义几何。第二小特征值对应的特征向量给出最平滑的非常数切分，是谱聚类的基础。</p>
+                <p>图正则化假设相连节点应有相似表示。异配图中邻居往往不同，这个偏置会失败。数学恒等式仍正确，失败的是“边上接近意味着语义相似”这一建模故事。</p>
+              </div>
             </section>
 
             <section class="article-section" id="zh-11">
@@ -2258,6 +2449,15 @@
                 最后需要记住：线性模型并不等于简单模型，线性代数也不等于低维直线。高维线性空间可以表达极其丰富的结构，非线性模型也由大量局部线性近似和矩阵运算构成。真正的分界不在“有没有矩阵”，而在模型如何选择表示、如何组合线性结构与非线性结构、以及它对数据生成规律加入了什么假设。
               </p>
               <div class="chapter-divider">第一章完</div>
+
+              <div class="insight-box depth-note">
+                <span class="box-label">严谨推导</span>
+                <h3>条件数衡量敏感性，而不是矩阵元素有多大</h3>
+                <p><strong>一阶扰动界。</strong>对可逆系统 \(Ax=b\)，小扰动满足 \(\delta x=A^{-1}\delta b\)。在谱范数下，\(\|\delta x\|/\|x\|\le\kappa_2(A)\|\delta b\|/\|b\|\)，其中 \(\kappa_2(A)=\sigma_{\max}(A)/\sigma_{\min}(A)\)。把两个次乘性范数界合并即可证明。</p>
+                <div class="equation">\[\frac{\|\delta x\|_2}{\|x\|_2}\le\underbrace{\frac{\sigma_{\max}(A)}{\sigma_{\min}(A)}}_{\kappa_2(A)}\frac{\|\delta b\|_2}{\|b\|_2}\]</div>
+                <p>矩阵病态，是因为它几乎压扁某个方向。恢复该分量必须除以很小的奇异值，于是噪声被放大。问题不在元素大，而在各方向作用相差悬殊；正交矩阵即使剧烈旋转，条件数仍为一。</p>
+                <p>这区分了解是否存在、是否唯一、以及能否从含噪有限精度数据中可靠算出。正则化有意放弃对最弱方向的精确求逆，用少量偏差换取方差和数值放大的显著下降。</p>
+              </div>
             </section>
 
             <footer class="article-end">
