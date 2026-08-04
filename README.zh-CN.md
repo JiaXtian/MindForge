@@ -14,8 +14,6 @@ MindForge 是一个双语强化学习笔记与交互式实验平台。它将学�
 - 多臂老虎机实验室：[bandit.html](https://jiaxtian.github.io/MindForge/bandit.html)
 - 随机游走预测实验室：[prediction.html](https://jiaxtian.github.io/MindForge/prediction.html)
 - Mountain Car 控制实验室：[mountain-car.html](https://jiaxtian.github.io/MindForge/mountain-car.html)
-- 学习笔记：[notes.html](https://jiaxtian.github.io/MindForge/notes.html)
-- 可复用笔记模板：[note-template.html](https://jiaxtian.github.io/MindForge/note-template.html)
 
 ## 实验覆盖范围
 
@@ -79,8 +77,8 @@ Mountain Car 使用标准的确定性位置与速度动力学。由于引擎无�
 
 ## 笔记工作流
 
-笔记库目前有意保持为空。完成相应主题的学习后，可以基于 `note-template.html` 创建新章节。模板包含六个
-相互对应的中英文部分：
+笔记以源码文件维护，不再使用空白的公开网页。完成一个主题的学习后，将 [`NOTE_TEMPLATE.md`](NOTE_TEMPLATE.md)
+复制到 `notes/` 目录，修改副本文件名并替换其中的方括号占位内容。模板包含六个相互对应的中英文部分：
 
 1. 当前问题
 2. 定义、符号与假设
@@ -88,6 +86,8 @@ Mountain Car 使用标准的确定性位置与速度动力学。由于引擎无�
 4. 通俗直觉
 5. 可复现实验
 6. 错误、修正与开放问题
+
+请始终保持两种语言的章节顺序一致。可以先完成一种语言，但随后应将完整含义翻译到对应章节，不压缩技术内容。
 
 ## 设计与可访问性
 
@@ -112,8 +112,7 @@ MindForge/
 ├── prediction.js
 ├── mountain-car.html
 ├── mountain-car.js
-├── notes.html
-├── note-template.html
+├── NOTE_TEMPLATE.md
 ├── app.js
 ├── styles.css
 ├── rl.css

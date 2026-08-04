@@ -3,8 +3,6 @@ import { dirname, resolve } from "node:path";
 
 const pages = [
   "index.html",
-  "notes.html",
-  "note-template.html",
   "gridworld.html",
   "bandit.html",
   "prediction.html",
@@ -18,6 +16,8 @@ const removedPages = [
   "probability.html",
   "article.css",
   "scripts/check-content-parity.mjs",
+  "notes.html",
+  "note-template.html",
 ];
 
 const errors = [];
@@ -62,9 +62,11 @@ for (const file of pages) {
   }
 }
 
-const template = readFileSync("note-template.html", "utf8");
-const englishSections = (template.match(/id="en-[^"]+"/g) || []).length;
-const chineseSections = (template.match(/id="zh-[^"]+"/g) || []).length;
+const template = readFileSync("NOTE_TEMPLATE.md", "utf8");
+const englishTemplate = template.split("## English")[1]?.split("## 中文")[0] || "";
+const chineseTemplate = template.split("## 中文")[1] || "";
+const englishSections = (englishTemplate.match(/^### [1-6]\. /gm) || []).length;
+const chineseSections = (chineseTemplate.match(/^### [1-6]\. /gm) || []).length;
 if (englishSections !== 6 || chineseSections !== 6) {
   errors.push(
     "Note template must contain 6 paired sections; found English " +
@@ -107,6 +109,36 @@ for (const algorithm of ["qlearning", "sarsa", "expected", "lambda"]) {
   }
 }
 
+const home = readFileSync("index.html", "utf8");
+const homeLabCards = (
+  home.match(/<a class="module-card[^\"]*" href="(?:gridworld|bandit|prediction|mountain-car)\.html">/g) || []
+).length;
+if (homeLabCards !== 4) {
+  errors.push("Home page must expose exactly four laboratory cards; found " + homeLabCards);
+}
+for (const lab of ["gridworld", "bandit", "prediction", "mountain-car"]) {
+  if (!home.includes('href="' + lab + '.html"')) {
+    errors.push("Home page is missing direct access to " + lab + ".html");
+  }
+}
+for (const removedLink of ["notes.html", "note-template.html"]) {
+  if (home.includes(removedLink)) errors.push("Home page still references " + removedLink);
+}
+
+for (const [name, html] of [
+  ["gridworld.html", gridworld],
+  ["bandit.html", bandit],
+  ["prediction.html", prediction],
+  ["mountain-car.html", mountainCar],
+]) {
+  if (html.includes("guided-experiments") || html.includes("guidedExperimentsTitle")) {
+    errors.push(name + " still contains the guided experiments section");
+  }
+  if (/data-i18n="(?:grid|bandit|prediction|mountain)Hero(?:Title|Deck)"/.test(html)) {
+    errors.push(name + " still contains the removed promotional hero copy");
+  }
+}
+
 for (const requiredDetail of ["q-table-body", "transition-log", "update-equation"]) {
   if (!gridworld.includes('id="' + requiredDetail + '"')) {
     errors.push("Gridworld is missing detail visualization: " + requiredDetail);
@@ -115,8 +147,6 @@ for (const requiredDetail of ["q-table-body", "transition-log", "update-equation
 
 const publicFiles = [
   "index.html",
-  "notes.html",
-  "note-template.html",
   "gridworld.html",
   "bandit.html",
   "prediction.html",
@@ -124,6 +154,7 @@ const publicFiles = [
   "app.js",
   "README.md",
   "README.zh-CN.md",
+  "NOTE_TEMPLATE.md",
   "sitemap.xml",
 ];
 const forbiddenLegacyLinks = [
@@ -164,7 +195,7 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    "MindForge validation passed: 8 bilingual pages, 4 interactive labs, " +
+    "MindForge validation passed: 6 bilingual pages, 4 interactive labs, " +
       "7 Gridworld algorithms, 6 environments, 5 bandit strategies, 4 prediction methods, " +
       "4 Mountain Car controllers, and no legacy chapters.",
   );

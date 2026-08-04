@@ -50,12 +50,9 @@
     </header>
 
     <main id="main">
-      <header class="page-hero">
+      <header class="page-hero lab-page-hero">
         <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
-        <h1 class="reveal" data-i18n="predictionHeroTitle">See the difference between waiting and bootstrapping.</h1>
-        <p class="page-deck reveal" data-i18n="predictionHeroDeck">
-          Follow one random walk and compare when Monte Carlo, TD(0), n-step TD, and TD lambda move each state-value estimate.
-        </p>
+        <h1 class="reveal" data-i18n="predictionTitle">Random Walk Prediction Lab</h1>
       </header>
 
       <section class="lab-shell">
@@ -215,30 +212,6 @@
             <span id="episode-buffer-size">0 transitions</span>
           </div>
           <div class="episode-path" id="episode-path"></div>
-        </section>
-
-        <section class="guided-experiments">
-          <div class="card-heading">
-            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
-            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
-          </div>
-          <div class="experiment-grid">
-            <article>
-              <strong>01 / UPDATE TIME</strong>
-              <h3 data-i18n="predictionExperimentOneTitle">What is learned before the outcome is known?</h3>
-              <p data-i18n="predictionExperimentOneCopy">Single-step one episode with Monte Carlo, reset, then repeat with TD(0). Watch whether the value table changes before either terminal is reached.</p>
-            </article>
-            <article>
-              <strong>02 / BACKUP LENGTH</strong>
-              <h3 data-i18n="predictionExperimentTwoTitle">Where is the bias-variance compromise?</h3>
-              <p data-i18n="predictionExperimentTwoCopy">On the 19-state chain, compare n=1, 4, and 10 with the same α. Track update delay, bootstrap magnitude, and RMSE variability over 100 episodes.</p>
-            </article>
-            <article>
-              <strong>03 / TRACE DECAY</strong>
-              <h3 data-i18n="predictionExperimentThreeTitle">How far should one TD error travel?</h3>
-              <p data-i18n="predictionExperimentThreeCopy">Run TD(λ) with λ=0, 0.5, and 0.95. Single-step near a terminal and inspect how many earlier states retain meaningful eligibility.</p>
-            </article>
-          </div>
         </section>
 
         <div id="watch">

@@ -50,12 +50,9 @@
     </header>
 
     <main id="main">
-      <header class="page-hero">
+      <header class="page-hero lab-page-hero">
         <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
-        <h1 class="reveal" data-i18n="mountainHeroTitle">Build momentum before you can reach the goal.</h1>
-        <p class="page-deck reveal" data-i18n="mountainHeroDeck">
-          Control a car with insufficient engine force, then inspect how continuous position and velocity become a finite Q-table.
-        </p>
+        <h1 class="reveal" data-i18n="mountainTitle">Mountain Car Control Lab</h1>
       </header>
 
       <section class="lab-shell">
@@ -244,30 +241,6 @@
           <p class="small-copy" data-i18n="dynamicsCopy">
             The engine cannot climb the right hill directly. A successful policy first drives left, converts height into speed, and then accelerates right with enough momentum.
           </p>
-        </section>
-
-        <section class="guided-experiments">
-          <div class="card-heading">
-            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
-            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
-          </div>
-          <div class="experiment-grid">
-            <article>
-              <strong>01 / MOMENTUM</strong>
-              <h3 data-i18n="mountainExperimentOneTitle">Why does moving away from the goal help?</h3>
-              <p data-i18n="mountainExperimentOneCopy">After training, single-step from the valley and follow the engine arrows. The policy should push left before reversing right, trading position for velocity.</p>
-            </article>
-            <article>
-              <strong>02 / RESOLUTION</strong>
-              <h3 data-i18n="mountainExperimentTwoTitle">When does a finer state table become slower?</h3>
-              <p data-i18n="mountainExperimentTwoCopy">Train 50 episodes with 12×10 bins and again with 24×18 bins. Compare early goal rate and whether neighboring map cells learn consistent actions.</p>
-            </article>
-            <article>
-              <strong>03 / CREDIT</strong>
-              <h3 data-i18n="mountainExperimentThreeTitle">Do traces move terminal information faster?</h3>
-              <p data-i18n="mountainExperimentThreeCopy">Compare SARSA and SARSA(λ=0.85) using identical α, γ, and ε. Watch episode length and inspect how one TD error changes recent state-action pairs.</p>
-            </article>
-          </div>
         </section>
 
         <div id="watch">

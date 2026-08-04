@@ -28,9 +28,9 @@
       </a>
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="index.html" data-i18n="navHome">Home</a>
-        <a href="notes.html" data-i18n="navNotes">Notes</a>
         <a href="bandit.html" data-i18n="navBandit">Bandits</a>
         <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
+        <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
         <a href="#watch" data-i18n="whatToWatch">What to watch</a>
       </nav>
       <div class="header-actions">
@@ -50,13 +50,9 @@
     </header>
 
     <main id="main">
-      <header class="page-hero">
+      <header class="page-hero lab-page-hero">
         <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
-        <h1 class="reveal" data-i18n="gridHeroTitle">Make Bellman updates visible on a grid.</h1>
-        <p class="page-deck reveal" data-i18n="gridHeroDeck">
-          Choose an environment and algorithm, tune the hyperparameters, then step through changes in value,
-          policy, TD error, and trajectory.
-        </p>
+        <h1 class="reveal" data-i18n="gridTitle">Gridworld Control Lab</h1>
       </header>
 
       <section class="lab-shell">
@@ -266,30 +262,6 @@
               </thead>
               <tbody id="q-table-body"></tbody>
             </table>
-          </div>
-        </section>
-
-        <section class="guided-experiments">
-          <div class="card-heading">
-            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
-            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
-          </div>
-          <div class="experiment-grid">
-            <article>
-              <strong>01 / CLIFF SAFETY</strong>
-              <h3 data-i18n="gridExperimentOneTitle">Does the target account for exploration risk?</h3>
-              <p data-i18n="gridExperimentOneCopy">Use Cliff Walking with α=0.50 and ε=0.10. Train Q-learning and SARSA for 50 episodes each; compare the greedy arrows beside the cliff and inspect their latest targets.</p>
-            </article>
-            <article>
-              <strong>02 / MODEL REPLAY</strong>
-              <h3 data-i18n="gridExperimentTwoTitle">How much real experience can planning replace?</h3>
-              <p data-i18n="gridExperimentTwoCopy">Use Dyna Maze and compare 0, 10, and 30 planning steps. Hold α, γ, and ε fixed, then compare environment steps rather than total backups.</p>
-            </article>
-            <article>
-              <strong>03 / STOCHASTICITY</strong>
-              <h3 data-i18n="gridExperimentThreeTitle">Expected backups versus sampled accidents</h3>
-              <p data-i18n="gridExperimentThreeCopy">In Frozen Lake, run value iteration to convergence, then train Q-learning. The planner averages all slip outcomes while Q-learning sees only the accidents it samples.</p>
-            </article>
           </div>
         </section>
 

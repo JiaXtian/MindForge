@@ -28,7 +28,6 @@
       </a>
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="index.html" data-i18n="navHome">Home</a>
-        <a href="notes.html" data-i18n="navNotes">Notes</a>
         <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
         <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
         <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
@@ -51,13 +50,9 @@
     </header>
 
     <main id="main">
-      <header class="page-hero">
+      <header class="page-hero lab-page-hero">
         <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
-        <h1 class="reveal" data-i18n="banditHeroTitle">Make the exploration–exploitation choice visible.</h1>
-        <p class="page-deck reveal" data-i18n="banditHeroDeck">
-          Change each arm's true reward rate, then compare how three exploration strategies form estimates,
-          accumulate regret, and discover the best action.
-        </p>
+        <h1 class="reveal" data-i18n="banditTitle">Multi-Armed Bandit Lab</h1>
       </header>
 
       <section class="lab-shell">
@@ -232,30 +227,6 @@
             </div>
           </div>
         </div>
-
-        <section class="guided-experiments">
-          <div class="card-heading">
-            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
-            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
-          </div>
-          <div class="experiment-grid">
-            <article>
-              <strong>01 / STATIONARY</strong>
-              <h3 data-i18n="banditExperimentOneTitle">Which strategy spends exploration deliberately?</h3>
-              <p data-i18n="banditExperimentOneCopy">Keep the default stationary means, enable five-strategy comparison, and run 500 pulls. Compare UCB confidence scores, Thompson samples, and cumulative regret.</p>
-            </article>
-            <article>
-              <strong>02 / DRIFT</strong>
-              <h3 data-i18n="banditExperimentTwoTitle">What breaks when old evidence becomes stale?</h3>
-              <p data-i18n="banditExperimentTwoCopy">Switch to non-stationary random walk after 500 pulls and continue. Observe which strategies revisit alternatives after the identity of the best arm changes.</p>
-            </article>
-            <article>
-              <strong>03 / OPTIMISM</strong>
-              <h3 data-i18n="banditExperimentThreeTitle">Can optimism create exploration without randomness?</h3>
-              <p data-i18n="banditExperimentThreeCopy">Set ε=0 and Q₀=1.0 for ε-greedy, reset, and step manually. Each disappointing reward lowers one arm, causing an untried optimistic arm to be selected next.</p>
-            </article>
-          </div>
-        </section>
 
         <div id="watch">
           <ol class="watch-list">

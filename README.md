@@ -15,8 +15,6 @@ traces, and policy changes can be inspected rather than hidden inside a training
 - Multi-Armed Bandit Lab: [bandit.html](https://jiaxtian.github.io/MindForge/bandit.html)
 - Random Walk Prediction Lab: [prediction.html](https://jiaxtian.github.io/MindForge/prediction.html)
 - Mountain Car Control Lab: [mountain-car.html](https://jiaxtian.github.io/MindForge/mountain-car.html)
-- Notes: [notes.html](https://jiaxtian.github.io/MindForge/notes.html)
-- Reusable note template: [note-template.html](https://jiaxtian.github.io/MindForge/note-template.html)
 
 ## Laboratory Coverage
 
@@ -85,8 +83,9 @@ episode length, return, and goal rate.
 
 ## Notes Workflow
 
-The notes library remains intentionally empty. New chapters should be created from `note-template.html` after
-the corresponding topic has been studied. The template contains six paired English and Chinese sections:
+Notes are maintained as source files rather than empty public pages. Copy [`NOTE_TEMPLATE.md`](NOTE_TEMPLATE.md)
+into a `notes/` directory after studying a topic, rename the copy, and replace its bracketed placeholders. The
+template contains six paired English and Chinese sections:
 
 1. The question
 2. Definitions, notation, and assumptions
@@ -94,6 +93,9 @@ the corresponding topic has been studied. The template contains six paired Engli
 4. Plain-language intuition
 5. Reproducible experiment
 6. Mistakes, revisions, and open questions
+
+Keep the two language sections in the same order. It is fine to finish one language first, but translate the
+complete meaning into the paired section without shortening the technical content.
 
 ## Design and Accessibility
 
@@ -118,8 +120,7 @@ MindForge/
 ├── prediction.js
 ├── mountain-car.html
 ├── mountain-car.js
-├── notes.html
-├── note-template.html
+├── NOTE_TEMPLATE.md
 ├── app.js
 ├── styles.css
 ├── rl.css
