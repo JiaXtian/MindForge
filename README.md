@@ -1,5 +1,7 @@
 # MindForge
 
+**English** | [简体中文](README.zh-CN.md)
+
 [![Deploy to GitHub Pages](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml)
 
 MindForge is a bilingual reinforcement learning notebook and interactive laboratory. It slows learning loops
@@ -124,6 +126,8 @@ MindForge/
 ├── 404.html
 ├── sitemap.xml
 ├── robots.txt
+├── README.md
+├── README.zh-CN.md
 ├── assets/
 │   └── favicon.svg
 ├── scripts/

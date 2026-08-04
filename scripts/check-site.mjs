@@ -123,6 +123,7 @@ const publicFiles = [
   "mountain-car.html",
   "app.js",
   "README.md",
+  "README.zh-CN.md",
   "sitemap.xml",
 ];
 const forbiddenLegacyLinks = [
@@ -135,6 +136,26 @@ for (const file of publicFiles) {
   for (const legacy of forbiddenLegacyLinks) {
     if (content.includes(legacy)) errors.push(file + " still references " + legacy);
   }
+}
+
+const englishReadme = readFileSync("README.md", "utf8");
+const chineseReadme = readFileSync("README.zh-CN.md", "utf8");
+if (!englishReadme.includes("[简体中文](README.zh-CN.md)")) {
+  errors.push("README.md is missing the Chinese language switch link");
+}
+if (!chineseReadme.includes("[English](README.md)")) {
+  errors.push("README.zh-CN.md is missing the English language switch link");
+}
+
+const englishHeadings = (englishReadme.match(/^## /gm) || []).length;
+const chineseHeadings = (chineseReadme.match(/^## /gm) || []).length;
+if (englishHeadings !== chineseHeadings) {
+  errors.push(
+    "README language editions must have matching section counts; found English " +
+      englishHeadings +
+      ", Chinese " +
+      chineseHeadings,
+  );
 }
 
 if (errors.length > 0) {
