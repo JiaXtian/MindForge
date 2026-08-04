@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive bilingual random-walk prediction lab comparing Monte Carlo, TD(0), n-step TD, and TD lambda."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Random Walk Prediction Lab — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+    <script src="prediction.js" defer></script>
+  </head>
+  <body
+    data-page="prediction"
+    data-title-en="Random Walk Prediction Lab — MindForge"
+    data-title-zh="随机游走预测实验室 — MindForge"
+  >
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span><span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+        <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
+        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero">
+        <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
+        <h1 class="reveal" data-i18n="predictionHeroTitle">See the difference between waiting and bootstrapping.</h1>
+        <p class="page-deck reveal" data-i18n="predictionHeroDeck">
+          Follow one random walk and compare when Monte Carlo, TD(0), n-step TD, and TD lambda move each state-value estimate.
+        </p>
+      </header>
+
+      <section class="lab-shell">
+        <div class="lab-toolbar prediction-toolbar" aria-label="Prediction controls">
+          <div class="control-group">
+            <label for="chain-select" data-i18n="chainLength">Non-terminal states</label>
+            <select id="chain-select">
+              <option value="5">5 · A–E</option>
+              <option value="9" selected>9 · A–I</option>
+              <option value="19">19 · A–S</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="prediction-algorithm" data-i18n="algorithm">Algorithm</label>
+            <select id="prediction-algorithm">
+              <option value="mc" data-i18n="algorithmMc">Every-visit Monte Carlo</option>
+              <option value="td0" data-i18n="algorithmTd0">TD(0)</option>
+              <option value="nstep" data-i18n="algorithmNStep">n-step TD</option>
+              <option value="lambda" data-i18n="algorithmTdLambda">TD(λ)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="prediction-alpha" data-i18n="alpha">Learning rate α</label>
+            <div class="range-line">
+              <input id="prediction-alpha" type="range" min="0.01" max="1" step="0.01" value="0.15" />
+              <output id="prediction-alpha-output">0.15</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="prediction-gamma" data-i18n="gamma">Discount γ</label>
+            <div class="range-line">
+              <input id="prediction-gamma" type="range" min="0.5" max="1" step="0.01" value="1" />
+              <output id="prediction-gamma-output">1.00</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="n-step-input" data-i18n="nStepHorizon">n-step horizon</label>
+            <div class="range-line">
+              <input id="n-step-input" type="range" min="1" max="10" step="1" value="4" />
+              <output id="n-step-output">4</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="lambda-input" data-i18n="lambdaTrace">Trace decay λ</label>
+            <div class="range-line">
+              <input id="lambda-input" type="range" min="0" max="1" step="0.01" value="0.80" />
+              <output id="lambda-output">0.80</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="prediction-speed" data-i18n="speed">Run speed</label>
+            <div class="range-line">
+              <input id="prediction-speed" type="range" min="1" max="10" step="1" value="6" />
+              <output id="prediction-speed-output">6×</output>
+            </div>
+          </div>
+        </div>
+
+        <div class="lab-actions">
+          <button class="lab-button is-primary" id="prediction-step" type="button" data-i18n="singleTransition">Single transition</button>
+          <button class="lab-button" id="prediction-episode" type="button" data-i18n="completeEpisode">Complete episode</button>
+          <button class="lab-button" id="prediction-run" type="button" data-i18n="autoRun">Auto run</button>
+          <button class="lab-button" id="prediction-reset" type="button" data-i18n="reset">Reset</button>
+          <button class="lab-button" id="prediction-batch" type="button" data-i18n="trainHundred">Train 100 episodes</button>
+          <div class="lab-status" id="prediction-status" aria-live="polite">Experiment ready.</div>
+        </div>
+
+        <div class="prediction-layout">
+          <div>
+            <section class="lab-stage">
+              <div class="stage-topline">
+                <strong data-i18n="randomWalkTitle">Symmetric random walk</strong>
+                <span id="prediction-phase">episode in progress</span>
+              </div>
+              <div class="walk-scroll">
+                <div class="random-walk-track" id="random-walk-track"></div>
+              </div>
+              <div class="value-legend">
+                <span><i class="estimate-key"></i><span data-i18n="estimatedValue">estimate V(s)</span></span>
+                <span><i class="true-key"></i><span data-i18n="trueValue">true value vπ(s)</span></span>
+              </div>
+            </section>
+
+            <div class="metric-grid prediction-metrics">
+              <div class="metric-card"><span data-i18n="metricEpisode">Episodes</span><strong id="prediction-episodes">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricStep">Environment steps</span><strong id="prediction-steps">0</strong></div>
+              <div class="metric-card"><span data-i18n="latestOutcome">Latest outcome</span><strong id="prediction-outcome">—</strong></div>
+              <div class="metric-card"><span data-i18n="rmse">Value RMSE</span><strong id="prediction-rmse">0.000</strong></div>
+            </div>
+
+            <section class="chart-card">
+              <div class="card-heading">
+                <h2 data-i18n="rmseCurve">Prediction error</h2>
+                <span data-i18n="perEpisode">per episode</span>
+              </div>
+              <svg class="lab-chart" viewBox="0 0 700 180" role="img" aria-label="Value prediction RMSE chart">
+                <line class="chart-axis" x1="32" y1="8" x2="32" y2="154"></line>
+                <line class="chart-axis" x1="32" y1="154" x2="690" y2="154"></line>
+                <polyline class="chart-line" id="prediction-error-line" points=""></polyline>
+              </svg>
+            </section>
+          </div>
+
+          <aside class="lab-side">
+            <section class="lab-side-card">
+              <div class="card-heading">
+                <h2 data-i18n="algorithmLens">Current algorithm</h2>
+                <span id="prediction-badge">MONTE CARLO</span>
+              </div>
+              <div class="algorithm-formula" id="prediction-formula">V(Sₜ) ← V(Sₜ) + α[Gₜ − V(Sₜ)]</div>
+              <p class="algorithm-explanation" id="prediction-explanation"></p>
+            </section>
+
+            <section class="lab-side-card update-card">
+              <div class="card-heading">
+                <h2 data-i18n="lastUpdateTitle">Last update</h2>
+                <span id="prediction-update-kind">V(S)</span>
+              </div>
+              <div class="update-equation" id="prediction-equation">No update yet.</div>
+              <dl class="update-ledger">
+                <div><dt data-i18n="updateState">State</dt><dd id="prediction-update-state">—</dd></div>
+                <div><dt data-i18n="updateReward">Reward</dt><dd id="prediction-update-reward">—</dd></div>
+                <div><dt data-i18n="updateTarget">Target</dt><dd id="prediction-update-target">—</dd></div>
+                <div><dt data-i18n="updateBootstrap">Bootstrap</dt><dd id="prediction-update-bootstrap">—</dd></div>
+                <div><dt data-i18n="updateOld">Old estimate</dt><dd id="prediction-update-old">—</dd></div>
+                <div><dt data-i18n="updateError">Prediction error</dt><dd id="prediction-update-error">—</dd></div>
+                <div><dt data-i18n="updateNew">New estimate</dt><dd id="prediction-update-new">—</dd></div>
+                <div><dt data-i18n="updateHorizon">Horizon</dt><dd id="prediction-update-horizon">—</dd></div>
+              </dl>
+            </section>
+          </aside>
+        </div>
+
+        <div class="learning-detail-grid prediction-details">
+          <section class="lab-side-card">
+            <div class="card-heading">
+              <h2 data-i18n="valueTableTitle">Value estimate table</h2>
+              <span>V(S)</span>
+            </div>
+            <div class="prediction-value-table" id="prediction-value-table"></div>
+          </section>
+          <section class="lab-side-card">
+            <div class="card-heading">
+              <h2 data-i18n="eligibilityTitle">Eligibility traces</h2>
+              <span>e(S)</span>
+            </div>
+            <p class="small-copy" data-i18n="eligibilityCopy">
+              TD lambda assigns credit backward through recently visited states. Traces decay by gamma lambda after each transition.
+            </p>
+            <div class="eligibility-view" id="eligibility-view"></div>
+          </section>
+        </div>
+
+        <section class="lab-side-card episode-ledger-card">
+          <div class="card-heading">
+            <h2 data-i18n="episodeLedgerTitle">Current episode trajectory</h2>
+            <span id="episode-buffer-size">0 transitions</span>
+          </div>
+          <div class="episode-path" id="episode-path"></div>
+        </section>
+
+        <section class="guided-experiments">
+          <div class="card-heading">
+            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
+            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
+          </div>
+          <div class="experiment-grid">
+            <article>
+              <strong>01 / UPDATE TIME</strong>
+              <h3 data-i18n="predictionExperimentOneTitle">What is learned before the outcome is known?</h3>
+              <p data-i18n="predictionExperimentOneCopy">Single-step one episode with Monte Carlo, reset, then repeat with TD(0). Watch whether the value table changes before either terminal is reached.</p>
+            </article>
+            <article>
+              <strong>02 / BACKUP LENGTH</strong>
+              <h3 data-i18n="predictionExperimentTwoTitle">Where is the bias-variance compromise?</h3>
+              <p data-i18n="predictionExperimentTwoCopy">On the 19-state chain, compare n=1, 4, and 10 with the same α. Track update delay, bootstrap magnitude, and RMSE variability over 100 episodes.</p>
+            </article>
+            <article>
+              <strong>03 / TRACE DECAY</strong>
+              <h3 data-i18n="predictionExperimentThreeTitle">How far should one TD error travel?</h3>
+              <p data-i18n="predictionExperimentThreeCopy">Run TD(λ) with λ=0, 0.5, and 0.95. Single-step near a terminal and inspect how many earlier states retain meaningful eligibility.</p>
+            </article>
+          </div>
+        </section>
+
+        <div id="watch">
+          <ol class="watch-list">
+            <li><strong>01 / WAIT</strong><span data-i18n="predictionWatchOne">Monte Carlo waits for a terminal outcome, then sends the observed return backward through the whole trajectory.</span></li>
+            <li><strong>02 / BOOTSTRAP</strong><span data-i18n="predictionWatchTwo">TD(0) updates immediately from one reward and the current estimate of the next state.</span></li>
+            <li><strong>03 / HORIZON</strong><span data-i18n="predictionWatchThree">n-step TD chooses an explicit point between one-step bootstrapping and a complete sampled return.</span></li>
+            <li><strong>04 / CREDIT</strong><span data-i18n="predictionWatchFour">TD lambda combines many backup lengths through a decaying memory of recently visited states.</span></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p>
+      <a href="mountain-car.html"><span data-i18n="navMountainCar">Mountain Car</span> ↗</a>
+    </footer>
+  </body>
+</html>

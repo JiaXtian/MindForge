@@ -31,6 +31,8 @@ jobs:
           node --check app.js
           node --check gridworld.js
           node --check bandit.js
+          node --check prediction.js
+          node --check mountain-car.js
           node scripts/smoke-labs.mjs
 
       - name: Configure GitHub Pages

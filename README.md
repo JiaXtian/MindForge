@@ -2,68 +2,89 @@
 
 [![Deploy to GitHub Pages](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml)
 
-MindForge is a bilingual reinforcement learning notebook and interactive laboratory. It is designed for learning
-by changing an environment, advancing an algorithm one update at a time, and recording what the experiment
-reveals.
+MindForge is a bilingual reinforcement learning notebook and interactive laboratory. It slows learning loops
+down so that state transitions, value estimates, action selection, Bellman targets, TD errors, eligibility
+traces, and policy changes can be inspected rather than hidden inside a training script.
 
 ## Live Site
 
 - Home: [https://jiaxtian.github.io/MindForge/](https://jiaxtian.github.io/MindForge/)
 - Gridworld Control Lab: [gridworld.html](https://jiaxtian.github.io/MindForge/gridworld.html)
 - Multi-Armed Bandit Lab: [bandit.html](https://jiaxtian.github.io/MindForge/bandit.html)
+- Random Walk Prediction Lab: [prediction.html](https://jiaxtian.github.io/MindForge/prediction.html)
+- Mountain Car Control Lab: [mountain-car.html](https://jiaxtian.github.io/MindForge/mountain-car.html)
 - Notes: [notes.html](https://jiaxtian.github.io/MindForge/notes.html)
 - Reusable note template: [note-template.html](https://jiaxtian.github.io/MindForge/note-template.html)
 
-## Interactive Laboratories
+## Laboratory Coverage
 
-### Gridworld Control Lab
+| Laboratory | Core question | Algorithms and mechanisms |
+| --- | --- | --- |
+| Gridworld | How do planning and sampled control produce a policy? | Value iteration, policy iteration, Q-learning, SARSA, Expected SARSA, Dyna-Q, Double Q-learning |
+| Multi-Armed Bandit | How should an agent balance exploration and exploitation? | Epsilon-greedy, UCB1, Thompson sampling, Softmax exploration, Gradient Bandit |
+| Random Walk | When should a value estimate be updated? | Every-visit Monte Carlo, TD(0), n-step TD, TD(lambda) |
+| Mountain Car | How can tabular control handle continuous state? | Q-learning, SARSA, Expected SARSA, SARSA(lambda), state aggregation |
 
-The Gridworld lab places model-based planning and model-free learning in one visual interface.
+Together, the laboratories cover bandit feedback, value prediction, dynamic programming, model-free control,
+model-based replay, maximization bias, stochastic transitions, eligibility traces, delayed reward, and continuous
+state discretization.
 
-Algorithms:
-
-1. Value iteration
-2. Policy iteration
-3. Q-learning
-4. SARSA
-5. Expected SARSA
+## Gridworld Control Lab
 
 Environment presets:
 
 1. Classic Gridworld
 2. Cliff Walking
 3. Windy Gridworld
-4. Maze
+4. Dyna Maze
+5. Frozen Lake with stochastic slipping
+6. Four Rooms
 
-The user can adjust the discount factor, learning rate, exploration rate, and playback speed. The lab supports
-single updates, automatic execution, pause, reset, 50-episode training batches, clickable obstacle editing,
-value heatmaps, policy arrows, an animated agent, update signals, and return history.
+The lab supports single updates, automatic execution, pause, reset, 50-episode batches, adjustable hyperparameters,
+and optional obstacle editing. Clicking a state opens its four action values. A complete live table exposes each
+state's visit count, value, learned Q-values or Bellman backups, greedy action, latest updated action, sampled
+transition, numerical target, error, and resulting estimate.
 
-### Multi-Armed Bandit Lab
+Dyna-Q stores sampled one-step transitions and performs a configurable number of model backups after every real
+interaction. Double Q-learning keeps two estimators and separates maximizing-action selection from evaluation.
 
-The bandit lab focuses on the exploration-exploitation tradeoff.
+## Multi-Armed Bandit Lab
 
-Strategies:
+The reward model can be Bernoulli or Gaussian, while the underlying means can remain stationary or drift through
+a random walk. Each arm's true mean is editable during an experiment.
 
-1. Epsilon-greedy
-2. UCB1
-3. Thompson sampling
+The lab records sample-average estimates, pulls, reward, pseudo-regret, best-arm rate, action probabilities,
+confidence bounds, posterior samples, learned preferences, and the exact evidence behind the latest choice.
+Optimistic initial estimates, Softmax temperature, epsilon, and Gradient Bandit step size are adjustable. A
+comparison mode advances all five strategies against the same reward landscape.
 
-Each arm's true expected reward can be changed while the experiment is running. Bernoulli and Gaussian rewards
-are supported. The interface shows sample-average estimates, visit counts, cumulative reward, pseudo-regret,
-best-arm selection rate, and regret curves. A comparison mode advances all three strategies together.
+## Random Walk Prediction Lab
 
-The interaction model was informed by Andrej Karpathy's
-[REINFORCEjs](https://cs.stanford.edu/people/karpathy/reinforcejs/), while MindForge uses its own implementation,
-adds multiple environment presets and algorithms, and makes control, comparison, bilingual explanation, and
-mobile use first-class parts of the interface.
+The prediction lab uses a symmetric Markov reward process with selectable chain length. It computes the true
+discounted value function and compares it with the current estimate after every episode.
+
+- Monte Carlo waits for termination and propagates sampled returns backward.
+- TD(0) bootstraps after every transition.
+- n-step TD exposes the bias, variance, and delay introduced by the chosen backup horizon.
+- TD(lambda) displays the complete eligibility trace and its backward credit assignment.
+
+The interface shows the current path, estimate and truth for every state, the active bootstrap term, update
+horizon, prediction error, trace magnitude, and per-episode RMSE.
+
+## Mountain Car Control Lab
+
+Mountain Car uses the standard deterministic position and velocity dynamics. The engine cannot climb directly,
+so the policy must first move away from the goal to build momentum.
+
+Continuous position and velocity are mapped into adjustable discrete bins. The resulting state-action map shows
+the greedy engine action and maximum Q-value in every region. The lab also exposes the physical trajectory,
+engine and velocity vectors, current continuous and discrete state, exact TD update, per-action Q-values,
+episode length, return, and goal rate.
 
 ## Notes Workflow
 
-The notes library is intentionally empty. New chapters should be created from `note-template.html` only after
-the corresponding topic has been studied.
-
-The template provides six paired English and Chinese sections:
+The notes library remains intentionally empty. New chapters should be created from `note-template.html` after
+the corresponding topic has been studied. The template contains six paired English and Chinese sections:
 
 1. The question
 2. Definitions, notation, and assumptions
@@ -71,14 +92,6 @@ The template provides six paired English and Chinese sections:
 4. Plain-language intuition
 5. Reproducible experiment
 6. Mistakes, revisions, and open questions
-
-To add a note:
-
-1. Duplicate `note-template.html` and give the copy a URL-safe filename.
-2. Search the copy for `EDIT HERE`.
-3. Keep the English and Chinese section order identical.
-4. Add the new page to `notes.html`, `sitemap.xml`, and `scripts/check-site.mjs`.
-5. Run the validation command before publishing.
 
 ## Design and Accessibility
 
@@ -88,19 +101,23 @@ To add a note:
 - Keyboard-accessible native controls
 - Reduced-motion support
 - No backend, account, analytics, or remote training service
-- All reinforcement learning simulations run locally in the browser
+- All simulations run locally in the browser
 
 ## Project Structure
 
 ```text
 MindForge/
 ├── index.html
-├── notes.html
-├── note-template.html
 ├── gridworld.html
 ├── gridworld.js
 ├── bandit.html
 ├── bandit.js
+├── prediction.html
+├── prediction.js
+├── mountain-car.html
+├── mountain-car.js
+├── notes.html
+├── note-template.html
 ├── app.js
 ├── styles.css
 ├── rl.css
@@ -110,10 +127,9 @@ MindForge/
 ├── assets/
 │   └── favicon.svg
 ├── scripts/
-│   └── check-site.mjs
-└── .github/
-    └── workflows/
-        └── deploy-pages.yml
+│   ├── check-site.mjs
+│   └── smoke-labs.mjs
+└── .github/workflows/deploy-pages.yml
 ```
 
 ## Local Development
@@ -124,20 +140,20 @@ No installation or build step is required.
 python3 -m http.server 8000
 ```
 
-Then visit [http://localhost:8000](http://localhost:8000).
-
-Run the same structural and syntax checks used by the deployment workflow:
+Run the same checks used by the deployment workflow:
 
 ```bash
 node scripts/check-site.mjs
 node --check app.js
 node --check gridworld.js
 node --check bandit.js
+node --check prediction.js
+node --check mountain-car.js
 node scripts/smoke-labs.mjs
 ```
 
 ## Deployment
 
-Pushing to `main` triggers `.github/workflows/deploy-pages.yml`. The workflow validates the page graph,
-bilingual controls, note template pairing, available algorithms and environments, JavaScript syntax, and removal
-of the previous long-form chapters before deploying the repository to GitHub Pages.
+Pushing to `main` triggers `.github/workflows/deploy-pages.yml`. The workflow validates the page graph, bilingual
+translation keys, laboratory coverage, JavaScript syntax, and simulated interactions before deploying the static
+site to GitHub Pages.

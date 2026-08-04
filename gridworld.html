@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="An interactive bilingual Gridworld laboratory for value iteration, policy iteration, Q-learning, SARSA, and Expected SARSA."
+      content="An interactive bilingual Gridworld laboratory for dynamic programming, temporal-difference control, Dyna-Q, Double Q-learning, and live Q-table inspection."
     />
     <meta name="theme-color" content="#f3f0e8" />
     <title>Gridworld Control Lab — MindForge</title>
@@ -30,6 +30,7 @@
         <a href="index.html" data-i18n="navHome">Home</a>
         <a href="notes.html" data-i18n="navNotes">Notes</a>
         <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+        <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
         <a href="#watch" data-i18n="whatToWatch">What to watch</a>
       </nav>
       <div class="header-actions">
@@ -67,6 +68,8 @@
               <option value="cliff" data-i18n="environmentCliff">Cliff walking</option>
               <option value="windy" data-i18n="environmentWindy">Windy grid</option>
               <option value="maze" data-i18n="environmentMaze">Maze</option>
+              <option value="frozen" data-i18n="environmentFrozen">Frozen lake</option>
+              <option value="fourrooms" data-i18n="environmentFourRooms">Four rooms</option>
             </select>
           </div>
           <div class="control-group">
@@ -77,6 +80,8 @@
               <option value="qlearning" data-i18n="algorithmQ">Q-learning</option>
               <option value="sarsa" data-i18n="algorithmSarsa">SARSA</option>
               <option value="expected" data-i18n="algorithmExpected">Expected SARSA</option>
+              <option value="dyna" data-i18n="algorithmDyna">Dyna-Q</option>
+              <option value="double" data-i18n="algorithmDouble">Double Q-learning</option>
             </select>
           </div>
           <div class="control-group">
@@ -101,11 +106,25 @@
             </div>
           </div>
           <div class="control-group">
+            <label for="planning-input" data-i18n="planningSteps">Dyna planning steps</label>
+            <div class="range-line">
+              <input id="planning-input" type="range" min="0" max="30" step="1" value="10" />
+              <output id="planning-output">10</output>
+            </div>
+          </div>
+          <div class="control-group">
             <label for="speed-input" data-i18n="speed">Run speed</label>
             <div class="range-line">
               <input id="speed-input" type="range" min="1" max="10" step="1" value="6" />
               <output id="speed-output">6×</output>
             </div>
+          </div>
+          <div class="control-group control-toggle-group">
+            <span class="control-label" data-i18n="cellClickMode">Cell click mode</span>
+            <label class="toggle-control">
+              <input id="edit-toggle" type="checkbox" />
+              <span data-i18n="editObstacles">Edit obstacles</span>
+            </label>
           </div>
         </div>
 
@@ -132,9 +151,10 @@
                 <span class="legend-item"><i class="legend-swatch" style="background: color-mix(in srgb, var(--lime) 38%, var(--surface))"></i> <span data-i18n="legendGoal">Goal</span></span>
                 <span class="legend-item"><i class="legend-swatch" style="background: var(--surface-strong)"></i> <span data-i18n="legendWall">Wall</span></span>
                 <span class="legend-item"><i class="legend-swatch" style="background: color-mix(in srgb, #b23828 28%, var(--surface))"></i> <span data-i18n="legendHazard">Hazard</span></span>
+                <span class="legend-item"><i class="legend-swatch selected-swatch"></i> <span data-i18n="legendSelected">Inspected state</span></span>
               </div>
               <p class="small-copy" style="margin-top: 15px" data-i18n="editGridHint">
-                Click a regular cell to add or remove an obstacle. Editing the environment resets learning.
+                Click a cell to inspect its action values. Enable obstacle editing to reshape regular cells; editing resets learning.
               </p>
             </div>
 
@@ -178,14 +198,107 @@
               <div class="metric-card"><span data-i18n="metricReturn">Latest return</span><strong id="metric-return">—</strong></div>
               <div class="metric-card" style="grid-column: 1 / -1"><span data-i18n="metricSignal">Update signal</span><strong id="metric-signal">Δ 0.000</strong></div>
             </div>
+
+            <div class="lab-side-card update-card">
+              <div class="card-heading">
+                <h2 data-i18n="lastUpdateTitle">Last update</h2>
+                <span id="update-table">V / Q</span>
+              </div>
+              <div class="update-equation" id="update-equation">new estimate = old estimate + step size × error</div>
+              <dl class="update-ledger">
+                <div><dt data-i18n="updateState">State</dt><dd id="update-state">—</dd></div>
+                <div><dt data-i18n="updateAction">Action</dt><dd id="update-action">—</dd></div>
+                <div><dt data-i18n="updateReward">Reward</dt><dd id="update-reward">—</dd></div>
+                <div><dt data-i18n="updateNext">Next state</dt><dd id="update-next">—</dd></div>
+                <div><dt data-i18n="updateOld">Old estimate</dt><dd id="update-old">—</dd></div>
+                <div><dt data-i18n="updateTarget">Target</dt><dd id="update-target">—</dd></div>
+                <div><dt data-i18n="updateError">TD / Bellman error</dt><dd id="update-error">—</dd></div>
+                <div><dt data-i18n="updateNew">New estimate</dt><dd id="update-new">—</dd></div>
+              </dl>
+            </div>
           </aside>
         </div>
+
+        <div class="learning-detail-grid">
+          <section class="lab-side-card">
+            <div class="card-heading">
+              <h2 data-i18n="stateInspectorTitle">Selected-state action values</h2>
+              <span id="inspector-state">S(0, 0)</span>
+            </div>
+            <p class="small-copy" data-i18n="stateInspectorCopy">
+              Compare all four actions for the selected state. The greedy action and the action updated most recently are marked separately.
+            </p>
+            <div class="q-inspector" id="q-inspector"></div>
+          </section>
+
+          <section class="lab-side-card">
+            <div class="card-heading">
+              <h2 data-i18n="transitionLogTitle">Recent transition ledger</h2>
+              <span data-i18n="latestEight">latest 8</span>
+            </div>
+            <p class="small-copy" data-i18n="transitionLogCopy">
+              Every row records the sampled experience and the numerical update it produced. Planning sweeps are recorded as Bellman backups.
+            </p>
+            <div class="transition-log" id="transition-log"></div>
+          </section>
+        </div>
+
+        <section class="q-table-card">
+          <div class="card-heading">
+            <h2 data-i18n="qTableTitle">Live state-action table</h2>
+            <span id="q-table-mode">Q(S, A)</span>
+          </div>
+          <p class="small-copy" data-i18n="qTableCopy">
+            Each row is one state. For planning algorithms, action columns show one-step Bellman backups; for control algorithms they show learned Q-values.
+          </p>
+          <div class="q-table-scroll">
+            <table class="q-table">
+              <thead>
+                <tr>
+                  <th data-i18n="tableState">State</th>
+                  <th data-i18n="tableVisits">Visits</th>
+                  <th data-i18n="tableValue">V / max Q</th>
+                  <th>↑</th>
+                  <th>→</th>
+                  <th>↓</th>
+                  <th>←</th>
+                </tr>
+              </thead>
+              <tbody id="q-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="guided-experiments">
+          <div class="card-heading">
+            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
+            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
+          </div>
+          <div class="experiment-grid">
+            <article>
+              <strong>01 / CLIFF SAFETY</strong>
+              <h3 data-i18n="gridExperimentOneTitle">Does the target account for exploration risk?</h3>
+              <p data-i18n="gridExperimentOneCopy">Use Cliff Walking with α=0.50 and ε=0.10. Train Q-learning and SARSA for 50 episodes each; compare the greedy arrows beside the cliff and inspect their latest targets.</p>
+            </article>
+            <article>
+              <strong>02 / MODEL REPLAY</strong>
+              <h3 data-i18n="gridExperimentTwoTitle">How much real experience can planning replace?</h3>
+              <p data-i18n="gridExperimentTwoCopy">Use Dyna Maze and compare 0, 10, and 30 planning steps. Hold α, γ, and ε fixed, then compare environment steps rather than total backups.</p>
+            </article>
+            <article>
+              <strong>03 / STOCHASTICITY</strong>
+              <h3 data-i18n="gridExperimentThreeTitle">Expected backups versus sampled accidents</h3>
+              <p data-i18n="gridExperimentThreeCopy">In Frozen Lake, run value iteration to convergence, then train Q-learning. The planner averages all slip outcomes while Q-learning sees only the accidents it samples.</p>
+            </article>
+          </div>
+        </section>
 
         <div id="watch">
           <ol class="watch-list">
             <li><strong>01 / MODEL</strong><span data-i18n="gridWatchOne">Planning algorithms update the full value table each step; TD algorithms use one real transition.</span></li>
             <li><strong>02 / TARGET</strong><span data-i18n="gridWatchTwo">Q-learning uses the largest next-state Q value; SARSA uses the action actually selected by its behavior policy.</span></li>
-            <li><strong>03 / HORIZON</strong><span data-i18n="gridWatchThree">Higher epsilon increases exploration; higher gamma lets distant rewards influence earlier states.</span></li>
+            <li><strong>03 / MODEL</strong><span data-i18n="gridWatchThree">Dyna-Q replays a learned model after each real step; compare its sample efficiency with ordinary Q-learning.</span></li>
+            <li><strong>04 / BIAS</strong><span data-i18n="gridWatchFour">Double Q-learning separates action selection from evaluation to reduce maximization bias.</span></li>
           </ol>
         </div>
       </section>
@@ -194,7 +307,7 @@
     <footer class="site-footer">
       <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
       <p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p>
-      <a href="bandit.html"><span data-i18n="navBandit">Bandits</span> ↗</a>
+      <a href="prediction.html"><span data-i18n="navPrediction">Prediction</span> ↗</a>
     </footer>
   </body>
 </html>

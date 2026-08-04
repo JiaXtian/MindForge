@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="An interactive bilingual multi-armed bandit laboratory comparing epsilon-greedy, UCB1, and Thompson sampling."
+      content="An interactive bilingual multi-armed bandit laboratory comparing five exploration strategies in stationary and drifting reward environments."
     />
     <meta name="theme-color" content="#f3f0e8" />
     <title>Multi-Armed Bandit Lab — MindForge</title>
@@ -30,6 +30,8 @@
         <a href="index.html" data-i18n="navHome">Home</a>
         <a href="notes.html" data-i18n="navNotes">Notes</a>
         <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
+        <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
         <a href="#watch" data-i18n="whatToWatch">What to watch</a>
       </nav>
       <div class="header-actions">
@@ -59,13 +61,15 @@
       </header>
 
       <section class="lab-shell">
-        <div class="lab-toolbar" aria-label="Bandit controls">
+        <div class="lab-toolbar bandit-toolbar" aria-label="Bandit controls">
           <div class="control-group">
             <label for="strategy-select" data-i18n="algorithm">Algorithm</label>
             <select id="strategy-select">
               <option value="epsilon" data-i18n="algorithmEpsilon">ε-greedy</option>
               <option value="ucb" data-i18n="algorithmUcb">UCB1</option>
               <option value="thompson" data-i18n="algorithmThompson">Thompson sampling</option>
+              <option value="softmax" data-i18n="algorithmSoftmax">Softmax exploration</option>
+              <option value="gradient" data-i18n="algorithmGradient">Gradient bandit</option>
             </select>
           </div>
           <div class="control-group">
@@ -76,10 +80,38 @@
             </select>
           </div>
           <div class="control-group">
+            <label for="bandit-dynamics" data-i18n="rewardDynamics">Reward dynamics</label>
+            <select id="bandit-dynamics">
+              <option value="stationary" data-i18n="stationaryBandit">Stationary</option>
+              <option value="drifting" data-i18n="driftingBandit">Non-stationary random walk</option>
+            </select>
+          </div>
+          <div class="control-group">
             <label for="bandit-epsilon" data-i18n="epsilon">Exploration ε</label>
             <div class="range-line">
               <input id="bandit-epsilon" type="range" min="0" max="1" step="0.01" value="0.12" />
               <output id="bandit-epsilon-output">0.12</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="bandit-temperature" data-i18n="temperature">Temperature τ</label>
+            <div class="range-line">
+              <input id="bandit-temperature" type="range" min="0.03" max="1" step="0.01" value="0.20" />
+              <output id="bandit-temperature-output">0.20</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="bandit-preference-alpha" data-i18n="preferenceStep">Preference step α</label>
+            <div class="range-line">
+              <input id="bandit-preference-alpha" type="range" min="0.01" max="0.5" step="0.01" value="0.10" />
+              <output id="bandit-preference-output">0.10</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="bandit-initial-q" data-i18n="optimisticInitial">Initial estimate Q₀</label>
+            <div class="range-line">
+              <input id="bandit-initial-q" type="range" min="0" max="1.5" step="0.05" value="0" />
+              <output id="bandit-initial-output">0.00</output>
             </div>
           </div>
           <div class="control-group">
@@ -90,10 +122,10 @@
             </div>
           </div>
           <div class="control-group" style="grid-column: span 2">
-            <span class="control-label" data-i18n="compareMode">Compare all three strategies</span>
+            <span class="control-label" data-i18n="compareFiveMode">Compare all five strategies</span>
             <label class="toggle-control">
               <input id="compare-toggle" type="checkbox" />
-              <span data-copy-en="Advance ε-greedy, UCB1, and Thompson sampling together" data-copy-zh="让 ε-greedy、UCB1 与 Thompson sampling 同时前进">Advance ε-greedy, UCB1, and Thompson sampling together</span>
+              <span data-copy-en="Advance all five strategies against the same reward landscape" data-copy-zh="让五种策略在同一奖励环境中同步前进">Advance all five strategies against the same reward landscape</span>
             </label>
           </div>
         </div>
@@ -141,6 +173,8 @@
                   <span><i></i> ε-greedy</span>
                   <span><i></i> UCB1</span>
                   <span><i></i> Thompson</span>
+                  <span><i></i> Softmax</span>
+                  <span><i></i> Gradient</span>
                 </div>
               </div>
               <svg class="lab-chart" id="regret-chart" viewBox="0 0 700 180" role="img" aria-label="Cumulative regret chart">
@@ -149,6 +183,8 @@
                 <polyline class="chart-line" id="regret-epsilon" points=""></polyline>
                 <polyline class="chart-line is-secondary" id="regret-ucb" points=""></polyline>
                 <polyline class="chart-line is-tertiary" id="regret-thompson" points=""></polyline>
+                <polyline class="chart-line is-quaternary" id="regret-softmax" points=""></polyline>
+                <polyline class="chart-line is-quinary" id="regret-gradient" points=""></polyline>
               </svg>
             </div>
 
@@ -163,14 +199,70 @@
                 use the largest sample-average estimate.
               </p>
             </div>
+
+            <div class="learning-detail-grid bandit-detail-grid">
+              <section class="lab-side-card update-card">
+                <div class="card-heading">
+                  <h2 data-i18n="lastDecisionTitle">Last decision</h2>
+                  <span id="bandit-decision-strategy">ε-greedy</span>
+                </div>
+                <div class="update-equation" id="bandit-decision-equation">No pull yet.</div>
+                <dl class="update-ledger">
+                  <div><dt data-i18n="selectedArm">Selected arm</dt><dd id="decision-arm">—</dd></div>
+                  <div><dt data-i18n="observedReward">Observed reward</dt><dd id="decision-reward">—</dd></div>
+                  <div><dt data-i18n="selectionScore">Selection score</dt><dd id="decision-score">—</dd></div>
+                  <div><dt data-i18n="selectionProbability">Action probability</dt><dd id="decision-probability">—</dd></div>
+                  <div><dt data-i18n="updateOld">Old estimate</dt><dd id="decision-old">—</dd></div>
+                  <div><dt data-i18n="updateNew">New estimate</dt><dd id="decision-new">—</dd></div>
+                  <div><dt data-i18n="instantRegret">Instant regret</dt><dd id="decision-regret">—</dd></div>
+                  <div><dt data-i18n="baselineReward">Reward baseline</dt><dd id="decision-baseline">—</dd></div>
+                </dl>
+              </section>
+
+              <section class="lab-side-card">
+                <div class="card-heading">
+                  <h2 data-i18n="decisionTableTitle">Per-arm decision evidence</h2>
+                  <span id="decision-table-kind">score / probability</span>
+                </div>
+                <p class="small-copy" data-i18n="decisionTableCopy">
+                  The displayed quantity changes with the strategy: confidence bound, posterior sample, softmax probability, or learned preference.
+                </p>
+                <div class="bandit-score-table" id="bandit-score-table"></div>
+              </section>
+            </div>
           </div>
         </div>
+
+        <section class="guided-experiments">
+          <div class="card-heading">
+            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
+            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
+          </div>
+          <div class="experiment-grid">
+            <article>
+              <strong>01 / STATIONARY</strong>
+              <h3 data-i18n="banditExperimentOneTitle">Which strategy spends exploration deliberately?</h3>
+              <p data-i18n="banditExperimentOneCopy">Keep the default stationary means, enable five-strategy comparison, and run 500 pulls. Compare UCB confidence scores, Thompson samples, and cumulative regret.</p>
+            </article>
+            <article>
+              <strong>02 / DRIFT</strong>
+              <h3 data-i18n="banditExperimentTwoTitle">What breaks when old evidence becomes stale?</h3>
+              <p data-i18n="banditExperimentTwoCopy">Switch to non-stationary random walk after 500 pulls and continue. Observe which strategies revisit alternatives after the identity of the best arm changes.</p>
+            </article>
+            <article>
+              <strong>03 / OPTIMISM</strong>
+              <h3 data-i18n="banditExperimentThreeTitle">Can optimism create exploration without randomness?</h3>
+              <p data-i18n="banditExperimentThreeCopy">Set ε=0 and Q₀=1.0 for ε-greedy, reset, and step manually. Each disappointing reward lowers one arm, causing an untried optimistic arm to be selected next.</p>
+            </article>
+          </div>
+        </section>
 
         <div id="watch">
           <ol class="watch-list">
             <li><strong>01 / RANDOMNESS</strong><span data-i18n="banditWatchOne">Epsilon-greedy explores at a fixed rate, so it keeps making random trials after finding a good arm.</span></li>
             <li><strong>02 / OPTIMISM</strong><span data-i18n="banditWatchTwo">UCB builds an optimistic bound from visit counts and prioritizes arms that remain uncertain.</span></li>
             <li><strong>03 / POSTERIOR</strong><span data-i18n="banditWatchThree">Thompson sampling draws from a posterior and converts uncertainty directly into selection probability.</span></li>
+            <li><strong>04 / DRIFT</strong><span data-i18n="banditWatchFour">In a drifting environment, sample averages remember stale rewards; compare which strategy keeps checking alternatives.</span></li>
           </ol>
         </div>
       </section>
@@ -179,7 +271,7 @@
     <footer class="site-footer">
       <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
       <p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p>
-      <a href="gridworld.html"><span data-i18n="navGrid">Gridworld</span> ↗</a>
+      <a href="prediction.html"><span data-i18n="navPrediction">Prediction</span> ↗</a>
     </footer>
   </body>
 </html>

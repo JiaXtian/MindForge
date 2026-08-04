@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive bilingual Mountain Car control lab visualizing continuous dynamics, state discretization, Q-values, and eligibility traces."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Mountain Car Control Lab — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+    <script src="mountain-car.js" defer></script>
+  </head>
+  <body
+    data-page="mountain-car"
+    data-title-en="Mountain Car Control Lab — MindForge"
+    data-title-zh="Mountain Car 控制实验室 — MindForge"
+  >
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span><span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
+        <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero">
+        <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
+        <h1 class="reveal" data-i18n="mountainHeroTitle">Build momentum before you can reach the goal.</h1>
+        <p class="page-deck reveal" data-i18n="mountainHeroDeck">
+          Control a car with insufficient engine force, then inspect how continuous position and velocity become a finite Q-table.
+        </p>
+      </header>
+
+      <section class="lab-shell">
+        <div class="lab-toolbar mountain-toolbar" aria-label="Mountain Car controls">
+          <div class="control-group">
+            <label for="mountain-algorithm" data-i18n="algorithm">Algorithm</label>
+            <select id="mountain-algorithm">
+              <option value="qlearning" data-i18n="algorithmQ">Q-learning</option>
+              <option value="sarsa" data-i18n="algorithmSarsa">SARSA</option>
+              <option value="expected" data-i18n="algorithmExpected">Expected SARSA</option>
+              <option value="lambda" data-i18n="algorithmSarsaLambda">SARSA(λ)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="position-bins" data-i18n="positionBins">Position bins</label>
+            <select id="position-bins">
+              <option value="12">12</option>
+              <option value="18" selected>18</option>
+              <option value="24">24</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="velocity-bins" data-i18n="velocityBins">Velocity bins</label>
+            <select id="velocity-bins">
+              <option value="10">10</option>
+              <option value="14" selected>14</option>
+              <option value="18">18</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="mountain-alpha" data-i18n="alpha">Learning rate α</label>
+            <div class="range-line">
+              <input id="mountain-alpha" type="range" min="0.01" max="1" step="0.01" value="0.32" />
+              <output id="mountain-alpha-output">0.32</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="mountain-gamma" data-i18n="gamma">Discount γ</label>
+            <div class="range-line">
+              <input id="mountain-gamma" type="range" min="0.5" max="1" step="0.01" value="0.99" />
+              <output id="mountain-gamma-output">0.99</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="mountain-epsilon" data-i18n="epsilon">Exploration ε</label>
+            <div class="range-line">
+              <input id="mountain-epsilon" type="range" min="0" max="0.5" step="0.01" value="0.10" />
+              <output id="mountain-epsilon-output">0.10</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="mountain-lambda" data-i18n="lambdaTrace">Trace decay λ</label>
+            <div class="range-line">
+              <input id="mountain-lambda" type="range" min="0" max="1" step="0.01" value="0.85" />
+              <output id="mountain-lambda-output">0.85</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="mountain-speed" data-i18n="speed">Run speed</label>
+            <div class="range-line">
+              <input id="mountain-speed" type="range" min="1" max="10" step="1" value="7" />
+              <output id="mountain-speed-output">7×</output>
+            </div>
+          </div>
+        </div>
+
+        <div class="lab-actions">
+          <button class="lab-button is-primary" id="mountain-step" type="button" data-i18n="singleStep">Single step</button>
+          <button class="lab-button" id="mountain-episode" type="button" data-i18n="completeEpisode">Complete episode</button>
+          <button class="lab-button" id="mountain-run" type="button" data-i18n="autoRun">Auto run</button>
+          <button class="lab-button" id="mountain-reset" type="button" data-i18n="reset">Reset</button>
+          <button class="lab-button" id="mountain-batch" type="button" data-i18n="trainFifty">Train 50 episodes</button>
+          <div class="lab-status" id="mountain-status" aria-live="polite">Experiment ready.</div>
+        </div>
+
+        <div class="mountain-layout">
+          <div>
+            <section class="lab-stage mountain-stage">
+              <div class="stage-topline">
+                <strong data-i18n="mountainEnvironment">Continuous valley</strong>
+                <span id="mountain-action-label">engine neutral</span>
+              </div>
+              <svg class="mountain-scene" viewBox="0 0 800 320" role="img" aria-label="Mountain Car environment">
+                <path class="mountain-fill" id="mountain-fill" d=""></path>
+                <path class="mountain-track-line" id="mountain-track" d=""></path>
+                <polyline class="mountain-trajectory" id="mountain-trajectory" points=""></polyline>
+                <line class="force-arrow" id="force-arrow" x1="0" y1="0" x2="0" y2="0"></line>
+                <line class="velocity-arrow" id="velocity-arrow" x1="0" y1="0" x2="0" y2="0"></line>
+                <g id="goal-flag">
+                  <line x1="0" y1="-92" x2="0" y2="0"></line>
+                  <path d="M0 -90 L42 -76 L0 -61 Z"></path>
+                </g>
+                <g id="mountain-car">
+                  <circle r="13"></circle>
+                  <rect x="-19" y="-10" width="38" height="16" rx="4"></rect>
+                </g>
+              </svg>
+              <div class="mountain-state-readout">
+                <span><small data-i18n="position">position</small><strong id="mountain-position">−0.5000</strong></span>
+                <span><small data-i18n="velocity">velocity</small><strong id="mountain-velocity">0.0000</strong></span>
+                <span><small data-i18n="discreteState">discrete state</small><strong id="mountain-discrete">(0, 0)</strong></span>
+                <span><small data-i18n="force">engine force</small><strong id="mountain-force">0</strong></span>
+              </div>
+            </section>
+
+            <div class="metric-grid mountain-metrics">
+              <div class="metric-card"><span data-i18n="metricEpisode">Episodes</span><strong id="mountain-episodes">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricStep">Environment steps</span><strong id="mountain-steps">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricReturn">Latest return</span><strong id="mountain-return">—</strong></div>
+              <div class="metric-card"><span data-i18n="successRate">Goal rate</span><strong id="mountain-success">0%</strong></div>
+            </div>
+
+            <section class="chart-card">
+              <div class="card-heading">
+                <h2 data-i18n="stepsPerEpisode">Steps per episode</h2>
+                <span data-i18n="lowerIsBetter">lower is better</span>
+              </div>
+              <svg class="lab-chart" viewBox="0 0 700 180" role="img" aria-label="Mountain Car episode length chart">
+                <line class="chart-axis" x1="32" y1="8" x2="32" y2="154"></line>
+                <line class="chart-axis" x1="32" y1="154" x2="690" y2="154"></line>
+                <polyline class="chart-line" id="mountain-history-line" points=""></polyline>
+              </svg>
+            </section>
+          </div>
+
+          <aside class="lab-side">
+            <section class="lab-side-card">
+              <div class="card-heading">
+                <h2 data-i18n="algorithmLens">Current algorithm</h2>
+                <span id="mountain-badge">Q-LEARNING</span>
+              </div>
+              <div class="algorithm-formula" id="mountain-formula"></div>
+              <p class="algorithm-explanation" id="mountain-explanation"></p>
+            </section>
+
+            <section class="lab-side-card update-card">
+              <div class="card-heading">
+                <h2 data-i18n="lastUpdateTitle">Last update</h2>
+                <span id="mountain-update-kind">Q(S,A)</span>
+              </div>
+              <div class="update-equation" id="mountain-equation">No update yet.</div>
+              <dl class="update-ledger">
+                <div><dt data-i18n="updateState">State</dt><dd id="mountain-update-state">—</dd></div>
+                <div><dt data-i18n="updateAction">Action</dt><dd id="mountain-update-action">—</dd></div>
+                <div><dt data-i18n="updateReward">Reward</dt><dd id="mountain-update-reward">—</dd></div>
+                <div><dt data-i18n="updateNext">Next state</dt><dd id="mountain-update-next">—</dd></div>
+                <div><dt data-i18n="updateOld">Old estimate</dt><dd id="mountain-update-old">—</dd></div>
+                <div><dt data-i18n="updateTarget">Target</dt><dd id="mountain-update-target">—</dd></div>
+                <div><dt data-i18n="updateError">TD error</dt><dd id="mountain-update-error">—</dd></div>
+                <div><dt data-i18n="updateNew">New estimate</dt><dd id="mountain-update-new">—</dd></div>
+              </dl>
+            </section>
+
+            <section class="lab-side-card">
+              <div class="card-heading">
+                <h2 data-i18n="currentQValues">Current state Q-values</h2>
+                <span id="mountain-q-state">S(0,0)</span>
+              </div>
+              <div class="q-inspector" id="mountain-q-inspector"></div>
+            </section>
+          </aside>
+        </div>
+
+        <section class="q-table-card mountain-map-card">
+          <div class="card-heading">
+            <h2 data-i18n="stateAggregationMap">State aggregation map</h2>
+            <span data-i18n="velocityByPosition">velocity × position</span>
+          </div>
+          <p class="small-copy" data-i18n="stateAggregationCopy">
+            Each cell represents a rectangle of the continuous state space. Color shows max Q; the symbol shows the greedy engine action.
+          </p>
+          <div class="mountain-map-scroll">
+            <div class="mountain-q-map" id="mountain-q-map"></div>
+          </div>
+        </section>
+
+        <section class="lab-side-card physics-card">
+          <div class="card-heading">
+            <h2 data-i18n="dynamicsTitle">Environment dynamics</h2>
+            <span>deterministic</span>
+          </div>
+          <div class="physics-equations">
+            <code>vₜ₊₁ = clip(vₜ + 0.001aₜ − 0.0025 cos(3xₜ), −0.07, 0.07)</code>
+            <code>xₜ₊₁ = clip(xₜ + vₜ₊₁, −1.2, 0.6)</code>
+          </div>
+          <p class="small-copy" data-i18n="dynamicsCopy">
+            The engine cannot climb the right hill directly. A successful policy first drives left, converts height into speed, and then accelerates right with enough momentum.
+          </p>
+        </section>
+
+        <section class="guided-experiments">
+          <div class="card-heading">
+            <h2 data-i18n="guidedExperimentsTitle">Guided experiments</h2>
+            <span data-i18n="reproducibleComparisons">reproducible comparisons</span>
+          </div>
+          <div class="experiment-grid">
+            <article>
+              <strong>01 / MOMENTUM</strong>
+              <h3 data-i18n="mountainExperimentOneTitle">Why does moving away from the goal help?</h3>
+              <p data-i18n="mountainExperimentOneCopy">After training, single-step from the valley and follow the engine arrows. The policy should push left before reversing right, trading position for velocity.</p>
+            </article>
+            <article>
+              <strong>02 / RESOLUTION</strong>
+              <h3 data-i18n="mountainExperimentTwoTitle">When does a finer state table become slower?</h3>
+              <p data-i18n="mountainExperimentTwoCopy">Train 50 episodes with 12×10 bins and again with 24×18 bins. Compare early goal rate and whether neighboring map cells learn consistent actions.</p>
+            </article>
+            <article>
+              <strong>03 / CREDIT</strong>
+              <h3 data-i18n="mountainExperimentThreeTitle">Do traces move terminal information faster?</h3>
+              <p data-i18n="mountainExperimentThreeCopy">Compare SARSA and SARSA(λ=0.85) using identical α, γ, and ε. Watch episode length and inspect how one TD error changes recent state-action pairs.</p>
+            </article>
+          </div>
+        </section>
+
+        <div id="watch">
+          <ol class="watch-list">
+            <li><strong>01 / STATE</strong><span data-i18n="mountainWatchOne">Position alone is not Markov: the same location requires different actions depending on velocity.</span></li>
+            <li><strong>02 / RESOLUTION</strong><span data-i18n="mountainWatchTwo">More bins preserve finer distinctions but spread experience over a larger table, slowing early learning.</span></li>
+            <li><strong>03 / MOMENTUM</strong><span data-i18n="mountainWatchThree">The immediate reward is always minus one, so shorter successful trajectories have larger return.</span></li>
+            <li><strong>04 / TRACES</strong><span data-i18n="mountainWatchFour">SARSA lambda sends each TD error through recently active state-action pairs, accelerating delayed credit assignment.</span></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p>
+      <a href="gridworld.html"><span data-i18n="navGrid">Gridworld</span> ↗</a>
+    </footer>
+  </body>
+</html>

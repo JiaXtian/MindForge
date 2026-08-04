@@ -2,23 +2,42 @@ const strategyDetails = {
   epsilon: {
     name: "ε-greedy",
     badge: "EPSILON-GREEDY",
-    formula: "a = random with ε; otherwise arg max Q(a)",
-    en: "A fixed fraction of decisions is reserved for uniform random exploration; all remaining decisions use the largest sample-average estimate.",
-    zh: "固定比例的决策用于均匀随机探索，其余决策选择样本平均估计最大的臂。",
+    formula: "π(a) = ε/k + (1−ε)/|arg max Q| for greedy actions",
+    evidence: { en: "estimate Q(a)", zh: "估计 Q(a)" },
+    en: "A fixed probability mass is spread uniformly across every arm; the remaining mass is shared by arms with the largest sample-average estimate.",
+    zh: "固定比例的概率质量均匀分配给所有臂，剩余概率由样本平均估计最大的臂共同获得。",
   },
   ucb: {
     name: "UCB1",
     badge: "UPPER CONFIDENCE BOUND",
     formula: "a = arg max [Q(a) + √(2 ln t / N(a))]",
-    en: "The confidence bonus is large for rarely visited arms and shrinks with evidence. Exploration is directed toward uncertainty instead of chosen at random.",
-    zh: "访问较少的臂具有更大的置信奖励，并随证据增加而缩小；探索会定向流向不确定性，而不是完全随机。",
+    evidence: { en: "optimistic upper bound", zh: "乐观上置信界" },
+    en: "The confidence bonus is large for rarely sampled arms and shrinks with evidence. Exploration is directed toward uncertainty instead of chosen uniformly.",
+    zh: "访问较少的臂具有更大的置信奖励，并随证据增加而缩小；探索会定向流向不确定性，而不是均匀随机发生。",
   },
   thompson: {
     name: "Thompson sampling",
     badge: "POSTERIOR SAMPLING",
     formula: "θₐ ~ posterior(a);  a = arg max θₐ",
-    en: "Each arm proposes one plausible reward rate sampled from its posterior. Uncertain arms occasionally look best, while accumulated evidence makes strong arms win more often.",
-    zh: "每个臂从自己的后验中抽取一个可能奖励率；不确定的臂偶尔会显得最好，而累积证据会让真正优秀的臂更频繁胜出。",
+    evidence: { en: "latest posterior sample", zh: "最近一次后验样本" },
+    en: "Each arm proposes one plausible reward parameter sampled from its posterior. Uncertainty becomes selection probability through repeated posterior draws.",
+    zh: "每个臂从后验中提出一个可能的奖励参数；通过反复后验抽样，不确定性被直接转化为选择概率。",
+  },
+  softmax: {
+    name: "Softmax exploration",
+    badge: "BOLTZMANN / SOFTMAX",
+    formula: "π(a) = exp(Q(a)/τ) / Σᵦ exp(Q(b)/τ)",
+    evidence: { en: "action probability π(a)", zh: "动作概率 π(a)" },
+    en: "Every arm receives probability according to its relative estimate. Temperature controls whether small value differences are amplified or flattened.",
+    zh: "每个臂根据相对估计获得选择概率；温度决定价值差异是被放大还是被压平。",
+  },
+  gradient: {
+    name: "Gradient bandit",
+    badge: "POLICY GRADIENT",
+    formula: "H(a) ← H(a) + α(R−R̄)[1(a=A)−π(a)]",
+    evidence: { en: "preference H(a)", zh: "偏好 H(a)" },
+    en: "The algorithm learns action preferences directly rather than estimating reward values for control. Reward above the running baseline raises the chosen action's probability.",
+    zh: "算法直接学习动作偏好，而不是依赖奖励价值进行控制；高于运行基线的奖励会提高所选动作的概率。",
   },
 };
 
@@ -31,19 +50,27 @@ const banditText = {
   run: { en: "Auto run", zh: "自动运行" },
   pause: { en: "Pause", zh: "暂停" },
   single: { en: "single strategy", zh: "单一策略" },
-  compare: { en: "three-strategy comparison", zh: "三策略同时比较" },
+  compare: { en: "five-strategy comparison", zh: "五策略同时比较" },
   trueMean: { en: "true mean", zh: "真实均值" },
   estimate: { en: "estimate", zh: "估计" },
   pulls: { en: "pulls", zh: "次数" },
   arm: { en: "Arm", zh: "臂" },
   trueMeanLabel: { en: "true mean", zh: "真实均值" },
+  probability: { en: "probability", zh: "概率" },
+  score: { en: "evidence", zh: "决策证据" },
+  noDecision: { en: "No pull yet. Advance once to expose the selection evidence and estimate update.", zh: "尚未拉杆。执行一次单步即可看到选择依据与估计更新。" },
+  unavailable: { en: "sampled, not analytic", zh: "由抽样产生，无解析值" },
 };
 
 const means = [0.18, 0.38, 0.57, 0.72, 0.5];
 const strategies = {};
 const strategySelect = document.querySelector("#strategy-select");
 const rewardSelect = document.querySelector("#reward-select");
+const dynamicsSelect = document.querySelector("#bandit-dynamics");
 const epsilonInput = document.querySelector("#bandit-epsilon");
+const temperatureInput = document.querySelector("#bandit-temperature");
+const preferenceAlphaInput = document.querySelector("#bandit-preference-alpha");
+const initialQInput = document.querySelector("#bandit-initial-q");
 const speedInput = document.querySelector("#bandit-speed");
 const compareToggle = document.querySelector("#compare-toggle");
 const stepButton = document.querySelector("#bandit-step");
@@ -63,7 +90,8 @@ function language() {
 function newStrategyState() {
   return {
     counts: Array(means.length).fill(0),
-    estimates: Array(means.length).fill(0),
+    estimates: Array(means.length).fill(Number(initialQInput.value)),
+    preferences: Array(means.length).fill(0),
     successes: Array(means.length).fill(0),
     failures: Array(means.length).fill(0),
     pulls: 0,
@@ -72,6 +100,7 @@ function newStrategyState() {
     bestPulls: 0,
     regretHistory: [],
     lastArm: null,
+    lastDecision: null,
   };
 }
 
@@ -91,9 +120,7 @@ function normalSample(mean, deviation) {
 }
 
 function gammaSample(shape) {
-  if (shape < 1) {
-    return gammaSample(shape + 1) * Math.pow(Math.random(), 1 / shape);
-  }
+  if (shape < 1) return gammaSample(shape + 1) * Math.pow(Math.random(), 1 / shape);
   const d = shape - 1 / 3;
   const c = 1 / Math.sqrt(9 * d);
   while (true) {
@@ -102,7 +129,7 @@ function gammaSample(shape) {
     if (vBase <= 0) continue;
     const v = vBase * vBase * vBase;
     const u = Math.random();
-    if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+    if (u < 1 - 0.0331 * x ** 4) return d * v;
     if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
   }
 }
@@ -117,40 +144,72 @@ function argmax(values, randomTies) {
   const maximum = Math.max(...values);
   const candidates = values
     .map((value, index) => ({ value, index }))
-    .filter((item) => Math.abs(item.value - maximum) < 1e-12)
+    .filter((item) => item.value === maximum || Math.abs(item.value - maximum) < 1e-12)
     .map((item) => item.index);
-  if (randomTies && candidates.length > 1) {
-    return candidates[Math.floor(Math.random() * candidates.length)];
-  }
+  if (randomTies && candidates.length > 1) return candidates[Math.floor(Math.random() * candidates.length)];
   return candidates[0];
+}
+
+function softmax(values, temperature) {
+  const scaled = values.map((value) => value / Math.max(0.001, temperature));
+  const maximum = Math.max(...scaled);
+  const weights = scaled.map((value) => Math.exp(value - maximum));
+  const total = weights.reduce((sum, value) => sum + value, 0);
+  return weights.map((value) => value / total);
+}
+
+function sampleProbability(probabilities) {
+  let draw = Math.random();
+  for (let arm = 0; arm < probabilities.length; arm += 1) {
+    draw -= probabilities[arm];
+    if (draw <= 0) return arm;
+  }
+  return probabilities.length - 1;
+}
+
+function epsilonProbabilities(estimates) {
+  const greedy = argmax(estimates, false);
+  const probabilities = Array(means.length).fill(Number(epsilonInput.value) / means.length);
+  probabilities[greedy] += 1 - Number(epsilonInput.value);
+  return probabilities;
 }
 
 function chooseArm(key, state) {
   if (key === "epsilon") {
-    if (Math.random() < Number(epsilonInput.value)) {
-      return Math.floor(Math.random() * means.length);
-    }
-    return argmax(state.estimates, true);
+    const probabilities = epsilonProbabilities(state.estimates);
+    return { arm: sampleProbability(probabilities), scores: state.estimates.slice(), probabilities };
   }
 
   if (key === "ucb") {
-    const unvisited = state.counts.findIndex((count) => count === 0);
-    if (unvisited >= 0) return unvisited;
     const scores = state.estimates.map((estimate, arm) => {
+      if (state.counts[arm] === 0) return Number.POSITIVE_INFINITY;
       return estimate + Math.sqrt(2 * Math.log(state.pulls + 1) / state.counts[arm]);
     });
-    return argmax(scores, true);
+    const arm = argmax(scores, true);
+    const probabilities = Array(means.length).fill(0);
+    probabilities[arm] = 1;
+    return { arm, scores, probabilities };
   }
 
-  const samples = means.map((_, arm) => {
-    if (rewardSelect.value === "bernoulli") {
-      return betaSample(state.successes[arm] + 1, state.failures[arm] + 1);
-    }
-    const count = state.counts[arm];
-    const posteriorMean = count === 0 ? 0.5 : state.estimates[arm];
-    return normalSample(posteriorMean, 0.35 / Math.sqrt(count + 1));
-  });
-  return argmax(samples, true);
+  if (key === "thompson") {
+    const scores = means.map((_, arm) => {
+      if (rewardSelect.value === "bernoulli") {
+        return betaSample(state.successes[arm] + 1, state.failures[arm] + 1);
+      }
+      const count = state.counts[arm];
+      const posteriorMean = count === 0 ? Number(initialQInput.value) : state.estimates[arm];
+      return normalSample(posteriorMean, 0.35 / Math.sqrt(count + 1));
+    });
+    return { arm: argmax(scores, true), scores, probabilities: null };
+  }
+
+  if (key === "softmax") {
+    const probabilities = softmax(state.estimates, Number(temperatureInput.value));
+    return { arm: sampleProbability(probabilities), scores: probabilities.slice(), probabilities };
+  }
+
+  const probabilities = softmax(state.preferences, 1);
+  return { arm: sampleProbability(probabilities), scores: state.preferences.slice(), probabilities };
 }
 
 function sampleReward(arm) {
@@ -160,28 +219,61 @@ function sampleReward(arm) {
 
 function advanceStrategy(key) {
   const state = strategies[key];
-  const arm = chooseArm(key, state);
+  const decision = chooseArm(key, state);
+  const arm = decision.arm;
   const reward = sampleReward(arm);
+  const oldEstimate = state.estimates[arm];
+  const oldPreference = state.preferences[arm];
+  const baseline = state.pulls === 0 ? 0 : state.reward / state.pulls;
+  const bestMean = Math.max(...means);
+  const instantRegret = bestMean - means[arm];
+
   state.pulls += 1;
   state.counts[arm] += 1;
   state.reward += reward;
   state.estimates[arm] += (reward - state.estimates[arm]) / state.counts[arm];
   if (reward > 0.5) state.successes[arm] += 1;
   else state.failures[arm] += 1;
-  const bestMean = Math.max(...means);
-  state.regret += bestMean - means[arm];
+
+  if (key === "gradient") {
+    for (let candidate = 0; candidate < means.length; candidate += 1) {
+      const indicator = candidate === arm ? 1 : 0;
+      state.preferences[candidate] += Number(preferenceAlphaInput.value) * (reward - baseline) * (indicator - decision.probabilities[candidate]);
+    }
+  }
+
+  state.regret += instantRegret;
   if (means[arm] === bestMean) state.bestPulls += 1;
   state.lastArm = arm;
+  state.lastDecision = {
+    arm,
+    reward,
+    score: decision.scores[arm],
+    scores: decision.scores,
+    probabilities: decision.probabilities,
+    probability: decision.probabilities ? decision.probabilities[arm] : null,
+    oldEstimate,
+    newEstimate: state.estimates[arm],
+    instantRegret,
+    baseline,
+    oldPreference,
+    newPreference: state.preferences[arm],
+  };
   state.regretHistory.push(state.regret);
   state.regretHistory = state.regretHistory.slice(-240);
 }
 
-function performStep(skipRender) {
-  if (compareToggle.checked) {
-    Object.keys(strategyDetails).forEach(advanceStrategy);
-  } else {
-    advanceStrategy(strategySelect.value);
+function driftMeans() {
+  if (dynamicsSelect.value !== "drifting") return;
+  for (let arm = 0; arm < means.length; arm += 1) {
+    means[arm] = Math.max(0.02, Math.min(0.98, means[arm] + normalSample(0, 0.006)));
   }
+}
+
+function performStep(skipRender) {
+  if (compareToggle.checked) Object.keys(strategyDetails).forEach(advanceStrategy);
+  else advanceStrategy(strategySelect.value);
+  driftMeans();
   if (!skipRender) render();
 }
 
@@ -220,6 +312,13 @@ function updateRunButton() {
   runButton.textContent = banditText[runTimer ? "pause" : "run"][language()];
 }
 
+function updateControlAvailability() {
+  const compare = compareToggle.checked;
+  epsilonInput.disabled = strategySelect.value !== "epsilon" && !compare;
+  temperatureInput.disabled = strategySelect.value !== "softmax" && !compare;
+  preferenceAlphaInput.disabled = strategySelect.value !== "gradient" && !compare;
+}
+
 function renderEditors() {
   editorList.replaceChildren();
   means.forEach((mean, arm) => {
@@ -238,24 +337,51 @@ function renderEditors() {
     input.max = "0.98";
     input.step = "0.01";
     input.value = mean;
-    input.setAttribute(
-      "aria-label",
-      banditText.arm[language()] + " " + (arm + 1) + " " + banditText.trueMeanLabel[language()],
-    );
+    input.setAttribute("aria-label", banditText.arm[language()] + " " + (arm + 1) + " " + banditText.trueMeanLabel[language()]);
     input.addEventListener("input", () => {
       means[arm] = Number(input.value);
       value.textContent = means[arm].toFixed(2);
       setStatus("shifted");
       renderVisuals();
       renderMetrics();
+      renderDecision();
     });
     wrapper.append(top, input);
     editorList.append(wrapper);
   });
 }
 
+function syncEditors() {
+  Array.from(editorList.children).forEach((wrapper, arm) => {
+    const top = wrapper.children[0];
+    const input = wrapper.children[1];
+    top.children[0].textContent = banditText.arm[language()] + " " + (arm + 1);
+    top.children[1].textContent = means[arm].toFixed(2);
+    if (document.activeElement !== input) input.value = means[arm];
+  });
+}
+
+function currentEvidence(key, state) {
+  if (state.lastDecision) return { scores: state.lastDecision.scores, probabilities: state.lastDecision.probabilities };
+  if (key === "epsilon") return { scores: state.estimates, probabilities: epsilonProbabilities(state.estimates) };
+  if (key === "softmax") {
+    const probabilities = softmax(state.estimates, Number(temperatureInput.value));
+    return { scores: probabilities, probabilities };
+  }
+  if (key === "gradient") {
+    return { scores: state.preferences, probabilities: softmax(state.preferences, 1) };
+  }
+  if (key === "thompson") {
+    const scores = state.successes.map((successes, arm) => (successes + 1) / (successes + state.failures[arm] + 2));
+    return { scores, probabilities: null };
+  }
+  const scores = state.estimates.map((estimate, arm) => state.counts[arm] === 0 ? Number.POSITIVE_INFINITY : estimate + Math.sqrt(2 * Math.log(state.pulls + 1) / state.counts[arm]));
+  return { scores, probabilities: null };
+}
+
 function renderVisuals() {
   const state = strategies[strategySelect.value];
+  const evidence = currentEvidence(strategySelect.value, state);
   visuals.replaceChildren();
   means.forEach((mean, arm) => {
     const card = document.createElement("article");
@@ -276,10 +402,10 @@ function renderVisuals() {
     const title = document.createElement("h3");
     title.textContent = banditText.arm[language()] + " " + (arm + 1);
     const stats = document.createElement("p");
-    stats.textContent =
-      banditText.trueMean[language()] + " " + mean.toFixed(2) + " · " +
+    const probability = evidence.probabilities ? " · π " + (evidence.probabilities[arm] * 100).toFixed(1) + "%" : "";
+    stats.textContent = banditText.trueMean[language()] + " " + mean.toFixed(2) + " · " +
       banditText.estimate[language()] + " " + state.estimates[arm].toFixed(2) + " · " +
-      banditText.pulls[language()] + " " + state.counts[arm];
+      banditText.pulls[language()] + " " + state.counts[arm] + probability;
     card.append(bars, title, stats);
     visuals.append(card);
   });
@@ -306,9 +432,9 @@ function chartPoints(history, maximum) {
 function renderChart() {
   const allValues = Object.values(strategies).flatMap((state) => state.regretHistory);
   const maximum = Math.max(1, ...allValues);
-  document.querySelector("#regret-epsilon").setAttribute("points", chartPoints(strategies.epsilon.regretHistory, maximum));
-  document.querySelector("#regret-ucb").setAttribute("points", chartPoints(strategies.ucb.regretHistory, maximum));
-  document.querySelector("#regret-thompson").setAttribute("points", chartPoints(strategies.thompson.regretHistory, maximum));
+  for (const key of Object.keys(strategyDetails)) {
+    document.querySelector("#regret-" + key).setAttribute("points", chartPoints(strategies[key].regretHistory, maximum));
+  }
 }
 
 function renderAlgorithm() {
@@ -317,27 +443,101 @@ function renderAlgorithm() {
   document.querySelector("#bandit-algorithm-badge").textContent = detail.badge;
   document.querySelector("#bandit-formula").textContent = detail.formula;
   document.querySelector("#bandit-explanation").textContent = detail[language()];
-  document.querySelector("#bandit-mode").textContent =
-    banditText[compareToggle.checked ? "compare" : "single"][language()];
-  epsilonInput.disabled = strategySelect.value !== "epsilon" && !compareToggle.checked;
+  document.querySelector("#bandit-mode").textContent = banditText[compareToggle.checked ? "compare" : "single"][language()];
+  updateControlAvailability();
+}
+
+function formatEvidence(value) {
+  if (value === null || value === undefined) return "—";
+  if (!Number.isFinite(value)) return "∞";
+  return Number(value).toFixed(4);
+}
+
+function renderDecision() {
+  const key = strategySelect.value;
+  const state = strategies[key];
+  const decision = state.lastDecision;
+  document.querySelector("#bandit-decision-strategy").textContent = strategyDetails[key].name;
+  if (!decision) {
+    document.querySelector("#bandit-decision-equation").textContent = banditText.noDecision[language()];
+    for (const suffix of ["arm", "reward", "score", "probability", "old", "new", "regret", "baseline"]) {
+      document.querySelector("#decision-" + suffix).textContent = "—";
+    }
+  } else {
+    const gradient = key === "gradient";
+    document.querySelector("#bandit-decision-equation").textContent = gradient
+      ? "Hnew = " + decision.oldPreference.toFixed(4) + " + " + Number(preferenceAlphaInput.value).toFixed(2) +
+        " × (" + decision.reward.toFixed(4) + " − " + decision.baseline.toFixed(4) + ") × (1 − " +
+        decision.probability.toFixed(4) + ") = " + decision.newPreference.toFixed(4)
+      : "Qnew = " + decision.oldEstimate.toFixed(4) + " + (" + decision.reward.toFixed(4) + " − " +
+        decision.oldEstimate.toFixed(4) + ") / " + state.counts[decision.arm] + " = " + decision.newEstimate.toFixed(4);
+    document.querySelector("#decision-arm").textContent = banditText.arm[language()] + " " + (decision.arm + 1);
+    document.querySelector("#decision-reward").textContent = decision.reward.toFixed(4);
+    document.querySelector("#decision-score").textContent = formatEvidence(decision.score);
+    document.querySelector("#decision-probability").textContent = decision.probability === null ? banditText.unavailable[language()] : (decision.probability * 100).toFixed(2) + "%";
+    document.querySelector("#decision-old").textContent = (gradient ? decision.oldPreference : decision.oldEstimate).toFixed(4);
+    document.querySelector("#decision-new").textContent = (gradient ? decision.newPreference : decision.newEstimate).toFixed(4);
+    document.querySelector("#decision-regret").textContent = decision.instantRegret.toFixed(4);
+    document.querySelector("#decision-baseline").textContent = decision.baseline.toFixed(4);
+  }
+  renderScoreTable();
+}
+
+function renderScoreTable() {
+  const key = strategySelect.value;
+  const state = strategies[key];
+  const evidence = currentEvidence(key, state);
+  const table = document.querySelector("#bandit-score-table");
+  table.replaceChildren();
+  document.querySelector("#decision-table-kind").textContent = strategyDetails[key].evidence[language()];
+  means.forEach((_, arm) => {
+    const row = document.createElement("div");
+    row.className = "bandit-score-row";
+    if (state.lastArm === arm) row.classList.add("is-selected");
+    const name = document.createElement("strong");
+    name.textContent = banditText.arm[language()] + " " + (arm + 1);
+    const estimate = document.createElement("span");
+    estimate.textContent = "Q " + state.estimates[arm].toFixed(4);
+    const score = document.createElement("code");
+    score.textContent = banditText.score[language()] + " " + formatEvidence(evidence.scores[arm]);
+    const probability = document.createElement("code");
+    probability.textContent = evidence.probabilities ? "π " + (evidence.probabilities[arm] * 100).toFixed(2) + "%" : "N " + state.counts[arm];
+    row.append(name, estimate, score, probability);
+    table.append(row);
+  });
 }
 
 function render() {
   renderAlgorithm();
+  syncEditors();
   renderVisuals();
   renderMetrics();
   renderChart();
+  renderDecision();
   updateRunButton();
+}
+
+function updateRange(input, output, suffix) {
+  output.textContent = Number(input.value).toFixed(input.step === "1" ? 0 : 2) + (suffix || "");
 }
 
 strategySelect.addEventListener("change", render);
 rewardSelect.addEventListener("change", () => resetStrategies("reset"));
+dynamicsSelect.addEventListener("change", () => setStatus("shifted"));
 compareToggle.addEventListener("change", render);
 epsilonInput.addEventListener("input", () => {
-  document.querySelector("#bandit-epsilon-output").textContent = Number(epsilonInput.value).toFixed(2);
+  updateRange(epsilonInput, document.querySelector("#bandit-epsilon-output"));
+  render();
 });
+temperatureInput.addEventListener("input", () => {
+  updateRange(temperatureInput, document.querySelector("#bandit-temperature-output"));
+  render();
+});
+preferenceAlphaInput.addEventListener("input", () => updateRange(preferenceAlphaInput, document.querySelector("#bandit-preference-output")));
+initialQInput.addEventListener("input", () => updateRange(initialQInput, document.querySelector("#bandit-initial-output")));
+initialQInput.addEventListener("change", () => resetStrategies("reset"));
 speedInput.addEventListener("input", () => {
-  document.querySelector("#bandit-speed-output").textContent = speedInput.value + "×";
+  updateRange(speedInput, document.querySelector("#bandit-speed-output"), "×");
   restartRun();
 });
 stepButton.addEventListener("click", () => performStep(false));

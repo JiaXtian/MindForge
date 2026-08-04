@@ -7,6 +7,8 @@ const pages = [
   "note-template.html",
   "gridworld.html",
   "bandit.html",
+  "prediction.html",
+  "mountain-car.html",
   "404.html",
 ];
 
@@ -73,21 +75,41 @@ if (englishSections !== 6 || chineseSections !== 6) {
 }
 
 const gridworld = readFileSync("gridworld.html", "utf8");
-for (const algorithm of ["value", "policy", "qlearning", "sarsa", "expected"]) {
+for (const algorithm of ["value", "policy", "qlearning", "sarsa", "expected", "dyna", "double"]) {
   if (!gridworld.includes('value="' + algorithm + '"')) {
     errors.push("Gridworld is missing algorithm: " + algorithm);
   }
 }
-for (const environment of ["grid", "cliff", "windy", "maze"]) {
+for (const environment of ["grid", "cliff", "windy", "maze", "frozen", "fourrooms"]) {
   if (!gridworld.includes('value="' + environment + '"')) {
     errors.push("Gridworld is missing environment: " + environment);
   }
 }
 
 const bandit = readFileSync("bandit.html", "utf8");
-for (const strategy of ["epsilon", "ucb", "thompson"]) {
+for (const strategy of ["epsilon", "ucb", "thompson", "softmax", "gradient"]) {
   if (!bandit.includes('value="' + strategy + '"')) {
     errors.push("Bandit lab is missing strategy: " + strategy);
+  }
+}
+
+const prediction = readFileSync("prediction.html", "utf8");
+for (const algorithm of ["mc", "td0", "nstep", "lambda"]) {
+  if (!prediction.includes('value="' + algorithm + '"')) {
+    errors.push("Prediction lab is missing algorithm: " + algorithm);
+  }
+}
+
+const mountainCar = readFileSync("mountain-car.html", "utf8");
+for (const algorithm of ["qlearning", "sarsa", "expected", "lambda"]) {
+  if (!mountainCar.includes('value="' + algorithm + '"')) {
+    errors.push("Mountain Car is missing algorithm: " + algorithm);
+  }
+}
+
+for (const requiredDetail of ["q-table-body", "transition-log", "update-equation"]) {
+  if (!gridworld.includes('id="' + requiredDetail + '"')) {
+    errors.push("Gridworld is missing detail visualization: " + requiredDetail);
   }
 }
 
@@ -97,6 +119,8 @@ const publicFiles = [
   "note-template.html",
   "gridworld.html",
   "bandit.html",
+  "prediction.html",
+  "mountain-car.html",
   "app.js",
   "README.md",
   "sitemap.xml",
@@ -119,7 +143,8 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    "MindForge validation passed: 6 bilingual pages, 2 interactive labs, " +
-      "5 Gridworld algorithms, 4 environments, 3 bandit strategies, and no legacy chapters.",
+    "MindForge validation passed: 8 bilingual pages, 4 interactive labs, " +
+      "7 Gridworld algorithms, 6 environments, 5 bandit strategies, 4 prediction methods, " +
+      "4 Mountain Car controllers, and no legacy chapters.",
   );
 }
