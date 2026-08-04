@@ -1,94 +1,164 @@
 const translations = {
   zh: {
     skip: "跳到正文",
-    navLibrary: "知识库",
-    navPrinciples: "学习原则",
-    navJourney: "学习路径",
-    navLatest: "最新文章",
-    heroEyebrow: "一份持续生长的人工智能学习指南",
-    heroTitleLine1: "锻造理解，",
-    heroTitleLine2: "从第一性原理出发。",
-    heroCopy:
-      "MindForge 是我的人工智能学习档案：记录模型之下的数学、经得住推敲的思想，以及那些仍值得继续追问的问题。",
-    heroPrimary: "阅读最新章节",
-    heroSecondary: "探索知识库",
-    statEssays: "篇长文",
-    statTracks: "条学习主线",
-    statQuestions: "个开放问题",
-    libraryEyebrow: "知识地图",
-    libraryTitle: "按照认知层次，组织学习。",
-    libraryCopy: "每个集合关注不同层次：数学基础、模型机制、论文阅读，以及动手构建之后留下的经验。",
-    statusLive: "已发布",
-    statusDrafting: "撰写中",
-    statusCollecting: "整理中",
-    statusPlanned: "计划中",
-    linearKicker: "数学 · 约 120 分钟",
-    linearTitle: "机器学习中的线性代数",
-    linearCopy: "严格推导基表示、秩—零度、投影、谱理论、SVD、梯度、注意力与条件数，再把每个结论翻译成几何直觉和机器学习中的实际后果。",
-    openChapter: "打开章节",
-    probKicker: "概率论 · 约 150 分钟",
-    probTitle: "机器学习中的概率论",
-    probCopy:
-      "从概率公理出发，严格讲清贝叶斯决策、似然、KL、EM、Monte Carlo、变分学习与 conformal coverage，以及每项保证依赖的条件。",
-    modelKicker: "大模型 · 约 160 分钟",
-    modelTitle: "大语言模型详解",
-    modelCopy:
-      "沿着数学与系统逻辑讲清注意力、残差流、GPT 与 BERT 目标、scaling、DPO、KV cache、检索、智能体、LoRA、RoPE、校准与部署边界。",
-    paperKicker: "论文笔记",
-    paperTitle: "值得留下的思想",
-    paperCopy: "提炼那些改变我思考方式的论文：核心论证、图示、质疑和能够穿越时间的启发。",
-    labKicker: "实验手记",
-    labTitle: "构建、测量、反思",
-    labCopy: "记录实验、实现细节、失败的假设，以及一个可用系统背后的工程选择。",
-    principlesEyebrow: "学习原则",
-    principlesTitle: "理解是建造出来的，不是收集来的。",
-    principlesCopy:
-      "这些笔记不是定义的仓库。我希望从假设出发重建每个概念，用例子检验它，再让抽象符号回到可以被看见和想象的对象。",
-    principleOneTitle: "从问题开始。",
-    principleOneCopy: "只有先看见是什么问题迫使一个公式出现，公式本身才真正有意义。",
-    principleTwoTitle: "在多种视角间切换。",
-    principleTwoCopy: "代数、几何、计算和直觉，应当能够相互解释。",
-    principleThreeTitle: "保留探索的痕迹。",
-    principleThreeCopy: "困惑、修订和失败的尝试，本来就是学习记录的一部分。",
-    journeyEyebrow: "学习旅程",
-    journeyTitle: "地图随着疆域一同生长。",
-    journeyCopy: "MindForge 会一次认真增加一个章节。路线图保持公开，让尚未完成的问题也清晰可见。",
-    phaseOneTitle: "数学基础",
-    phaseOneCopy: "线性代数 · 概率论 · 微积分 · 优化",
-    phaseTwoTitle: "经典机器学习",
-    phaseTwoCopy: "回归 · 决策树 · 核方法 · 集成学习 · 评估",
-    ongoing: "持续进行",
-    phaseThreeTitle: "深度学习与前沿",
-    phaseThreeCopy: "神经网络 · Transformer · 智能体 · 对齐 · ……",
-    closingEyebrow: "最新发布",
-    closingTitle: "让不确定性在决策真正发生前变得可见。",
-    closingButton: "阅读《机器学习中的概率论》",
-    footerCopy: "以好奇、严谨与反复修订，锻造每一篇笔记。",
-    linearHeroOne: "线性代数：",
-    linearHeroTwo: "机器学习的空间语言",
-    linearDeck: "从第一性原理出发：理解向量如何编码数据、矩阵如何改变空间、分解如何显露结构，以及现代模型怎样把几何转化为学习。",
-    metaUpdated: "更新于 2026 年 7 月",
-    metaLevel: "基础 → 进阶",
-    metaTopics: "11 章 · 24 组核心推导",
-    llmKicker: "大模型 · 约 160 分钟",
-    llmHeroOne: "大语言模型详解：",
-    llmHeroTwo: "从 Transformer 到智能体",
-    llmDeck:
-      "从第一性原理出发：理解现代语言模型如何把 token 转化为表示，如何扩展 Transformer 计算，如何从人类偏好中学习，如何检索知识、使用工具，并成为可部署的 AI 系统。",
-    llmMetaUpdated: "更新于 2026 年 7 月",
-    llmMetaLevel: "Transformer → 前沿系统",
-    llmMetaTopics: "12 章 · 20 组核心推导",
-    probHeroOne: "概率论：",
-    probHeroTwo: "机器学习的不确定性语言",
-    probDeck:
-      "从第一性原理出发：理解概率如何描述数据生成过程，贝叶斯公式如何更新信念，分类器如何做决策，以及现代模型怎样使用似然、熵、采样和校准。",
-    probMetaUpdated: "更新于 2026 年 7 月",
-    probMetaLevel: "概率基础 → 概率机器学习",
-    probMetaTopics: "12 章 · 25 组核心推导",
-    tocLabel: "本页目录",
+    navLabs: "算法实验室",
+    navNotes: "学习笔记",
+    navRoadmap: "学习路线",
+    navStartLab: "打开实验室",
+    navHome: "首页",
+    navGrid: "网格世界",
+    navBandit: "多臂老虎机",
     themeToDark: "切换到深色模式",
     themeToLight: "切换到浅色模式",
-    languageLabel: "Switch to English"
+    languageLabel: "Switch to English",
+    heroEyebrow: "一份强化学习实践笔记",
+    heroTitleLine1: "在行动中学习，",
+    heroTitleLine2: "让价值显现。",
+    heroCopy: "MindForge 记录我的强化学习历程，并把核心算法变成可以暂停、单步执行、重置和重新塑造的实验。",
+    heroPrimary: "进入网格世界实验室",
+    heroSecondary: "探索全部实验",
+    statLabs: "个交互实验室",
+    statAlgorithms: "种经典算法",
+    statExperiments: "次可重复实验",
+    libraryEyebrow: "交互式实验室",
+    libraryTitle: "只改变一条规则，观察学习如何改变。",
+    libraryCopy: "实验室会显露训练循环通常隐藏的状态、策略、价值估计、不确定性与遗憾。",
+    statusInteractive: "可交互",
+    statusReady: "等待生长",
+    statusReusable: "可复用",
+    statusPlanned: "计划中",
+    gridKicker: "4 种环境 · 5 种算法",
+    gridTitle: "网格世界控制实验室",
+    gridCopy: "在普通网格、悬崖、风场和迷宫中比较价值迭代、策略迭代、Q-learning、SARSA 与 Expected SARSA。",
+    banditKicker: "可调奖励分布",
+    banditTitle: "多臂老虎机实验室",
+    banditCopy: "把 ε-greedy、UCB1 与 Thompson sampling 放进同一奖励环境，比较收益、不确定性与累积遗憾。",
+    openLab: "打开实验室",
+    notesKicker: "个人学习记录",
+    notesTitle: "强化学习笔记",
+    notesCopy: "一座刻意留空的书架，用来逐步记录定义、推导、实验、错误与学习过程中产生的问题。",
+    openNotes: "打开笔记库",
+    templateKicker: "双语写作骨架",
+    templateTitle: "学习笔记模板",
+    templateCopy: "为问题、假设、推导、实验、修正与下一步提供清晰结构，中英文内容在源码中成对维护。",
+    openTemplate: "查看模板",
+    futureKicker: "函数逼近",
+    futureTitle: "策略梯度与深度控制",
+    futureCopy: "后续实验将把表格型直觉连接到 DQN、REINFORCE、Actor-Critic 与连续控制。",
+    principlesEyebrow: "如何使用实验室",
+    principlesTitle: "把循环放慢，直到每一步都能被读懂。",
+    principlesCopy: "当每次状态转移都能对应一次更新、一个估计变化和一个后续决策时，强化学习才会真正直观。",
+    principleOneTitle: "训练前先观察。",
+    principleOneCopy: "辨认状态、可选动作、奖励、终止条件，以及智能体究竟能看到哪些信息。",
+    principleTwoTitle: "一次只改变一个变量。",
+    principleTwoCopy: "调整 γ、α、ε 或环境时保持其他条件不变，再比较轨迹和学习曲线。",
+    principleThreeTitle: "记录意外。",
+    principleThreeCopy: "失败策略或不稳定估计是在揭示算法假设，而不是浪费时间。",
+    journeyEyebrow: "学习路线",
+    journeyTitle: "从 Bellman 更新走向学到的行为。",
+    journeyCopy: "路线按照知识依赖展开；只有当概念在学习和实验中真正清晰时，新的笔记与实验才会加入。",
+    phaseNow: "当前",
+    phaseNext: "下一阶段",
+    phaseLater: "后续",
+    phaseOneTitle: "MDP 与规划",
+    phaseOneCopy: "回报 · Bellman 方程 · 价值迭代 · 策略迭代",
+    phaseTwoTitle: "从经验中学习",
+    phaseTwoCopy: "Monte Carlo · TD · SARSA · Q-learning · 探索",
+    phaseThreeTitle: "深度强化学习",
+    phaseThreeCopy: "DQN · 策略梯度 · Actor-Critic · Offline RL · RLHF",
+    closingEyebrow: "从一次状态转移开始",
+    closingTitle: "当你能看见策略改变，策略就更容易理解。",
+    closingButton: "运行网格世界实验室",
+    footerCopy: "一份通过实验、修正与重复逐渐形成的强化学习笔记。",
+    notesPageEyebrow: "学习记录",
+    notesPageTitle: "笔记从这里开始生长。",
+    notesPageDeck: "这里暂时不放预先生成的章节。每一篇内容都将在实际学习、推导和实验之后，由你逐步写入。",
+    notesEmptyLabel: "当前状态",
+    notesEmptyTitle: "书架还是空的，这正是设计的一部分。",
+    notesEmptyCopy: "复制笔记模板，修改标题与章节，在学习过程中保留问题、推导、实验结果和修正痕迹。",
+    notesTemplateButton: "打开笔记模板",
+    notesGuideTitle: "建议的记录节奏",
+    notesGuideOne: "先写下真正不明白的问题，而不是从定义开始抄写。",
+    notesGuideTwo: "推导时显式写出条件、符号形状和每一步依据。",
+    notesGuideThree: "用一个可重复实验检验直觉，并保存失败结果。",
+    notesGuideFour: "最后区分已经理解的结论与仍需追问的问题。",
+    templateEyebrow: "可复制模板",
+    templatePageTitle: "强化学习学习笔记",
+    templatePageDeck: "复制此页面并替换占位文本。英文与中文块保持相同章节顺序，便于持续同步。",
+    templateMetaTopic: "主题：……",
+    templateMetaDate: "日期：……",
+    templateMetaStatus: "状态：草稿",
+    templateUseTitle: "使用方式",
+    templateUseCopy: "在源码中搜索 EDIT HERE。先复制文件并改名，再同时编辑 en 与 zh 内容块；不要直接把模板本身写成某一篇笔记。",
+    backToNotes: "返回笔记库",
+    labEyebrow: "交互式强化学习实验室",
+    gridHeroTitle: "让 Bellman 更新在网格上变得可见。",
+    gridHeroDeck: "选择环境和算法，调整超参数，然后单步观察价值、策略、TD 误差与轨迹如何改变。",
+    banditHeroTitle: "在探索与利用之间做可见的选择。",
+    banditHeroDeck: "改变每个臂的真实奖励率，比较三种探索策略如何形成估计、承担遗憾并找到最优动作。",
+    controlPanel: "实验控制台",
+    environment: "环境",
+    algorithm: "算法",
+    rewardModel: "奖励模型",
+    gamma: "折扣因子 γ",
+    alpha: "学习率 α",
+    epsilon: "探索率 ε",
+    speed: "运行速度",
+    singleStep: "单步执行",
+    autoRun: "自动运行",
+    pause: "暂停",
+    reset: "重置",
+    trainBatch: "训练 50 回合",
+    compareMode: "同时比较三种策略",
+    metricSweep: "更新轮次",
+    metricStep: "交互步数",
+    metricEpisode: "回合数",
+    metricReturn: "最近回报",
+    metricSignal: "更新信号",
+    metricPulls: "拉杆次数",
+    metricReward: "累计奖励",
+    metricRegret: "累计遗憾",
+    metricBest: "最优臂命中率",
+    chartReturn: "回报轨迹",
+    chartRegret: "累积遗憾",
+    chartRecent: "最近 80 个回合或更新轮次",
+    algorithmLens: "当前算法",
+    editGridHint: "点击普通格子可以添加或移除障碍；修改环境会重置当前学习状态。",
+    armEditorTitle: "奖励环境",
+    armEditorCopy: "拖动滑块改变每个臂的真实期望奖励。算法只能看到采样结果，不能直接读取这些数值。",
+    whatToWatch: "观察重点",
+    gridWatchOne: "规划算法每一步更新整张价值表；TD 算法每一步只使用一条真实经验。",
+    gridWatchTwo: "Q-learning 使用下一状态的最大 Q 值，SARSA 使用行为策略实际选择的下一动作。",
+    gridWatchThree: "提高 ε 会增加探索；提高 γ 会让遥远奖励更早影响当前状态。",
+    banditWatchOne: "ε-greedy 以固定概率探索，因此即使已经找到好臂也会继续随机试验。",
+    banditWatchTwo: "UCB 根据访问次数构造乐观上界，优先检查尚不确定的臂。",
+    banditWatchThree: "Thompson sampling 从后验中抽样，把不确定性直接转换成选择概率。",
+    environmentGrid: "经典网格",
+    environmentCliff: "悬崖行走",
+    environmentWindy: "风场网格",
+    environmentMaze: "迷宫",
+    algorithmValue: "价值迭代",
+    algorithmPolicy: "策略迭代",
+    algorithmQ: "Q-learning",
+    algorithmSarsa: "SARSA",
+    algorithmExpected: "Expected SARSA",
+    algorithmEpsilon: "ε-greedy",
+    algorithmUcb: "UCB1",
+    algorithmThompson: "Thompson sampling",
+    rewardBernoulli: "Bernoulli 奖励",
+    rewardGaussian: "Gaussian 奖励",
+    armTrueMean: "真实均值",
+    armEstimate: "估计",
+    armPulls: "次数",
+    legendAgent: "智能体",
+    legendGoal: "目标",
+    legendWall: "障碍",
+    legendHazard: "危险区域",
+    fiveArms: "5 个臂",
+    labResetStatus: "实验已重置。",
+    runStatus: "正在自动运行",
+    pausedStatus: "实验已暂停。",
+    footerLabCopy: "所有计算都在浏览器本地完成；刷新页面即可从干净状态重新开始。"
   }
 };
 
@@ -96,6 +166,10 @@ const root = document.documentElement;
 const themeToggle = document.querySelector("#theme-toggle");
 const languageToggle = document.querySelector("#language-toggle");
 const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+function currentLanguage() {
+  return root.lang === "zh-CN" ? "zh" : "en";
+}
 
 function getInitialTheme() {
   const saved = localStorage.getItem("mindforge-theme");
@@ -106,13 +180,12 @@ function getInitialTheme() {
 function setTheme(theme) {
   root.dataset.theme = theme;
   localStorage.setItem("mindforge-theme", theme);
-  const language = root.lang === "zh-CN" ? "zh" : "en";
-  const label =
-    language === "zh"
-      ? translations.zh[theme === "light" ? "themeToDark" : "themeToLight"]
-      : `Switch to ${theme === "light" ? "dark" : "light"} theme`;
-  themeToggle?.setAttribute("aria-label", label);
+  const isChinese = currentLanguage() === "zh";
+  const key = theme === "light" ? "themeToDark" : "themeToLight";
+  const english = theme === "light" ? "Switch to dark theme" : "Switch to light theme";
+  themeToggle?.setAttribute("aria-label", isChinese ? translations.zh[key] : english);
   themeMeta?.setAttribute("content", theme === "dark" ? "#111310" : "#f2efe7");
+  window.dispatchEvent(new CustomEvent("mindforge:theme", { detail: { theme } }));
 }
 
 function setLanguage(language) {
@@ -130,9 +203,9 @@ function setLanguage(language) {
     element.hidden = element.dataset.langContent !== language;
   });
 
-  if (window.MathJax?.typesetPromise) {
-    window.MathJax.typesetPromise();
-  }
+  document.querySelectorAll("[data-copy-en][data-copy-zh]").forEach((element) => {
+    element.textContent = isChinese ? element.dataset.copyZh : element.dataset.copyEn;
+  });
 
   if (languageToggle) {
     languageToggle.querySelector(".current-language").textContent = isChinese ? "中" : "EN";
@@ -140,12 +213,12 @@ function setLanguage(language) {
     languageToggle.setAttribute("aria-label", isChinese ? translations.zh.languageLabel : "切换到中文");
   }
 
-  if (document.body.dataset.page === "article") {
-    document.title = isChinese
-      ? document.body.dataset.titleZh ?? "机器学习中的线性代数 — MindForge"
-      : document.body.dataset.titleEn ?? "Linear Algebra for Machine Learning — MindForge";
+  if (document.body.dataset.titleEn) {
+    document.title = isChinese ? document.body.dataset.titleZh : document.body.dataset.titleEn;
   }
+
   setTheme(root.dataset.theme);
+  window.dispatchEvent(new CustomEvent("mindforge:language", { detail: { language } }));
 }
 
 setTheme(getInitialTheme());
@@ -156,36 +229,22 @@ themeToggle?.addEventListener("click", () => {
 });
 
 languageToggle?.addEventListener("click", () => {
-  setLanguage(root.lang === "zh-CN" ? "en" : "zh");
+  setLanguage(currentLanguage() === "zh" ? "en" : "zh");
 });
 
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.08 }
-);
-
-document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
-
-const progressBar = document.querySelector(".reading-progress span");
-if (progressBar) {
-  const updateProgress = () => {
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
-    progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, progress))})`;
-  };
-  updateProgress();
-  window.addEventListener("scroll", updateProgress, { passive: true });
+if ("IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08 },
+  );
+  document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
+} else {
+  document.querySelectorAll(".reveal").forEach((element) => element.classList.add("is-visible"));
 }
-
-document.querySelectorAll(".toc a").forEach((link) => {
-  link.addEventListener("click", () => {
-    document.querySelector(".toc-panel")?.removeAttribute("open");
-  });
-});

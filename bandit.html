@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive bilingual multi-armed bandit laboratory comparing epsilon-greedy, UCB1, and Thompson sampling."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Multi-Armed Bandit Lab — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+    <script src="bandit.js" defer></script>
+  </head>
+  <body
+    data-page="bandit"
+    data-title-en="Multi-Armed Bandit Lab — MindForge"
+    data-title-zh="多臂老虎机实验室 — MindForge"
+  >
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span><span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="notes.html" data-i18n="navNotes">Notes</a>
+        <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero">
+        <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
+        <h1 class="reveal" data-i18n="banditHeroTitle">Make the exploration–exploitation choice visible.</h1>
+        <p class="page-deck reveal" data-i18n="banditHeroDeck">
+          Change each arm's true reward rate, then compare how three exploration strategies form estimates,
+          accumulate regret, and discover the best action.
+        </p>
+      </header>
+
+      <section class="lab-shell">
+        <div class="lab-toolbar" aria-label="Bandit controls">
+          <div class="control-group">
+            <label for="strategy-select" data-i18n="algorithm">Algorithm</label>
+            <select id="strategy-select">
+              <option value="epsilon" data-i18n="algorithmEpsilon">ε-greedy</option>
+              <option value="ucb" data-i18n="algorithmUcb">UCB1</option>
+              <option value="thompson" data-i18n="algorithmThompson">Thompson sampling</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="reward-select" data-i18n="rewardModel">Reward model</label>
+            <select id="reward-select">
+              <option value="bernoulli" data-i18n="rewardBernoulli">Bernoulli reward</option>
+              <option value="gaussian" data-i18n="rewardGaussian">Gaussian reward</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="bandit-epsilon" data-i18n="epsilon">Exploration ε</label>
+            <div class="range-line">
+              <input id="bandit-epsilon" type="range" min="0" max="1" step="0.01" value="0.12" />
+              <output id="bandit-epsilon-output">0.12</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="bandit-speed" data-i18n="speed">Run speed</label>
+            <div class="range-line">
+              <input id="bandit-speed" type="range" min="1" max="10" step="1" value="6" />
+              <output id="bandit-speed-output">6×</output>
+            </div>
+          </div>
+          <div class="control-group" style="grid-column: span 2">
+            <span class="control-label" data-i18n="compareMode">Compare all three strategies</span>
+            <label class="toggle-control">
+              <input id="compare-toggle" type="checkbox" />
+              <span data-copy-en="Advance ε-greedy, UCB1, and Thompson sampling together" data-copy-zh="让 ε-greedy、UCB1 与 Thompson sampling 同时前进">Advance ε-greedy, UCB1, and Thompson sampling together</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="lab-actions">
+          <button class="lab-button is-primary" id="bandit-step" type="button" data-i18n="singleStep">Single step</button>
+          <button class="lab-button" id="bandit-run" type="button" data-i18n="autoRun">Auto run</button>
+          <button class="lab-button" id="bandit-reset" type="button" data-i18n="reset">Reset</button>
+          <button class="lab-button" id="bandit-batch" type="button" data-copy-en="Run 500 pulls" data-copy-zh="执行 500 次拉杆">Run 500 pulls</button>
+          <div class="lab-status" id="bandit-status" aria-live="polite">Experiment ready.</div>
+        </div>
+
+        <div class="bandit-layout">
+          <aside class="arm-editor">
+            <div class="card-heading">
+              <h2 data-i18n="armEditorTitle">Reward environment</h2>
+              <span data-i18n="fiveArms">5 arms</span>
+            </div>
+            <p class="small-copy" data-i18n="armEditorCopy">
+              Drag a slider to change an arm's true expected reward. The algorithms see samples, not these values.
+            </p>
+            <div class="arm-list" id="arm-editor-list"></div>
+          </aside>
+
+          <div class="bandit-stage">
+            <div class="lab-stage">
+              <div class="stage-topline">
+                <strong id="strategy-name">ε-greedy</strong>
+                <span id="bandit-mode">single strategy</span>
+              </div>
+              <div class="arm-visuals" id="arm-visuals" aria-label="Bandit arm estimates"></div>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric-card"><span data-i18n="metricPulls">Pulls</span><strong id="metric-pulls">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricReward">Cumulative reward</span><strong id="metric-reward">0.0</strong></div>
+              <div class="metric-card"><span data-i18n="metricRegret">Cumulative regret</span><strong id="metric-regret">0.0</strong></div>
+              <div class="metric-card"><span data-i18n="metricBest">Best-arm rate</span><strong id="metric-best">0%</strong></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="card-heading">
+                <h2 data-i18n="chartRegret">Cumulative regret</h2>
+                <div class="strategy-legend">
+                  <span><i></i> ε-greedy</span>
+                  <span><i></i> UCB1</span>
+                  <span><i></i> Thompson</span>
+                </div>
+              </div>
+              <svg class="lab-chart" id="regret-chart" viewBox="0 0 700 180" role="img" aria-label="Cumulative regret chart">
+                <line class="chart-axis" x1="32" y1="8" x2="32" y2="154"></line>
+                <line class="chart-axis" x1="32" y1="154" x2="690" y2="154"></line>
+                <polyline class="chart-line" id="regret-epsilon" points=""></polyline>
+                <polyline class="chart-line is-secondary" id="regret-ucb" points=""></polyline>
+                <polyline class="chart-line is-tertiary" id="regret-thompson" points=""></polyline>
+              </svg>
+            </div>
+
+            <div class="lab-side-card">
+              <div class="card-heading">
+                <h2 data-i18n="algorithmLens">Current algorithm</h2>
+                <span id="bandit-algorithm-badge">EPSILON-GREEDY</span>
+              </div>
+              <div class="algorithm-formula" id="bandit-formula">a = random with ε; otherwise arg max Q(a)</div>
+              <p class="algorithm-explanation" id="bandit-explanation">
+                A fixed fraction of decisions is reserved for uniform random exploration; all remaining decisions
+                use the largest sample-average estimate.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="watch">
+          <ol class="watch-list">
+            <li><strong>01 / RANDOMNESS</strong><span data-i18n="banditWatchOne">Epsilon-greedy explores at a fixed rate, so it keeps making random trials after finding a good arm.</span></li>
+            <li><strong>02 / OPTIMISM</strong><span data-i18n="banditWatchTwo">UCB builds an optimistic bound from visit counts and prioritizes arms that remain uncertain.</span></li>
+            <li><strong>03 / POSTERIOR</strong><span data-i18n="banditWatchThree">Thompson sampling draws from a posterior and converts uncertainty directly into selection probability.</span></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p>
+      <a href="gridworld.html"><span data-i18n="navGrid">Gridworld</span> ↗</a>
+    </footer>
+  </body>
+</html>

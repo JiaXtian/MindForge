@@ -1,125 +1,124 @@
 # MindForge
 
-> Forge understanding from first principles.
-
 [![Deploy to GitHub Pages](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml)
 
-MindForge is a personal, bilingual learning space for documenting ideas, notes, and reflections from an ongoing journey through artificial intelligence. It connects mathematical foundations, model mechanics, paper reading, and practical experiments in one evolving knowledge map.
+MindForge is a bilingual reinforcement learning notebook and interactive laboratory. It is designed for learning
+by changing an environment, advancing an algorithm one update at a time, and recording what the experiment
+reveals.
 
-**Live site:** [https://jiaxtian.github.io/MindForge/](https://jiaxtian.github.io/MindForge/)
+## Live Site
 
-## Highlights
+- Home: [https://jiaxtian.github.io/MindForge/](https://jiaxtian.github.io/MindForge/)
+- Gridworld Control Lab: [gridworld.html](https://jiaxtian.github.io/MindForge/gridworld.html)
+- Multi-Armed Bandit Lab: [bandit.html](https://jiaxtian.github.io/MindForge/bandit.html)
+- Notes: [notes.html](https://jiaxtian.github.io/MindForge/notes.html)
+- Reusable note template: [note-template.html](https://jiaxtian.github.io/MindForge/note-template.html)
 
-- Modern responsive interface for desktop, tablet, and mobile
-- Light and dark themes with saved browser preference
-- English-first bilingual interface with one-click Chinese switching
-- Long-form article layout with a sticky table of contents and reading progress
-- MathJax rendering for rigorous mathematical notation
-- Zero-build static architecture: no package installation or framework lock-in
-- Automated parity checks keep the long-form English and Chinese editions structurally synchronized
-- Automatic deployment to GitHub Pages on every push to `main`
+## Interactive Laboratories
 
-## Pages
+### Gridworld Control Lab
 
-| Page | Description | Link |
-| --- | --- | --- |
-| Home | Site introduction, learning collections, principles, and roadmap | [Open home](https://jiaxtian.github.io/MindForge/) |
-| Linear Algebra for Machine Learning | An 11-chapter guide covering foundations, machine-learning applications, geometry, and physical meaning | [Read the chapter](https://jiaxtian.github.io/MindForge/linear-algebra.html) |
-| Probability Theory for Machine Learning | A 12-chapter guide covering random variables, Bayes classifiers, likelihood, information theory, graphical models, sampling, generative models, uncertainty, calibration, and evaluation | [Read the chapter](https://jiaxtian.github.io/MindForge/probability.html) |
-| Large Language Models Explained | A 12-chapter guide covering Transformer architecture, GPT/BERT, pre-training, alignment, RAG, agents, multimodality, efficiency, safety, and frontier mechanisms | [Read the chapter](https://jiaxtian.github.io/MindForge/llm.html) |
+The Gridworld lab places model-based planning and model-free learning in one visual interface.
 
-## Knowledge Map
+Algorithms:
 
-1. **Mathematical Foundations** — linear algebra, probability, calculus, and optimization.
-2. **Machine Learning Models** — large language models, loss functions, optimization, generalization, and classical models.
-3. **Paper Notes** — distilled arguments, diagrams, questions, and lasting insights.
-4. **Lab Notebook** — experiments, implementation decisions, failed assumptions, and lessons learned.
+1. Value iteration
+2. Policy iteration
+3. Q-learning
+4. SARSA
+5. Expected SARSA
 
-The first three long-form chapters are live. The remaining collections are intentionally reserved as the site grows.
+Environment presets:
 
-## Linear Algebra Chapter
+1. Classic Gridworld
+2. Cliff Walking
+3. Windy Gridworld
+4. Maze
 
-The first long-form chapter contains more than 20,000 Chinese characters and a complete English edition. Every
-section includes a formal result or mechanism, a derivation, a plain-language interpretation, and an explicit
-failure boundary. Its 11 sections cover:
+The user can adjust the discount factor, learning rate, exploration rate, and playback speed. The lab supports
+single updates, automatic execution, pause, reset, 50-episode training batches, clickable obstacle editing,
+value heatmaps, policy arrows, an animated agent, update signals, and return history.
 
-1. Scalars, vectors, vector spaces, basis, and coordinates
-2. Matrices as linear transformations
-3. Linear systems, column spaces, null spaces, rank, and least squares
-4. Inner products, norms, orthogonality, projections, and similarity
-5. Eigenvalues, eigenvectors, spectral theory, and dynamical systems
-6. Singular value decomposition, conditioning, low-rank approximation, and PCA
-7. Gradients, Jacobians, Hessians, backpropagation, and optimization geometry
-8. Linear regression, regularization, kernels, and probabilistic models
-9. Embeddings, tensors, convolutions, and attention
-10. Connections among algebra, geometry, physics, and machine learning
-11. Numerical stability, implementation habits, and a continued learning map
+### Multi-Armed Bandit Lab
 
-## Probability Chapter
+The bandit lab focuses on the exploration-exploitation tradeoff.
 
-The third long-form chapter contains more than 15,000 Chinese characters and a synchronized English edition.
-Each section connects a theorem or guarantee to its assumptions, proof idea, practical meaning, and common
-misuse. Its 12 sections cover:
+Strategies:
 
-1. Probability as the language of uncertainty in learning systems
-2. Random variables, distributions, expectation, and variance
-3. Conditional probability, independence, and Bayes' rule
-4. Common distributions and the modeling assumptions they encode
-5. Likelihood, maximum likelihood, MAP, and Bayesian posterior inference
-6. Bayes classifiers, generative models, discriminative models, and calibration
-7. Entropy, cross-entropy, KL divergence, and mutual information
-8. Graphical models, latent variables, EM, and probabilistic structure
-9. Sampling, Monte Carlo, MCMC, and variational inference
-10. Generative models from mixtures to VAEs, autoregression, and diffusion
-11. Aleatoric and epistemic uncertainty, ensembles, conformal prediction, and OOD detection
-12. Evaluation, leakage, fairness, monitoring, and a practical probability checklist
+1. Epsilon-greedy
+2. UCB1
+3. Thompson sampling
 
-## LLM Chapter
+Each arm's true expected reward can be changed while the experiment is running. Bernoulli and Gaussian rewards
+are supported. The interface shows sample-average estimates, visit counts, cumulative reward, pseudo-regret,
+best-arm selection rate, and regret curves. A comparison mode advances all three strategies together.
 
-The LLM long-form chapter contains more than 16,000 Chinese characters and a synchronized English edition.
-Each section grounds a model or systems claim in an objective, derivation, complexity argument, or probabilistic
-mechanism before translating it into plain language. Its 12 sections cover:
+The interaction model was informed by Andrej Karpathy's
+[REINFORCEjs](https://cs.stanford.edu/people/karpathy/reinforcejs/), while MindForge uses its own implementation,
+adds multiple environment presets and algorithms, and makes control, comparison, bilingual explanation, and
+mobile use first-class parts of the interface.
 
-1. Tokenization, next-token prediction, embeddings, perplexity, and compression
-2. Transformer self-attention, multi-head routing, and positional information
-3. Residual streams, normalization, MLPs, optimization, and training flow
-4. Encoder-only, decoder-only, and encoder-decoder architectures including BERT and GPT
-5. Large-scale pre-training, data quality, scaling laws, and base-model behavior
-6. Instruction tuning, RLHF, DPO, refusals, and preference alignment
-7. Decoding, sampling, context windows, KV cache, and serving constraints
-8. Prompting, reasoning traces, verification, tool use, and agents
-9. Retrieval-Augmented Generation, vector search, grounding, and memory
-10. LoRA, QLoRA, quantization, distillation, and Mixture-of-Experts systems
-11. Multimodal models, long-context mechanisms, and perception-action interfaces
-12. Evaluation, hallucination, security, privacy, and a durable frontier map
+## Notes Workflow
+
+The notes library is intentionally empty. New chapters should be created from `note-template.html` only after
+the corresponding topic has been studied.
+
+The template provides six paired English and Chinese sections:
+
+1. The question
+2. Definitions, notation, and assumptions
+3. Derivation
+4. Plain-language intuition
+5. Reproducible experiment
+6. Mistakes, revisions, and open questions
+
+To add a note:
+
+1. Duplicate `note-template.html` and give the copy a URL-safe filename.
+2. Search the copy for `EDIT HERE`.
+3. Keep the English and Chinese section order identical.
+4. Add the new page to `notes.html`, `sitemap.xml`, and `scripts/check-site.mjs`.
+5. Run the validation command before publishing.
+
+## Design and Accessibility
+
+- Responsive static pages suitable for GitHub Pages
+- English by default with persistent Chinese switching
+- Persistent light and dark themes
+- Keyboard-accessible native controls
+- Reduced-motion support
+- No backend, account, analytics, or remote training service
+- All reinforcement learning simulations run locally in the browser
 
 ## Project Structure
 
 ```text
 MindForge/
-├── .github/
-│   └── workflows/
-│       └── deploy-pages.yml
+├── index.html
+├── notes.html
+├── note-template.html
+├── gridworld.html
+├── gridworld.js
+├── bandit.html
+├── bandit.js
+├── app.js
+├── styles.css
+├── rl.css
+├── 404.html
+├── sitemap.xml
+├── robots.txt
 ├── assets/
 │   └── favicon.svg
 ├── scripts/
-│   └── check-content-parity.mjs
-├── index.html
-├── linear-algebra.html
-├── llm.html
-├── probability.html
-├── styles.css
-├── article.css
-├── app.js
-├── 404.html
-├── robots.txt
-├── sitemap.xml
-└── README.md
+│   └── check-site.mjs
+└── .github/
+    └── workflows/
+        └── deploy-pages.yml
 ```
 
-## Run Locally
+## Local Development
 
-The site has no build step. Start any static file server from the repository root:
+No installation or build step is required.
 
 ```bash
 python3 -m http.server 8000
@@ -127,50 +126,18 @@ python3 -m http.server 8000
 
 Then visit [http://localhost:8000](http://localhost:8000).
 
-Opening the HTML files directly also works, but a local server better matches GitHub Pages behavior.
-
-Before publishing article changes, verify that both language editions still contain matching sections,
-subsections, paragraphs, tables, equations, and one rigorous checkpoint in every paired section:
+Run the same structural and syntax checks used by the deployment workflow:
 
 ```bash
-node scripts/check-content-parity.mjs
+node scripts/check-site.mjs
+node --check app.js
+node --check gridworld.js
+node --check bandit.js
+node scripts/smoke-labs.mjs
 ```
-
-## Add a New Article
-
-1. Duplicate `linear-algebra.html` and rename it with a concise URL-safe filename.
-2. Keep the shared header, theme controls, language controls, and footer.
-3. Add the new article to the home-page module grid in `index.html`.
-4. Add English interface strings to the HTML and Chinese strings to `translations.zh` in `app.js`.
-5. Add the public URL to `sitemap.xml` and to the Pages table above.
-6. Push to `main`; GitHub Actions publishes the update automatically.
 
 ## Deployment
 
-The workflow in `.github/workflows/deploy-pages.yml` first checks bilingual article parity, then uploads the repository as a static Pages artifact and deploys it to the `github-pages` environment. It runs automatically on pushes to `main` and can also be started manually from the Actions tab.
-
-Repository Pages settings must use **GitHub Actions** as the publishing source. Once enabled, successful deployments are available at:
-
-```text
-https://jiaxtian.github.io/MindForge/
-```
-
-## Design Notes
-
-MindForge uses a warm editorial visual system rather than a generic dashboard layout. The interface combines:
-
-- A restrained neutral palette with a high-contrast orange accent
-- Serif display typography for long-form ideas and sans-serif body typography for clarity
-- Fine grid lines, large whitespace, and geometric details
-- Persistent theme and language preferences through `localStorage`
-- Progressive enhancement: all essential content remains readable without JavaScript
-
-## External Resources
-
-- [Google Fonts](https://fonts.google.com/) for Manrope, Newsreader, and DM Mono
-- [MathJax](https://www.mathjax.org/) for mathematical typesetting
-- [GitHub Pages](https://pages.github.com/) for hosting
-
-## License
-
-The writing and source code are currently maintained as part of this personal learning project. Unless a separate license is added, all rights are reserved.
+Pushing to `main` triggers `.github/workflows/deploy-pages.yml`. The workflow validates the page graph,
+bilingual controls, note template pairing, available algorithms and environments, JavaScript syntax, and removal
+of the previous long-form chapters before deploying the repository to GitHub Pages.

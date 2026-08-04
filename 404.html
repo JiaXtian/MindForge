@@ -1,20 +1,56 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f3f0e8" />
     <title>Page not found — MindForge</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
   </head>
-  <body>
-    <main class="closing-section" style="min-height: 100svh">
-      <p class="eyebrow">404 / LOST COORDINATE</p>
-      <h1 style="max-width: 900px; margin: 0; font-family: var(--serif); font-size: clamp(60px, 10vw, 140px); font-style: italic; font-weight: 400; letter-spacing: -0.06em; line-height: 0.9">
-        This point is outside the known space.
-      </h1>
-      <a class="button button-light" style="margin-top: 50px" href="./">Return to MindForge ↗</a>
+  <body
+    data-page="404"
+    data-title-en="Page not found — MindForge"
+    data-title-zh="页面不存在 — MindForge"
+  >
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="MindForge home">
+        <span class="brand-mark">M</span><span>MindForge</span>
+      </a>
+      <span></span>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+    <main class="closing-section" style="min-height: calc(100svh - 76px)">
+      <div data-lang-content="en">
+        <p class="eyebrow">404 / UNKNOWN STATE</p>
+        <h1 style="max-width: 900px; margin: 0; font-family: var(--serif); font-size: clamp(58px, 9vw, 130px); font-style: italic; font-weight: 400; letter-spacing: -0.06em; line-height: 0.9">
+          This state is outside the current environment.
+        </h1>
+        <a class="button button-light" style="margin-top: 50px" href="./">Reset to MindForge ↗</a>
+      </div>
+      <div data-lang-content="zh" hidden>
+        <p class="eyebrow">404 / 未知状态</p>
+        <h1 style="max-width: 900px; margin: 0; font-size: clamp(46px, 8vw, 100px); font-weight: 500; letter-spacing: -0.05em; line-height: 1.05">
+          当前环境中不存在这个状态。
+        </h1>
+        <a class="button button-light" style="margin-top: 50px" href="./">重置并返回 MindForge ↗</a>
+      </div>
     </main>
   </body>
 </html>

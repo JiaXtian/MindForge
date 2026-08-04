@@ -25,8 +25,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Check bilingual article parity
-        run: node scripts/check-content-parity.mjs
+      - name: Validate site structure and interactions
+        run: |
+          node scripts/check-site.mjs
+          node --check app.js
+          node --check gridworld.js
+          node --check bandit.js
+          node scripts/smoke-labs.mjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

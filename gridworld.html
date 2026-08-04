@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive bilingual Gridworld laboratory for value iteration, policy iteration, Q-learning, SARSA, and Expected SARSA."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Gridworld Control Lab — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+    <script src="gridworld.js" defer></script>
+  </head>
+  <body
+    data-page="gridworld"
+    data-title-en="Gridworld Control Lab — MindForge"
+    data-title-zh="网格世界控制实验室 — MindForge"
+  >
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span><span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="notes.html" data-i18n="navNotes">Notes</a>
+        <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero">
+        <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
+        <h1 class="reveal" data-i18n="gridHeroTitle">Make Bellman updates visible on a grid.</h1>
+        <p class="page-deck reveal" data-i18n="gridHeroDeck">
+          Choose an environment and algorithm, tune the hyperparameters, then step through changes in value,
+          policy, TD error, and trajectory.
+        </p>
+      </header>
+
+      <section class="lab-shell">
+        <div class="lab-toolbar" aria-label="Gridworld controls">
+          <div class="control-group">
+            <label for="environment-select" data-i18n="environment">Environment</label>
+            <select id="environment-select">
+              <option value="grid" data-i18n="environmentGrid">Classic grid</option>
+              <option value="cliff" data-i18n="environmentCliff">Cliff walking</option>
+              <option value="windy" data-i18n="environmentWindy">Windy grid</option>
+              <option value="maze" data-i18n="environmentMaze">Maze</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="algorithm-select" data-i18n="algorithm">Algorithm</label>
+            <select id="algorithm-select">
+              <option value="value" data-i18n="algorithmValue">Value iteration</option>
+              <option value="policy" data-i18n="algorithmPolicy">Policy iteration</option>
+              <option value="qlearning" data-i18n="algorithmQ">Q-learning</option>
+              <option value="sarsa" data-i18n="algorithmSarsa">SARSA</option>
+              <option value="expected" data-i18n="algorithmExpected">Expected SARSA</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="gamma-input" data-i18n="gamma">Discount γ</label>
+            <div class="range-line">
+              <input id="gamma-input" type="range" min="0" max="0.99" step="0.01" value="0.92" />
+              <output id="gamma-output">0.92</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="alpha-input" data-i18n="alpha">Learning rate α</label>
+            <div class="range-line">
+              <input id="alpha-input" type="range" min="0.01" max="1" step="0.01" value="0.28" />
+              <output id="alpha-output">0.28</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="epsilon-input" data-i18n="epsilon">Exploration ε</label>
+            <div class="range-line">
+              <input id="epsilon-input" type="range" min="0" max="1" step="0.01" value="0.16" />
+              <output id="epsilon-output">0.16</output>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="speed-input" data-i18n="speed">Run speed</label>
+            <div class="range-line">
+              <input id="speed-input" type="range" min="1" max="10" step="1" value="6" />
+              <output id="speed-output">6×</output>
+            </div>
+          </div>
+        </div>
+
+        <div class="lab-actions">
+          <button class="lab-button is-primary" id="step-button" type="button" data-i18n="singleStep">Single step</button>
+          <button class="lab-button" id="run-button" type="button" data-i18n="autoRun">Auto run</button>
+          <button class="lab-button" id="reset-button" type="button" data-i18n="reset">Reset</button>
+          <button class="lab-button" id="batch-button" type="button" data-i18n="trainBatch">Train 50 episodes</button>
+          <div class="lab-status" id="lab-status" aria-live="polite">Experiment ready.</div>
+        </div>
+
+        <div class="lab-grid-layout">
+          <div>
+            <div class="lab-stage">
+              <div class="stage-topline">
+                <strong id="environment-name">Classic grid</strong>
+                <span id="stage-mode">planning / full sweep</span>
+              </div>
+              <div class="grid-scroll">
+                <div class="grid-board" id="grid-board" role="grid" aria-label="Interactive Gridworld"></div>
+              </div>
+              <div class="grid-legend">
+                <span class="legend-item"><i class="legend-swatch" style="background: var(--ink)"></i> <span data-i18n="legendAgent">Agent</span></span>
+                <span class="legend-item"><i class="legend-swatch" style="background: color-mix(in srgb, var(--lime) 38%, var(--surface))"></i> <span data-i18n="legendGoal">Goal</span></span>
+                <span class="legend-item"><i class="legend-swatch" style="background: var(--surface-strong)"></i> <span data-i18n="legendWall">Wall</span></span>
+                <span class="legend-item"><i class="legend-swatch" style="background: color-mix(in srgb, #b23828 28%, var(--surface))"></i> <span data-i18n="legendHazard">Hazard</span></span>
+              </div>
+              <p class="small-copy" style="margin-top: 15px" data-i18n="editGridHint">
+                Click a regular cell to add or remove an obstacle. Editing the environment resets learning.
+              </p>
+            </div>
+
+            <div class="chart-card">
+              <div class="card-heading">
+                <h2 data-i18n="chartReturn">Return trajectory</h2>
+                <span id="chart-caption" data-i18n="chartRecent">last 80 episodes or sweeps</span>
+              </div>
+              <svg class="lab-chart" id="return-chart" viewBox="0 0 700 180" role="img" aria-label="Episode return chart">
+                <line class="chart-axis" x1="32" y1="8" x2="32" y2="154"></line>
+                <line class="chart-axis" x1="32" y1="154" x2="690" y2="154"></line>
+                <polyline class="chart-line" id="return-line" points=""></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <aside class="lab-side">
+            <div class="lab-side-card">
+              <div class="card-heading">
+                <h2 data-i18n="algorithmLens">Current algorithm</h2>
+                <span id="algorithm-badge">VALUE ITERATION</span>
+              </div>
+              <div
+                class="algorithm-formula"
+                id="algorithm-formula"
+                data-copy-en="V(s) ← maxₐ [r + γV(s′)]"
+                data-copy-zh="V(s) ← maxₐ [r + γV(s′)]"
+              >V(s) ← maxₐ [r + γV(s′)]</div>
+              <p
+                class="algorithm-explanation"
+                id="algorithm-explanation"
+                data-copy-en="One step performs a full Bellman optimality sweep over every non-terminal state."
+                data-copy-zh="每次单步会对所有非终止状态执行一轮完整的 Bellman 最优更新。"
+              >One step performs a full Bellman optimality sweep over every non-terminal state.</p>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric-card"><span data-i18n="metricSweep">Update sweeps</span><strong id="metric-sweep">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricStep">Environment steps</span><strong id="metric-step">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricEpisode">Episodes</span><strong id="metric-episode">0</strong></div>
+              <div class="metric-card"><span data-i18n="metricReturn">Latest return</span><strong id="metric-return">—</strong></div>
+              <div class="metric-card" style="grid-column: 1 / -1"><span data-i18n="metricSignal">Update signal</span><strong id="metric-signal">Δ 0.000</strong></div>
+            </div>
+          </aside>
+        </div>
+
+        <div id="watch">
+          <ol class="watch-list">
+            <li><strong>01 / MODEL</strong><span data-i18n="gridWatchOne">Planning algorithms update the full value table each step; TD algorithms use one real transition.</span></li>
+            <li><strong>02 / TARGET</strong><span data-i18n="gridWatchTwo">Q-learning uses the largest next-state Q value; SARSA uses the action actually selected by its behavior policy.</span></li>
+            <li><strong>03 / HORIZON</strong><span data-i18n="gridWatchThree">Higher epsilon increases exploration; higher gamma lets distant rewards influence earlier states.</span></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p>
+      <a href="bandit.html"><span data-i18n="navBandit">Bandits</span> ↗</a>
+    </footer>
+  </body>
+</html>

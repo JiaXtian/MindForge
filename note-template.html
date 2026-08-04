@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A reusable bilingual reinforcement learning study-note template for MindForge." />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Study Note Template — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body
+    data-page="template"
+    data-title-en="Study Note Template — MindForge"
+    data-title-zh="强化学习笔记模板 — MindForge"
+  >
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home">
+        <span class="brand-mark">M</span><span>MindForge</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="notes.html" data-i18n="navNotes">Notes</a>
+        <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+          </svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文">
+          <span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero">
+        <p class="eyebrow reveal" data-i18n="templateEyebrow">Reusable template</p>
+        <h1 class="reveal" data-i18n="templatePageTitle">Reinforcement Learning Study Note</h1>
+        <p class="page-deck reveal" data-i18n="templatePageDeck">
+          Duplicate this page and replace the placeholders. Keep English and Chinese blocks in the same section
+          order so both editions remain synchronized.
+        </p>
+      </header>
+
+      <div class="note-template-shell">
+        <aside class="note-template-aside">
+          <h2 data-i18n="templateUseTitle">How to use it</h2>
+          <p data-i18n="templateUseCopy">
+            Search the source for EDIT HERE. Duplicate and rename the file first, then edit both en and zh
+            content blocks; do not turn the template itself into a specific note.
+          </p>
+          <a href="notes.html"><span data-i18n="backToNotes">Back to notes</span> ↗</a>
+        </aside>
+
+        <article class="note-document">
+          <div class="note-meta">
+            <span data-i18n="templateMetaTopic">Topic: ...</span>
+            <span data-i18n="templateMetaDate">Date: ...</span>
+            <span data-i18n="templateMetaStatus">Status: draft</span>
+          </div>
+
+          <!-- EDIT HERE: Keep the English and Chinese section order identical. -->
+          <div data-lang-content="en">
+            <section class="note-section" id="en-question">
+              <span>01 / QUESTION</span>
+              <h2>The question I am trying to answer</h2>
+              <p class="note-placeholder">Write the concrete confusion, observed behavior, or decision problem that makes this topic worth studying. Avoid beginning with a copied definition.</p>
+            </section>
+            <section class="note-section" id="en-assumptions">
+              <span>02 / ASSUMPTIONS</span>
+              <h2>Definitions, notation, and assumptions</h2>
+              <p class="note-placeholder">Define the MDP, state and action spaces, transition or sampling assumptions, objective, and every symbol used later.</p>
+              <div class="equation-placeholder">[ Place the central definition or objective here. ]</div>
+            </section>
+            <section class="note-section" id="en-derivation">
+              <span>03 / DERIVATION</span>
+              <h2>Derivation, one justified step at a time</h2>
+              <p class="note-placeholder">Show the argument. State why each equality or approximation is allowed, and mark where an expectation, sample estimate, or optimization assumption enters.</p>
+              <div class="equation-placeholder">[ Place the key update equation here. ]</div>
+            </section>
+            <section class="note-section" id="en-intuition">
+              <span>04 / INTUITION</span>
+              <h2>A plain-language and geometric reading</h2>
+              <p class="note-placeholder">Explain what information moves, what estimate changes, and what the agent is trading off. Include a small counterexample to prevent overgeneralization.</p>
+            </section>
+            <section class="note-section" id="en-experiment">
+              <span>05 / EXPERIMENT</span>
+              <h2>Reproducible experiment and observations</h2>
+              <p class="note-placeholder">Record environment, algorithm, seed, hyperparameters, metric, result, and one comparison. Link to a lab or code sample where useful.</p>
+            </section>
+            <section class="note-section" id="en-corrections">
+              <span>06 / CORRECTIONS</span>
+              <h2>Mistakes, revisions, and open questions</h2>
+              <p class="note-placeholder">Preserve the wrong intuition, what evidence contradicted it, the corrected view, and the next question to investigate.</p>
+            </section>
+          </div>
+
+          <div data-lang-content="zh" hidden>
+            <section class="note-section" id="zh-question">
+              <span>01 / 问题</span>
+              <h2>我真正想回答的问题</h2>
+              <p class="note-placeholder">写下具体困惑、观察到的行为或决策问题，说明为什么值得学习这个主题。不要从抄写定义开始。</p>
+            </section>
+            <section class="note-section" id="zh-assumptions">
+              <span>02 / 假设</span>
+              <h2>定义、符号与成立条件</h2>
+              <p class="note-placeholder">定义 MDP、状态与动作空间、转移或采样假设、优化目标，以及后续出现的每个符号。</p>
+              <div class="equation-placeholder">[ 在这里放置核心定义或目标函数。 ]</div>
+            </section>
+            <section class="note-section" id="zh-derivation">
+              <span>03 / 推导</span>
+              <h2>逐步写出有依据的推导</h2>
+              <p class="note-placeholder">说明每个等式或近似为什么成立，并标记期望、样本估计或优化假设在何处进入。</p>
+              <div class="equation-placeholder">[ 在这里放置关键更新公式。 ]</div>
+            </section>
+            <section class="note-section" id="zh-intuition">
+              <span>04 / 直觉</span>
+              <h2>通俗解释与几何图景</h2>
+              <p class="note-placeholder">解释什么信息正在移动、哪个估计发生变化、智能体在权衡什么；补充一个小反例，防止过度推广。</p>
+            </section>
+            <section class="note-section" id="zh-experiment">
+              <span>05 / 实验</span>
+              <h2>可复现实验与观察结果</h2>
+              <p class="note-placeholder">记录环境、算法、随机种子、超参数、指标、结果和至少一个对照；必要时链接到实验室或代码。</p>
+            </section>
+            <section class="note-section" id="zh-corrections">
+              <span>06 / 修正</span>
+              <h2>错误、修订与开放问题</h2>
+              <p class="note-placeholder">保留原来的错误直觉、推翻它的证据、修正后的理解，以及下一步需要调查的问题。</p>
+            </section>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <p data-i18n="footerCopy">A reinforcement learning notebook built through experiments, corrections, and repetition.</p>
+      <a href="https://github.com/JiaXtian/MindForge" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </footer>
+  </body>
+</html>
