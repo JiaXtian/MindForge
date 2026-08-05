@@ -4,7 +4,7 @@
 
 [![部署到 GitHub Pages](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/JiaXtian/MindForge/actions/workflows/deploy-pages.yml)
 
-MindForge 是一个双语强化学习笔记与交互式实验平台。它将学习循环放慢并展开，让状态转移、价值估计、
+MindForge 一个强化学习笔记与交互式实验平台。它将学习循环放慢并展开，让状态转移、价值估计、
 动作选择、Bellman 目标、TD 误差、资格迹和策略变化不再隐藏在训练脚本内部，而是能够被逐步观察和检查。
 
 ## 在线网站
@@ -96,87 +96,4 @@ CartPole 实现标准的非线性位置、速度、杆角度与角速度动力�
 Q-learning、SARSA、Expected SARSA 和 Double Q-learning 会在可选择的四维离散状态上运行。页面展示物理
 运动、连续与离散状态、当前动作价值、精确 TD 更新、回合长度曲线、500 步平衡率，以及角度—角速度策略切片。
 
-## 笔记工作流
 
-笔记以源码文件维护，不再使用空白的公开网页。完成一个主题的学习后，将 [`NOTE_TEMPLATE.md`](NOTE_TEMPLATE.md)
-复制到 `notes/` 目录，修改副本文件名并替换其中的方括号占位内容。模板包含六个相互对应的中英文部分：
-
-1. 当前问题
-2. 定义、符号与假设
-3. 数学推导
-4. 通俗直觉
-5. 可复现实验
-6. 错误、修正与开放问题
-
-请始终保持两种语言的章节顺序一致。可以先完成一种语言，但随后应将完整含义翻译到对应章节，不压缩技术内容。
-
-## 设计与可访问性
-
-- 适用于 GitHub Pages 的响应式静态页面
-- 默认显示英文，并支持持久化中文切换
-- 支持持久化浅色与深色主题
-- 使用可通过键盘操作的原生控件
-- 支持减少动画偏好
-- 不需要后端、账户、分析服务或远程训练服务
-- 所有强化学习模拟均在浏览器本地运行
-
-## 项目结构
-
-```text
-MindForge/
-├── index.html
-├── gridworld.html
-├── gridworld.js
-├── bandit.html
-├── bandit.js
-├── prediction.html
-├── prediction.js
-├── mountain-car.html
-├── mountain-car.js
-├── blackjack.html
-├── blackjack.js
-├── cartpole.html
-├── cartpole.js
-├── NOTE_TEMPLATE.md
-├── app.js
-├── styles.css
-├── rl.css
-├── 404.html
-├── sitemap.xml
-├── robots.txt
-├── README.md
-├── README.zh-CN.md
-├── assets/
-│   └── favicon.svg
-├── scripts/
-│   ├── check-site.mjs
-│   └── smoke-labs.mjs
-└── .github/workflows/deploy-pages.yml
-```
-
-## 本地运行
-
-项目不需要安装依赖，也没有额外构建步骤。
-
-```bash
-python3 -m http.server 8000
-```
-
-运行与部署流水线相同的检查：
-
-```bash
-node scripts/check-site.mjs
-node --check app.js
-node --check gridworld.js
-node --check bandit.js
-node --check prediction.js
-node --check mountain-car.js
-node --check blackjack.js
-node --check cartpole.js
-node scripts/smoke-labs.mjs
-```
-
-## 部署
-
-推送到 `main` 后会触发 `.github/workflows/deploy-pages.yml`。流水线会检查页面链接关系、双语翻译键、
-实验室覆盖范围、JavaScript 语法和模拟交互，然后将静态站点部署到 GitHub Pages。
