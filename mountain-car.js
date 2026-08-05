@@ -12,24 +12,28 @@ const MOUNTAIN_ACTIONS = [
 
 const mountainDetails = {
   qlearning: {
+    name: { en: "Q-learning", zh: "Q-learning" },
     badge: "Q-LEARNING / OFF-POLICY",
     formula: "Q(s,a) ← Q(s,a) + α[r + γ maxₐ′Q(s′,a′) − Q(s,a)]",
     en: "Exploration generates behavior, but the target always evaluates the greedy next action. The learned surface therefore approaches a greedy control policy.",
     zh: "探索负责生成行为，但目标始终评价下一状态的贪心动作，因此学到的价值曲面趋向贪心控制策略。",
   },
   sarsa: {
+    name: { en: "SARSA", zh: "SARSA" },
     badge: "SARSA / ON-POLICY",
     formula: "Q(s,a) ← Q(s,a) + α[r + γQ(s′,a′) − Q(s,a)]",
     en: "The next exploratory action enters the target. This makes the action values describe the epsilon-greedy policy that is actually driving the car.",
     zh: "下一步探索动作会进入目标，因此动作价值描述的是实际驾驶小车的 ε-greedy 策略。",
   },
   expected: {
+    name: { en: "Expected SARSA", zh: "Expected SARSA" },
     badge: "EXPECTED SARSA",
     formula: "target = r + γΣₐπ(a|s′)Q(s′,a)",
     en: "Averaging over every possible next action removes one source of sampling noise while preserving the current behavior policy in the target.",
     zh: "对所有可能的下一动作求期望，能够消除一部分采样噪声，同时在目标中保留当前行为策略。",
   },
   lambda: {
+    name: { en: "SARSA(λ)", zh: "SARSA(λ)" },
     badge: "SARSA(λ) / REPLACING TRACES",
     formula: "Q ← Q + αδe;  e(s,a) ← 1;  e ← γλe",
     en: "Replacing traces remember recently active state-action pairs. Each new TD error updates the whole trace, allowing the terminal signal to travel backward faster.",
@@ -50,6 +54,11 @@ const mountainText = {
   engineNeutral: { en: "engine neutral", zh: "引擎空挡" },
   greedy: { en: "greedy", zh: "贪心" },
   updated: { en: "updated", zh: "刚更新" },
+};
+
+const mountainContext = {
+  experiment: { en: "Classic control with state aggregation maps continuous dynamics into a finite table of state-action values.", zh: "使用状态聚合的经典控制将连续动力学映射到有限的状态动作价值表。" },
+  environment: { en: "A deterministic underpowered car receives −1 per step and must build momentum before reaching position 0.5.", zh: "一辆动力不足的确定性小车每步获得 −1 奖励，必须先积累动量才能抵达位置 0.5。" },
 };
 
 const algorithmSelect = document.querySelector("#mountain-algorithm");
@@ -386,6 +395,16 @@ function renderAlgorithm() {
   document.querySelector("#mountain-explanation").textContent = detail[language()];
 }
 
+function renderContext() {
+  const lang = language();
+  const detail = mountainDetails[algorithmSelect.value];
+  document.querySelector("#context-experiment-copy").textContent = mountainContext.experiment[lang];
+  document.querySelector("#context-environment-name").textContent = (lang === "zh" ? "连续山谷" : "Continuous valley") + " · " + positionBins + "×" + velocityBins + " bins";
+  document.querySelector("#context-environment-copy").textContent = mountainContext.environment[lang];
+  document.querySelector("#context-algorithm-name").textContent = detail.name[lang];
+  document.querySelector("#context-algorithm-copy").textContent = detail[lang];
+}
+
 function format(value) {
   return value === null || value === undefined ? "—" : Number(value).toFixed(4);
 }
@@ -467,6 +486,7 @@ function renderQMap() {
 }
 
 function render() {
+  renderContext();
   updateControls();
   updateRunButton();
   renderAlgorithm();

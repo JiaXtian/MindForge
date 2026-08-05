@@ -1,6 +1,7 @@
 const strategyDetails = {
   epsilon: {
     name: "ε-greedy",
+    label: { en: "ε-greedy", zh: "ε-greedy" },
     badge: "EPSILON-GREEDY",
     formula: "π(a) = ε/k + (1−ε)/|arg max Q| for greedy actions",
     evidence: { en: "estimate Q(a)", zh: "估计 Q(a)" },
@@ -9,6 +10,7 @@ const strategyDetails = {
   },
   ucb: {
     name: "UCB1",
+    label: { en: "UCB1", zh: "UCB1" },
     badge: "UPPER CONFIDENCE BOUND",
     formula: "a = arg max [Q(a) + √(2 ln t / N(a))]",
     evidence: { en: "optimistic upper bound", zh: "乐观上置信界" },
@@ -17,6 +19,7 @@ const strategyDetails = {
   },
   thompson: {
     name: "Thompson sampling",
+    label: { en: "Thompson sampling", zh: "Thompson sampling" },
     badge: "POSTERIOR SAMPLING",
     formula: "θₐ ~ posterior(a);  a = arg max θₐ",
     evidence: { en: "latest posterior sample", zh: "最近一次后验样本" },
@@ -25,6 +28,7 @@ const strategyDetails = {
   },
   softmax: {
     name: "Softmax exploration",
+    label: { en: "Softmax exploration", zh: "Softmax 探索" },
     badge: "BOLTZMANN / SOFTMAX",
     formula: "π(a) = exp(Q(a)/τ) / Σᵦ exp(Q(b)/τ)",
     evidence: { en: "action probability π(a)", zh: "动作概率 π(a)" },
@@ -33,6 +37,7 @@ const strategyDetails = {
   },
   gradient: {
     name: "Gradient bandit",
+    label: { en: "Gradient bandit", zh: "Gradient Bandit" },
     badge: "POLICY GRADIENT",
     formula: "H(a) ← H(a) + α(R−R̄)[1(a=A)−π(a)]",
     evidence: { en: "preference H(a)", zh: "偏好 H(a)" },
@@ -60,6 +65,14 @@ const banditText = {
   score: { en: "evidence", zh: "决策证据" },
   noDecision: { en: "No pull yet. Advance once to expose the selection evidence and estimate update.", zh: "尚未拉杆。执行一次单步即可看到选择依据与估计更新。" },
   unavailable: { en: "sampled, not analytic", zh: "由抽样产生，无解析值" },
+};
+
+const banditContext = {
+  experiment: { en: "A stateless repeated decision problem isolates exploration, uncertainty, and regret from delayed credit assignment.", zh: "无状态的重复决策问题将探索、不确定性和遗憾从延迟信用分配中单独分离出来。" },
+  bernoulli: { en: "Bernoulli rewards", zh: "Bernoulli 奖励", enCopy: "Each pull returns either 0 or 1. An arm's editable mean is exactly its success probability.", zhCopy: "每次拉杆只返回 0 或 1，每个臂可编辑的均值就是其成功概率。" },
+  gaussian: { en: "Gaussian rewards", zh: "Gaussian 奖励", enCopy: "Each pull samples a continuous reward from a normal distribution centered on the arm's editable true mean.", zhCopy: "每次拉杆从以该臂可编辑真实均值为中心的正态分布中采样连续奖励。" },
+  stationary: { en: "The reward means remain fixed, so old observations and new observations describe the same latent problem.", zh: "奖励均值保持不变，因此旧观察与新观察描述的是同一个潜在问题。" },
+  drift: { en: "All true means follow a small random walk, so accumulated evidence becomes stale and continued exploration matters.", zh: "所有真实均值都会进行小幅随机游走，因此历史证据会过期，持续探索变得重要。" },
 };
 
 const means = [0.18, 0.38, 0.57, 0.72, 0.5];
@@ -447,6 +460,18 @@ function renderAlgorithm() {
   updateControlAvailability();
 }
 
+function renderContext() {
+  const lang = language();
+  const reward = banditContext[rewardSelect.value];
+  const dynamics = banditContext[dynamicsSelect.value === "stationary" ? "stationary" : "drift"];
+  const detail = strategyDetails[strategySelect.value];
+  document.querySelector("#context-experiment-copy").textContent = banditContext.experiment[lang];
+  document.querySelector("#context-environment-name").textContent = reward[lang] + " · " + (dynamicsSelect.value === "stationary" ? (lang === "zh" ? "平稳" : "stationary") : (lang === "zh" ? "漂移" : "drifting"));
+  document.querySelector("#context-environment-copy").textContent = reward[lang === "zh" ? "zhCopy" : "enCopy"] + " " + dynamics[lang];
+  document.querySelector("#context-algorithm-name").textContent = detail.label[lang];
+  document.querySelector("#context-algorithm-copy").textContent = detail[lang];
+}
+
 function formatEvidence(value) {
   if (value === null || value === undefined) return "—";
   if (!Number.isFinite(value)) return "∞";
@@ -508,6 +533,7 @@ function renderScoreTable() {
 }
 
 function render() {
+  renderContext();
   renderAlgorithm();
   syncEditors();
   renderVisuals();
@@ -523,7 +549,10 @@ function updateRange(input, output, suffix) {
 
 strategySelect.addEventListener("change", render);
 rewardSelect.addEventListener("change", () => resetStrategies("reset"));
-dynamicsSelect.addEventListener("change", () => setStatus("shifted"));
+dynamicsSelect.addEventListener("change", () => {
+  setStatus("shifted");
+  render();
+});
 compareToggle.addEventListener("change", render);
 epsilonInput.addEventListener("input", () => {
   updateRange(epsilonInput, document.querySelector("#bandit-epsilon-output"));

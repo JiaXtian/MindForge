@@ -60,7 +60,7 @@
   display: grid;
   width: min(920px, 100%);
   margin-top: 42px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--line-strong);
   border-left: 1px solid var(--line-strong);
 }
@@ -176,6 +176,70 @@ html[lang="zh-CN"] .page-hero.lab-page-hero h1 {
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 4vw 120px;
+}
+
+.lab-context {
+  display: grid;
+  margin-bottom: 28px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line-strong);
+  border-left: 1px solid var(--line-strong);
+  background: var(--surface);
+}
+
+.lab-context-item {
+  min-width: 0;
+  min-height: 190px;
+  padding: 22px;
+  border-right: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.lab-context-item > span,
+.lab-context-item > label {
+  display: block;
+  margin-bottom: 16px;
+  color: var(--accent);
+  font: 9px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lab-context-item > strong {
+  display: block;
+  min-height: 44px;
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 30px);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+html[lang="zh-CN"] .lab-context-item > strong {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.lab-context-item > p {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.lab-context-selector select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 600 12px var(--sans);
 }
 
 .lab-toolbar {
@@ -803,34 +867,6 @@ input[type="range"] {
   stroke: #d29b32;
 }
 
-.watch-list {
-  display: grid;
-  max-width: 1400px;
-  margin: 80px auto 0;
-  padding: 0;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  border-top: 1px solid var(--line-strong);
-  border-left: 1px solid var(--line-strong);
-  list-style: none;
-}
-
-.watch-list li {
-  min-height: 190px;
-  padding: 26px;
-  border-right: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.watch-list strong {
-  display: block;
-  margin-bottom: 25px;
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 9px;
-}
-
 .bandit-layout {
   display: grid;
   grid-template-columns: minmax(280px, 0.42fr) minmax(0, 1fr);
@@ -1364,6 +1400,204 @@ input[type="range"] {
   outline-offset: -2px;
 }
 
+.blackjack-toolbar {
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+}
+
+.blackjack-table {
+  display: grid;
+  min-height: 430px;
+  padding: clamp(24px, 5vw, 54px);
+  align-content: space-between;
+  border: 1px solid var(--line-strong);
+  background:
+    radial-gradient(circle at center, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
+    var(--bg);
+}
+
+.blackjack-seat {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.blackjack-seat > span,
+.blackjack-seat > strong {
+  color: var(--muted);
+  font: 9px var(--mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.blackjack-hand {
+  display: flex;
+  min-height: 72px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.playing-card {
+  display: grid;
+  width: 48px;
+  height: 66px;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font: italic 25px var(--serif);
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+.blackjack-action-mark {
+  justify-self: center;
+  color: var(--accent);
+  font: italic clamp(36px, 7vw, 72px) var(--serif);
+  letter-spacing: -0.05em;
+}
+
+.blackjack-readout,
+.blackjack-metrics {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.blackjack-map-card h3 {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+}
+
+html[lang="zh-CN"] .blackjack-map-card h3 {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.blackjack-map-grid {
+  display: grid;
+  margin-top: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.blackjack-map {
+  display: grid;
+  min-width: 620px;
+  grid-template-columns: 48px repeat(10, minmax(50px, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.blackjack-map-grid > div {
+  overflow-x: auto;
+}
+
+.blackjack-map-cell,
+.blackjack-map-label {
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font: 8px var(--mono);
+}
+
+.blackjack-map-label {
+  background: var(--surface-strong);
+  color: var(--muted);
+}
+
+.blackjack-map-cell {
+  background: color-mix(in srgb, var(--surface) calc(100% - var(--blackjack-value, 50%)), var(--accent));
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.cartpole-toolbar {
+  grid-template-columns: repeat(7, minmax(110px, 1fr));
+}
+
+.cartpole-scene {
+  display: block;
+  width: 100%;
+  min-height: 330px;
+  background: var(--bg);
+}
+
+.cartpole-track,
+.cartpole-limit {
+  stroke: var(--line-strong);
+  stroke-width: 2;
+}
+
+.cartpole-limit {
+  stroke: var(--accent);
+}
+
+.cartpole-pole {
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-width: 8;
+}
+
+.cartpole-pivot {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+
+.cartpole-body {
+  fill: var(--ink);
+}
+
+.cartpole-wheel {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+.cartpole-force {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.cartpole-readout,
+.cartpole-metrics {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.cartpole-q-map {
+  display: grid;
+  min-width: 680px;
+  margin-top: 20px;
+  grid-template-columns: repeat(var(--cartpole-angle-bins), minmax(44px, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.cartpole-map-card {
+  overflow-x: auto;
+}
+
+.cartpole-map-cell {
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  font: 12px var(--mono);
+}
+
+.cartpole-map-cell.is-current {
+  background: var(--accent-soft);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 .physics-card {
   margin-top: 28px;
 }
@@ -1600,14 +1834,6 @@ html[lang="zh-CN"] .note-section h2 {
     grid-template-columns: 1fr;
   }
 
-  .watch-list {
-    grid-template-columns: 1fr;
-  }
-
-  .watch-list li {
-    min-height: 140px;
-  }
-
   .writing-guide ol {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1623,6 +1849,10 @@ html[lang="zh-CN"] .note-section h2 {
   .bandit-toolbar {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .blackjack-map-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1637,6 +1867,14 @@ html[lang="zh-CN"] .note-section h2 {
   .lab-module-grid .module-card,
   .lab-module-grid .module-featured {
     min-height: 430px;
+  }
+
+  .lab-context {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-context-item {
+    min-height: 0;
   }
 }
 
@@ -1723,7 +1961,9 @@ html[lang="zh-CN"] .note-section h2 {
   }
 
   .mountain-metrics,
-  .mountain-state-readout {
+  .mountain-state-readout,
+  .blackjack-metrics,
+  .cartpole-metrics {
     grid-template-columns: repeat(2, 1fr);
   }
 

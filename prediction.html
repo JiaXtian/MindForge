@@ -31,7 +31,8 @@
         <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
         <a href="bandit.html" data-i18n="navBandit">Bandits</a>
         <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
-        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+        <a href="blackjack.html" data-i18n="navBlackjack">Blackjack</a>
+        <a href="cartpole.html" data-i18n="navCartPole">CartPole</a>
       </nav>
       <div class="header-actions">
         <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
@@ -56,6 +57,31 @@
       </header>
 
       <section class="lab-shell">
+        <section class="lab-context" aria-live="polite">
+          <div class="lab-context-item lab-context-selector">
+            <label for="experiment-switcher" data-i18n="currentExperiment">Experiment type</label>
+            <select id="experiment-switcher">
+              <option value="gridworld.html" data-i18n="gridTitle">Gridworld Control Lab</option>
+              <option value="bandit.html" data-i18n="banditTitle">Multi-Armed Bandit Lab</option>
+              <option value="prediction.html" data-i18n="predictionTitle" selected>Random Walk Prediction Lab</option>
+              <option value="mountain-car.html" data-i18n="mountainTitle">Mountain Car Control Lab</option>
+              <option value="blackjack.html" data-i18n="blackjackTitle">Blackjack Monte Carlo Lab</option>
+              <option value="cartpole.html" data-i18n="cartpoleTitle">CartPole Control Lab</option>
+            </select>
+            <p id="context-experiment-copy"></p>
+          </div>
+          <article class="lab-context-item">
+            <span data-i18n="currentEnvironment">Current environment</span>
+            <strong id="context-environment-name">—</strong>
+            <p id="context-environment-copy"></p>
+          </article>
+          <article class="lab-context-item">
+            <span data-i18n="currentAlgorithm">Current algorithm</span>
+            <strong id="context-algorithm-name">—</strong>
+            <p id="context-algorithm-copy"></p>
+          </article>
+        </section>
+
         <div class="lab-toolbar prediction-toolbar" aria-label="Prediction controls">
           <div class="control-group">
             <label for="chain-select" data-i18n="chainLength">Non-terminal states</label>
@@ -214,14 +240,6 @@
           <div class="episode-path" id="episode-path"></div>
         </section>
 
-        <div id="watch">
-          <ol class="watch-list">
-            <li><strong>01 / WAIT</strong><span data-i18n="predictionWatchOne">Monte Carlo waits for a terminal outcome, then sends the observed return backward through the whole trajectory.</span></li>
-            <li><strong>02 / BOOTSTRAP</strong><span data-i18n="predictionWatchTwo">TD(0) updates immediately from one reward and the current estimate of the next state.</span></li>
-            <li><strong>03 / HORIZON</strong><span data-i18n="predictionWatchThree">n-step TD chooses an explicit point between one-step bootstrapping and a complete sampled return.</span></li>
-            <li><strong>04 / CREDIT</strong><span data-i18n="predictionWatchFour">TD lambda combines many backup lengths through a decaying memory of recently visited states.</span></li>
-          </ol>
-        </div>
       </section>
     </main>
 

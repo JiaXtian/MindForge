@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An interactive bilingual CartPole reinforcement learning control laboratory." />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>CartPole Control Lab — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+    <script src="cartpole.js" defer></script>
+  </head>
+  <body data-page="cartpole" data-title-en="CartPole Control Lab — MindForge" data-title-zh="CartPole 控制实验室 — MindForge">
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+        <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
+        <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
+        <a href="blackjack.html" data-i18n="navBlackjack">Blackjack</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path></svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文"><span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span></button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero lab-page-hero"><p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p><h1 class="reveal" data-i18n="cartpoleTitle">CartPole Control Lab</h1></header>
+      <section class="lab-shell">
+        <section class="lab-context" aria-live="polite">
+          <div class="lab-context-item lab-context-selector">
+            <label for="experiment-switcher" data-i18n="currentExperiment">Experiment type</label>
+            <select id="experiment-switcher">
+              <option value="gridworld.html" data-i18n="gridTitle">Gridworld Control Lab</option><option value="bandit.html" data-i18n="banditTitle">Multi-Armed Bandit Lab</option><option value="prediction.html" data-i18n="predictionTitle">Random Walk Prediction Lab</option><option value="mountain-car.html" data-i18n="mountainTitle">Mountain Car Control Lab</option><option value="blackjack.html" data-i18n="blackjackTitle">Blackjack Monte Carlo Lab</option><option value="cartpole.html" data-i18n="cartpoleTitle" selected>CartPole Control Lab</option>
+            </select>
+            <p id="context-experiment-copy"></p>
+          </div>
+          <article class="lab-context-item"><span data-i18n="currentEnvironment">Current environment</span><strong id="context-environment-name">—</strong><p id="context-environment-copy"></p></article>
+          <article class="lab-context-item"><span data-i18n="currentAlgorithm">Current algorithm</span><strong id="context-algorithm-name">—</strong><p id="context-algorithm-copy"></p></article>
+        </section>
+
+        <div class="lab-toolbar cartpole-toolbar" aria-label="CartPole controls">
+          <div class="control-group"><label for="cartpole-environment" data-i18n="environment">Environment</label><select id="cartpole-environment"><option value="standard" data-i18n="cartpoleStandard">Standard dynamics</option><option value="gravity" data-i18n="cartpoleStrongGravity">Strong gravity</option><option value="weak" data-i18n="cartpoleWeakForce">Weak actuator</option></select></div>
+          <div class="control-group"><label for="cartpole-algorithm" data-i18n="algorithm">Algorithm</label><select id="cartpole-algorithm"><option value="qlearning" data-i18n="algorithmQ">Q-learning</option><option value="sarsa" data-i18n="algorithmSarsa">SARSA</option><option value="expected" data-i18n="algorithmExpected">Expected SARSA</option><option value="double" data-i18n="algorithmDouble">Double Q-learning</option></select></div>
+          <div class="control-group"><label for="cartpole-resolution" data-i18n="stateResolution">State resolution</label><select id="cartpole-resolution"><option value="coarse" data-i18n="resolutionCoarse">Coarse · 5×5×8×8</option><option value="medium" data-i18n="resolutionMedium" selected>Medium · 7×7×10×10</option><option value="fine" data-i18n="resolutionFine">Fine · 9×9×14×14</option></select></div>
+          <div class="control-group"><label for="cartpole-alpha" data-i18n="alpha">Learning rate α</label><div class="range-line"><input id="cartpole-alpha" type="range" min="0.01" max="1" step="0.01" value="0.22" /><output id="cartpole-alpha-output">0.22</output></div></div>
+          <div class="control-group"><label for="cartpole-gamma" data-i18n="gamma">Discount γ</label><div class="range-line"><input id="cartpole-gamma" type="range" min="0.5" max="1" step="0.01" value="0.99" /><output id="cartpole-gamma-output">0.99</output></div></div>
+          <div class="control-group"><label for="cartpole-epsilon" data-i18n="epsilon">Exploration ε</label><div class="range-line"><input id="cartpole-epsilon" type="range" min="0" max="0.5" step="0.01" value="0.10" /><output id="cartpole-epsilon-output">0.10</output></div></div>
+          <div class="control-group"><label for="cartpole-speed" data-i18n="speed">Run speed</label><div class="range-line"><input id="cartpole-speed" type="range" min="1" max="10" step="1" value="7" /><output id="cartpole-speed-output">7×</output></div></div>
+        </div>
+
+        <div class="lab-actions"><button class="lab-button is-primary" id="cartpole-step" type="button" data-i18n="singleStep">Single step</button><button class="lab-button" id="cartpole-episode" type="button" data-i18n="completeEpisode">Complete episode</button><button class="lab-button" id="cartpole-run" type="button" data-i18n="autoRun">Auto run</button><button class="lab-button" id="cartpole-reset" type="button" data-i18n="reset">Reset</button><button class="lab-button" id="cartpole-batch" type="button" data-i18n="trainFifty">Train 50 episodes</button><div class="lab-status" id="cartpole-status" aria-live="polite">Experiment ready.</div></div>
+
+        <div class="lab-grid-layout cartpole-layout">
+          <section class="lab-stage">
+            <div class="stage-topline"><span id="cartpole-environment-name">Standard dynamics</span><span id="cartpole-state-label">S(0,0,0,0)</span></div>
+            <svg class="cartpole-scene" viewBox="0 0 720 260" role="img" aria-label="CartPole dynamics"><line class="cartpole-track" x1="40" y1="190" x2="680" y2="190"></line><line class="cartpole-limit" x1="80" y1="174" x2="80" y2="205"></line><line class="cartpole-limit" x1="640" y1="174" x2="640" y2="205"></line><g id="cartpole-cart"><line class="cartpole-pole" id="cartpole-pole" x1="0" y1="-15" x2="0" y2="-110"></line><circle class="cartpole-pivot" cx="0" cy="-15" r="7"></circle><rect class="cartpole-body" x="-40" y="-15" width="80" height="30"></rect><circle class="cartpole-wheel" cx="-25" cy="20" r="8"></circle><circle class="cartpole-wheel" cx="25" cy="20" r="8"></circle></g><line class="cartpole-force" id="cartpole-force" x1="360" y1="225" x2="410" y2="225"></line></svg>
+            <div class="mountain-state-readout cartpole-readout"><span><small data-i18n="cartPosition">Cart position</small><strong id="cartpole-position">0.000</strong></span><span><small data-i18n="cartVelocity">Cart velocity</small><strong id="cartpole-velocity">0.000</strong></span><span><small data-i18n="poleAngle">Pole angle</small><strong id="cartpole-angle">0.00°</strong></span><span><small data-i18n="angularVelocity">Angular velocity</small><strong id="cartpole-angular-velocity">0.000</strong></span></div>
+          </section>
+          <aside class="lab-side">
+            <div class="metric-grid cartpole-metrics"><article class="metric-card"><span data-i18n="metricStep">Steps</span><strong id="cartpole-steps">0</strong></article><article class="metric-card"><span data-i18n="metricEpisode">Episodes</span><strong id="cartpole-episodes">0</strong></article><article class="metric-card"><span data-i18n="latestLength">Latest length</span><strong id="cartpole-latest-length">—</strong></article><article class="metric-card"><span data-i18n="balanceRate">500-step rate</span><strong id="cartpole-success-rate">0%</strong></article></div>
+            <section class="lab-side-card"><div class="card-heading"><h2 data-i18n="algorithmLens">Current algorithm</h2><span id="cartpole-badge">Q-LEARNING</span></div><div class="algorithm-formula" id="cartpole-formula"></div><p class="algorithm-explanation" id="cartpole-explanation"></p></section>
+            <section class="lab-side-card"><div class="card-heading"><h2 data-i18n="currentQValues">Current state Q-values</h2><span id="cartpole-q-state">S(0,0,0,0)</span></div><div class="q-inspector" id="cartpole-q-inspector"></div></section>
+          </aside>
+        </div>
+
+        <section class="learning-detail-grid">
+          <article class="chart-card"><div class="card-heading"><h2 data-i18n="stepsPerEpisode">Steps per episode</h2><span data-i18n="lowerIsNotBetter">higher is better</span></div><svg class="lab-chart" viewBox="0 0 720 180" role="img" aria-label="CartPole episode length"><line class="chart-axis" x1="30" y1="150" x2="700" y2="150"></line><line class="chart-axis" x1="30" y1="20" x2="30" y2="150"></line><polyline class="chart-line" id="cartpole-history-line" points=""></polyline></svg></article>
+          <section class="lab-side-card"><div class="card-heading"><h2 data-i18n="lastUpdateTitle">Last update</h2><span id="cartpole-update-kind">—</span></div><div class="update-equation" id="cartpole-equation"></div><dl class="update-ledger"><div><dt data-i18n="updateState">State</dt><dd id="cartpole-update-state">—</dd></div><div><dt data-i18n="updateAction">Action</dt><dd id="cartpole-update-action">—</dd></div><div><dt data-i18n="updateReward">Reward</dt><dd id="cartpole-update-reward">—</dd></div><div><dt data-i18n="updateNext">Next state</dt><dd id="cartpole-update-next">—</dd></div><div><dt data-i18n="updateOld">Old estimate</dt><dd id="cartpole-update-old">—</dd></div><div><dt data-i18n="updateTarget">Target</dt><dd id="cartpole-update-target">—</dd></div><div><dt data-i18n="updateError">TD error</dt><dd id="cartpole-update-error">—</dd></div><div><dt data-i18n="updateNew">New estimate</dt><dd id="cartpole-update-new">—</dd></div></dl></section>
+        </section>
+
+        <section class="q-table-card cartpole-map-card"><div class="card-heading"><h2 data-i18n="cartpoleStateMap">Angle–angular velocity slice</h2><span id="cartpole-map-slice">x-bin 0 · v-bin 0</span></div><p class="small-copy" data-i18n="cartpoleMapCopy">The map holds cart position and velocity at their current bins, then shows the greedy force across pole angle and angular velocity.</p><div class="cartpole-q-map" id="cartpole-q-map"></div></section>
+        <section class="lab-side-card physics-card"><div class="card-heading"><h2 data-i18n="dynamicsTitle">Environment dynamics</h2><span id="cartpole-dynamics-mode">deterministic</span></div><div class="physics-equations"><code>θ̈ = (g sin θ − cos θ · temp) / [ℓ(4/3 − mₚ cos²θ / m)]</code><code>ẍ = temp − mₚℓθ̈ cos θ / m</code></div><p class="small-copy" data-i18n="cartpoleDynamicsCopy">The action applies a fixed horizontal force. The episode ends when position or pole angle crosses its limit, so every successful extra step has reward 1.</p></section>
+      </section>
+    </main>
+    <footer class="site-footer"><a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a><p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p><a href="gridworld.html"><span data-i18n="navGrid">Gridworld</span> ↗</a></footer>
+  </body>
+</html>

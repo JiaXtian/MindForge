@@ -31,7 +31,8 @@
         <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
         <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
         <a href="bandit.html" data-i18n="navBandit">Bandits</a>
-        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+        <a href="blackjack.html" data-i18n="navBlackjack">Blackjack</a>
+        <a href="cartpole.html" data-i18n="navCartPole">CartPole</a>
       </nav>
       <div class="header-actions">
         <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
@@ -56,6 +57,31 @@
       </header>
 
       <section class="lab-shell">
+        <section class="lab-context" aria-live="polite">
+          <div class="lab-context-item lab-context-selector">
+            <label for="experiment-switcher" data-i18n="currentExperiment">Experiment type</label>
+            <select id="experiment-switcher">
+              <option value="gridworld.html" data-i18n="gridTitle">Gridworld Control Lab</option>
+              <option value="bandit.html" data-i18n="banditTitle">Multi-Armed Bandit Lab</option>
+              <option value="prediction.html" data-i18n="predictionTitle">Random Walk Prediction Lab</option>
+              <option value="mountain-car.html" data-i18n="mountainTitle" selected>Mountain Car Control Lab</option>
+              <option value="blackjack.html" data-i18n="blackjackTitle">Blackjack Monte Carlo Lab</option>
+              <option value="cartpole.html" data-i18n="cartpoleTitle">CartPole Control Lab</option>
+            </select>
+            <p id="context-experiment-copy"></p>
+          </div>
+          <article class="lab-context-item">
+            <span data-i18n="currentEnvironment">Current environment</span>
+            <strong id="context-environment-name">—</strong>
+            <p id="context-environment-copy"></p>
+          </article>
+          <article class="lab-context-item">
+            <span data-i18n="currentAlgorithm">Current algorithm</span>
+            <strong id="context-algorithm-name">—</strong>
+            <p id="context-algorithm-copy"></p>
+          </article>
+        </section>
+
         <div class="lab-toolbar mountain-toolbar" aria-label="Mountain Car controls">
           <div class="control-group">
             <label for="mountain-algorithm" data-i18n="algorithm">Algorithm</label>
@@ -243,14 +269,6 @@
           </p>
         </section>
 
-        <div id="watch">
-          <ol class="watch-list">
-            <li><strong>01 / STATE</strong><span data-i18n="mountainWatchOne">Position alone is not Markov: the same location requires different actions depending on velocity.</span></li>
-            <li><strong>02 / RESOLUTION</strong><span data-i18n="mountainWatchTwo">More bins preserve finer distinctions but spread experience over a larger table, slowing early learning.</span></li>
-            <li><strong>03 / MOMENTUM</strong><span data-i18n="mountainWatchThree">The immediate reward is always minus one, so shorter successful trajectories have larger return.</span></li>
-            <li><strong>04 / TRACES</strong><span data-i18n="mountainWatchFour">SARSA lambda sends each TD error through recently active state-action pairs, accelerating delayed credit assignment.</span></li>
-          </ol>
-        </div>
       </section>
     </main>
 

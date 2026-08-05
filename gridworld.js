@@ -7,42 +7,49 @@ const ACTIONS = [
 
 const algorithmDetails = {
   value: {
+    name: { en: "Value iteration", zh: "价值迭代" },
     badge: "VALUE ITERATION",
     formula: "V(s) ← maxₐ Σₛ′ p(s′|s,a)[r + γV(s′)]",
     en: "A synchronous Bellman optimality sweep updates every state from a frozen copy of the previous value table. Stochastic environments average over all possible successors.",
     zh: "同步 Bellman 最优更新使用上一轮价值表的冻结副本更新每个状态；在随机环境中，更新会对所有可能后继状态求期望。",
   },
   policy: {
+    name: { en: "Policy iteration", zh: "策略迭代" },
     badge: "POLICY ITERATION",
     formula: "Vᵖ(s) ← Eπ[r + γVᵖ(s′)]  ·  π ← greedy(Vᵖ)",
     en: "Five policy-evaluation sweeps are followed by one greedy improvement. This modified policy iteration makes the evaluation and improvement phases visible.",
     zh: "先进行五轮策略评估，再执行一次贪心策略改进。这种修正策略迭代能清楚展示评估与改进两个阶段。",
   },
   qlearning: {
+    name: { en: "Q-learning", zh: "Q-learning" },
     badge: "Q-LEARNING / OFF-POLICY",
     formula: "Q(s,a) ← Q(s,a) + α[r + γ maxₐ′Q(s′,a′) − Q(s,a)]",
     en: "The behavior is epsilon-greedy, while the target assumes a greedy next action. Only the sampled state-action pair changes on each real interaction.",
     zh: "行为策略采用 ε-greedy，而目标假设下一步执行贪心动作；每次真实交互只更新被采样的一对状态与动作。",
   },
   sarsa: {
+    name: { en: "SARSA", zh: "SARSA" },
     badge: "SARSA / ON-POLICY",
     formula: "Q(s,a) ← Q(s,a) + α[r + γQ(s′,a′) − Q(s,a)]",
     en: "The target uses the next action selected by the same behavior policy. Exploration risk therefore becomes part of the learned action value.",
     zh: "目标使用同一行为策略实际选择的下一动作，因此探索产生的风险会直接进入动作价值。",
   },
   expected: {
+    name: { en: "Expected SARSA", zh: "Expected SARSA" },
     badge: "EXPECTED SARSA",
     formula: "Q(s,a) ← Q(s,a) + α[r + γΣₐπ(a|s′)Q(s′,a) − Q(s,a)]",
     en: "The next-state target averages over the epsilon-greedy policy instead of sampling one action, reducing target variance while remaining on-policy.",
     zh: "下一状态目标对 ε-greedy 策略求期望，而不是只采样一个动作，因此在保持 on-policy 的同时降低目标方差。",
   },
   dyna: {
+    name: { en: "Dyna-Q", zh: "Dyna-Q" },
     badge: "DYNA-Q / LEARNED MODEL",
     formula: "real Q-update + n simulated Q-updates from model M(s,a)",
     en: "Each real transition updates Q and enters a learned one-step model. Dyna-Q then replays sampled model entries, converting computation into additional learning experience.",
     zh: "每条真实转移既更新 Q，也写入一步模型；随后 Dyna-Q 从模型中抽样回放，把额外计算转化为额外学习经验。",
   },
   double: {
+    name: { en: "Double Q-learning", zh: "Double Q-learning" },
     badge: "DOUBLE Q-LEARNING",
     formula: "Qᴬ ← r + γQᴮ(s′, arg max Qᴬ)  or swap A,B",
     en: "Two estimators alternate roles. One selects the maximizing action and the other evaluates it, weakening the positive bias caused by maximizing noisy estimates.",
@@ -51,12 +58,16 @@ const algorithmDetails = {
 };
 
 const environmentNames = {
-  grid: { en: "Classic grid", zh: "经典网格" },
-  cliff: { en: "Cliff walking", zh: "悬崖行走" },
-  windy: { en: "Windy grid", zh: "风场网格" },
-  maze: { en: "Dyna maze", zh: "Dyna 迷宫" },
-  frozen: { en: "Frozen lake · 20% slip", zh: "冰湖 · 20% 滑移" },
-  fourrooms: { en: "Four rooms", zh: "四房间" },
+  grid: { en: "Classic grid", zh: "经典网格", enCopy: "A deterministic 6×6 navigation MDP with walls, one trap, and a terminal goal. Each move costs a small reward, so shortest safe paths are preferred.", zhCopy: "一个确定性的 6×6 导航 MDP，包含障碍、陷阱和终止目标。每次移动都有小额代价，因此策略倾向于寻找最短安全路径。" },
+  cliff: { en: "Cliff walking", zh: "悬崖行走", enCopy: "A 4×10 episodic task with a severe cliff penalty. It exposes how on-policy and off-policy targets account for exploratory behavior differently.", zhCopy: "一个带有严重悬崖惩罚的 4×10 回合任务，用于展示同策略与离策略目标如何以不同方式处理探索风险。" },
+  windy: { en: "Windy grid", zh: "风场网格", enCopy: "A 7×10 grid where column-dependent wind pushes the agent upward after each action, coupling intended motion with environment dynamics.", zhCopy: "一个 7×10 网格，智能体每次行动后都会受到由列决定的向上风力，因此预期移动与环境动力学相互耦合。" },
+  maze: { en: "Dyna maze", zh: "Dyna 迷宫", enCopy: "A sparse maze designed to compare direct learning from real transitions with additional planning updates sampled from a learned model.", zhCopy: "一个稀疏迷宫，用于比较直接使用真实转移学习与从已学习模型中抽样执行额外规划更新。" },
+  frozen: { en: "Frozen lake · 20% slip", zh: "冰湖 · 20% 滑移", enCopy: "A stochastic grid in which the intended action succeeds with 80% probability and lateral slips share the remaining probability mass.", zhCopy: "一个随机网格：预期动作以 80% 概率成功，其余概率由两个侧向滑移动作平分。" },
+  fourrooms: { en: "Four rooms", zh: "四房间", enCopy: "An 11×11 navigation problem whose narrow doorways create bottlenecks and reveal how slowly local value information crosses distant regions.", zhCopy: "一个 11×11 导航问题，狭窄门口形成状态瓶颈，可观察局部价值信息跨越远距离区域时的传播速度。" },
+};
+
+const gridContext = {
+  experiment: { en: "Tabular MDP planning and control exposes complete state, transition, value, and policy updates.", zh: "表格型 MDP 规划与控制会完整展示状态、转移、价值和策略更新。" },
 };
 
 const uiText = {
@@ -664,6 +675,17 @@ function updateAlgorithmCard() {
   document.querySelector("#algorithm-explanation").textContent = detail[language()];
 }
 
+function renderContext() {
+  const lang = language();
+  const environment = environmentNames[environmentSelect.value];
+  const algorithm = algorithmDetails[algorithmSelect.value];
+  document.querySelector("#context-experiment-copy").textContent = gridContext.experiment[lang];
+  document.querySelector("#context-environment-name").textContent = environment[lang];
+  document.querySelector("#context-environment-copy").textContent = environment[lang === "zh" ? "zhCopy" : "enCopy"];
+  document.querySelector("#context-algorithm-name").textContent = algorithm.name[lang];
+  document.querySelector("#context-algorithm-copy").textContent = algorithm[lang];
+}
+
 function displayedValue(state) {
   if (algorithmSelect.value === "value" || algorithmSelect.value === "policy") return values[state];
   return Math.max(...displayedQValues(state));
@@ -936,6 +958,7 @@ function renderQTable() {
 
 function render() {
   document.querySelector("#environment-name").textContent = environmentNames[env.type][language()];
+  renderContext();
   updateAlgorithmCard();
   updateControlAvailability();
   updateRunButton();

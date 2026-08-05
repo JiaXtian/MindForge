@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An interactive bilingual Blackjack Monte Carlo reinforcement learning laboratory." />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Blackjack Monte Carlo Lab — MindForge</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="rl.css" />
+    <script src="app.js" defer></script>
+    <script src="blackjack.js" defer></script>
+  </head>
+  <body data-page="blackjack" data-title-en="Blackjack Monte Carlo Lab — MindForge" data-title-zh="Blackjack Monte Carlo 实验室 — MindForge">
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MindForge home"><span class="brand-mark">M</span><span>MindForge</span></a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="gridworld.html" data-i18n="navGrid">Gridworld</a>
+        <a href="bandit.html" data-i18n="navBandit">Bandits</a>
+        <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
+        <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
+        <a href="cartpole.html" data-i18n="navCartPole">CartPole</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path></svg>
+        </button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="切换到中文"><span class="current-language">EN</span><span class="language-divider"></span><span class="next-language">中</span></button>
+      </div>
+    </header>
+
+    <main id="main">
+      <header class="page-hero lab-page-hero">
+        <p class="eyebrow reveal" data-i18n="labEyebrow">Interactive reinforcement learning laboratory</p>
+        <h1 class="reveal" data-i18n="blackjackTitle">Blackjack Monte Carlo Lab</h1>
+      </header>
+
+      <section class="lab-shell">
+        <section class="lab-context" aria-live="polite">
+          <div class="lab-context-item lab-context-selector">
+            <label for="experiment-switcher" data-i18n="currentExperiment">Experiment type</label>
+            <select id="experiment-switcher">
+              <option value="gridworld.html" data-i18n="gridTitle">Gridworld Control Lab</option>
+              <option value="bandit.html" data-i18n="banditTitle">Multi-Armed Bandit Lab</option>
+              <option value="prediction.html" data-i18n="predictionTitle">Random Walk Prediction Lab</option>
+              <option value="mountain-car.html" data-i18n="mountainTitle">Mountain Car Control Lab</option>
+              <option value="blackjack.html" data-i18n="blackjackTitle" selected>Blackjack Monte Carlo Lab</option>
+              <option value="cartpole.html" data-i18n="cartpoleTitle">CartPole Control Lab</option>
+            </select>
+            <p id="context-experiment-copy"></p>
+          </div>
+          <article class="lab-context-item"><span data-i18n="currentEnvironment">Current environment</span><strong id="context-environment-name">—</strong><p id="context-environment-copy"></p></article>
+          <article class="lab-context-item"><span data-i18n="currentAlgorithm">Current algorithm</span><strong id="context-algorithm-name">—</strong><p id="context-algorithm-copy"></p></article>
+        </section>
+
+        <div class="lab-toolbar blackjack-toolbar" aria-label="Blackjack controls">
+          <div class="control-group">
+            <label for="blackjack-rules" data-i18n="ruleSet">Rule set</label>
+            <select id="blackjack-rules">
+              <option value="standard" data-i18n="blackjackStandard">Dealer stands on soft 17</option>
+              <option value="soft17" data-i18n="blackjackSoft17">Dealer hits soft 17</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="blackjack-algorithm" data-i18n="algorithm">Algorithm</label>
+            <select id="blackjack-algorithm">
+              <option value="prediction" data-i18n="algorithmMcPrediction">First-visit MC prediction</option>
+              <option value="onpolicy" data-i18n="algorithmMcControl">On-policy MC control</option>
+              <option value="offpolicy" data-i18n="algorithmOffPolicyMc">Off-policy MC control</option>
+            </select>
+          </div>
+          <div class="control-group"><label for="blackjack-epsilon" data-i18n="epsilon">Exploration ε</label><div class="range-line"><input id="blackjack-epsilon" type="range" min="0" max="0.5" step="0.01" value="0.10" /><output id="blackjack-epsilon-output">0.10</output></div></div>
+          <div class="control-group"><label for="blackjack-gamma" data-i18n="gamma">Discount γ</label><div class="range-line"><input id="blackjack-gamma" type="range" min="0.5" max="1" step="0.01" value="1" /><output id="blackjack-gamma-output">1.00</output></div></div>
+          <div class="control-group"><label for="blackjack-speed" data-i18n="speed">Run speed</label><div class="range-line"><input id="blackjack-speed" type="range" min="1" max="10" step="1" value="7" /><output id="blackjack-speed-output">7×</output></div></div>
+        </div>
+
+        <div class="lab-actions">
+          <button class="lab-button is-primary" id="blackjack-step" type="button" data-i18n="singleStep">Single step</button>
+          <button class="lab-button" id="blackjack-episode" type="button" data-i18n="completeEpisode">Complete episode</button>
+          <button class="lab-button" id="blackjack-run" type="button" data-i18n="autoRun">Auto run</button>
+          <button class="lab-button" id="blackjack-reset" type="button" data-i18n="reset">Reset</button>
+          <button class="lab-button" id="blackjack-batch" type="button" data-i18n="trainFiveHundred">Train 500 episodes</button>
+          <div class="lab-status" id="blackjack-status" aria-live="polite">Experiment ready.</div>
+        </div>
+
+        <div class="lab-grid-layout blackjack-layout">
+          <section class="lab-stage">
+            <div class="stage-topline"><span id="blackjack-environment-name">Infinite deck · S17</span><span id="blackjack-episode-state">episode 1</span></div>
+            <div class="blackjack-table" aria-label="Current Blackjack hand">
+              <div class="blackjack-seat"><span data-i18n="dealerHand">Dealer</span><div class="blackjack-hand" id="dealer-hand"></div><strong id="dealer-total">showing —</strong></div>
+              <div class="blackjack-action-mark" id="blackjack-action-mark">DEAL</div>
+              <div class="blackjack-seat"><span data-i18n="playerHand">Player</span><div class="blackjack-hand" id="player-hand"></div><strong id="player-total">—</strong></div>
+            </div>
+            <div class="mountain-state-readout blackjack-readout">
+              <span><small data-i18n="playerSum">Player sum</small><strong id="blackjack-player-sum">—</strong></span>
+              <span><small data-i18n="dealerShowing">Dealer showing</small><strong id="blackjack-dealer-showing">—</strong></span>
+              <span><small data-i18n="usableAce">Usable ace</small><strong id="blackjack-usable-ace">—</strong></span>
+              <span><small data-i18n="nextAction">Next action</small><strong id="blackjack-next-action">—</strong></span>
+            </div>
+          </section>
+
+          <aside class="lab-side">
+            <div class="metric-grid blackjack-metrics">
+              <article class="metric-card"><span data-i18n="metricEpisode">Episodes</span><strong id="blackjack-episodes">0</strong></article>
+              <article class="metric-card"><span data-i18n="winRate">Win rate</span><strong id="blackjack-win-rate">0%</strong></article>
+              <article class="metric-card"><span data-i18n="averageReturn">Average return</span><strong id="blackjack-average-return">0.00</strong></article>
+              <article class="metric-card"><span data-i18n="visitedStates">Visited states</span><strong id="blackjack-visited-states">0</strong></article>
+            </div>
+            <section class="lab-side-card"><div class="card-heading"><h2 data-i18n="algorithmLens">Current algorithm</h2><span id="blackjack-badge">MC</span></div><div class="algorithm-formula" id="blackjack-formula"></div><p class="algorithm-explanation" id="blackjack-explanation"></p></section>
+            <section class="lab-side-card"><div class="card-heading"><h2 data-i18n="lastUpdateTitle">Last update</h2><span id="blackjack-update-kind">—</span></div><div class="update-equation" id="blackjack-equation"></div><dl class="update-ledger"><div><dt data-i18n="updateState">State</dt><dd id="blackjack-update-state">—</dd></div><div><dt data-i18n="updateAction">Action</dt><dd id="blackjack-update-action">—</dd></div><div><dt data-i18n="sampledReturn">Sampled return</dt><dd id="blackjack-update-return">—</dd></div><div><dt data-i18n="importanceWeight">Importance weight</dt><dd id="blackjack-update-weight">—</dd></div><div><dt data-i18n="updateOld">Old estimate</dt><dd id="blackjack-update-old">—</dd></div><div><dt data-i18n="updateNew">New estimate</dt><dd id="blackjack-update-new">—</dd></div></dl></section>
+          </aside>
+        </div>
+
+        <section class="q-table-card blackjack-map-card">
+          <div class="card-heading"><h2 data-i18n="blackjackStateMap">State value and policy map</h2><span data-i18n="dealerByPlayer">dealer card × player sum</span></div>
+          <p class="small-copy" data-i18n="blackjackMapCopy">Each cell shows the current value estimate and, for control algorithms, the greedy action H or S.</p>
+          <div class="blackjack-map-grid"><div><h3 data-i18n="withoutUsableAce">Without usable ace</h3><div class="blackjack-map" id="blackjack-map-hard"></div></div><div><h3 data-i18n="withUsableAce">With usable ace</h3><div class="blackjack-map" id="blackjack-map-soft"></div></div></div>
+        </section>
+
+        <section class="learning-detail-grid">
+          <article class="chart-card"><div class="card-heading"><h2 data-i18n="returnHistory">Return history</h2><span data-i18n="recentHundred">recent 100 episodes</span></div><svg class="lab-chart" viewBox="0 0 720 180" role="img" aria-label="Blackjack return history"><line class="chart-axis" x1="30" y1="150" x2="700" y2="150"></line><line class="chart-axis" x1="30" y1="20" x2="30" y2="150"></line><polyline class="chart-line" id="blackjack-history-line" points=""></polyline></svg></article>
+          <article class="lab-side-card"><div class="card-heading"><h2 data-i18n="episodeLedgerTitle">Current episode trajectory</h2><span id="blackjack-trajectory-count">0 decisions</span></div><div class="transition-log" id="blackjack-trajectory"></div></article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer"><a class="brand" href="index.html"><span class="brand-mark">M</span><span>MindForge</span></a><p data-i18n="footerLabCopy">All computation runs locally in the browser; refresh to begin from a clean state.</p><a href="cartpole.html"><span data-i18n="navCartPole">CartPole</span> ↗</a></footer>
+  </body>
+</html>

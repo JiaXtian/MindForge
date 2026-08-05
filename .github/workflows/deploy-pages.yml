@@ -33,6 +33,8 @@ jobs:
           node --check bandit.js
           node --check prediction.js
           node --check mountain-car.js
+          node --check blackjack.js
+          node --check cartpole.js
           node scripts/smoke-labs.mjs
 
       - name: Configure GitHub Pages

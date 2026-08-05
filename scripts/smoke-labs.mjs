@@ -167,6 +167,7 @@ function runGridworldSmokeTest() {
       const probability = outcomes.reduce((sum, outcome) => sum + outcome.probability, 0);
       assert.ok(outcomes.length > 1, "Frozen Lake should expose stochastic successors");
       assert.ok(Math.abs(probability - 1) < 1e-12, "Frozen Lake transition probabilities should sum to one");
+      assert.ok(get("#context-environment-copy").textContent.includes("80%"), "environment switch should update Gridworld context");
     }
   }
 
@@ -222,12 +223,18 @@ function runBanditSmokeTest() {
   get("#strategy-select").value = "gradient";
   get("#strategy-select").dispatch("change");
   assert.ok(get("#bandit-decision-equation").textContent.startsWith("Hnew"), "Gradient Bandit should expose its preference update");
+  get("#reward-select").value = "gaussian";
+  get("#reward-select").dispatch("change");
+  get("#bandit-dynamics").value = "drift";
+  get("#bandit-dynamics").dispatch("change");
+  assert.ok(get("#context-environment-name").textContent.includes("Gaussian"), "reward model should update Bandit context");
+  assert.ok(get("#context-environment-name").textContent.includes("drifting"), "reward dynamics should update Bandit context");
 
   harness.document.documentElement.lang = "zh-CN";
   harness.window.dispatch("mindforge:language");
   const firstArmName = get("#arm-editor-list").children[0].children[0].children[0];
   assert.equal(firstArmName.textContent, "臂 1", "generated arm labels should switch language");
-  assert.equal(get("#bandit-status").textContent, "实验已重置。", "Bandit status should switch language");
+  assert.equal(get("#bandit-status").textContent, "奖励环境已改变，算法需要重新适应。", "Bandit status should switch language");
 }
 
 function runPredictionSmokeTest() {
@@ -263,13 +270,17 @@ function runPredictionSmokeTest() {
 
   get("#prediction-algorithm").value = "nstep";
   get("#prediction-algorithm").dispatch("change");
+  get("#chain-select").value = "19";
+  get("#chain-select").dispatch("change");
+  assert.ok(get("#context-environment-name").textContent.startsWith("19-state"), "chain length should update prediction context");
+  assert.equal(get("#context-algorithm-name").textContent, "n-step TD", "algorithm switch should update prediction context");
   get("#prediction-episode").click();
   assert.ok(get("#prediction-update-kind").textContent.includes("step TD"), "n-step TD should expose its backup horizon");
 
   get("#prediction-algorithm").value = "lambda";
   get("#prediction-algorithm").dispatch("change");
   get("#prediction-step").click();
-  assert.equal(get("#eligibility-view").children.length, 9, "TD lambda should expose one trace per state");
+  assert.equal(get("#eligibility-view").children.length, 19, "TD lambda should expose one trace per state");
   harness.document.documentElement.lang = "zh-CN";
   harness.window.dispatch("mindforge:language");
   assert.equal(get("#prediction-status").textContent, "价值预测已重置。", "Prediction status should switch language");
@@ -308,9 +319,11 @@ function runMountainCarSmokeTest() {
   get("#velocity-bins").value = "10";
   get("#velocity-bins").dispatch("change");
   assert.equal(get("#mountain-q-map").children.length, 120, "changed discretization should rebuild the Q map");
+  assert.ok(get("#context-environment-name").textContent.includes("12×10"), "discretization should update Mountain Car context");
 
   get("#mountain-algorithm").value = "lambda";
   get("#mountain-algorithm").dispatch("change");
+  assert.equal(get("#context-algorithm-name").textContent, "SARSA(λ)", "algorithm switch should update Mountain Car context");
   get("#mountain-step").click();
   assert.equal(get("#mountain-update-kind").textContent, "Q + eligibility trace", "SARSA lambda should expose trace-based updates");
   harness.document.documentElement.lang = "zh-CN";
@@ -319,8 +332,94 @@ function runMountainCarSmokeTest() {
   assert.ok(["向左加速", "不加速", "向右加速"].includes(get("#mountain-action-label").textContent), "Mountain Car action should switch language");
 }
 
+function runBlackjackSmokeTest() {
+  const harness = createHarness({
+    "#blackjack-rules": { value: "standard" },
+    "#blackjack-algorithm": { value: "prediction" },
+    "#blackjack-epsilon": { value: "0.10", step: "0.01" },
+    "#blackjack-gamma": { value: "1", step: "0.01" },
+    "#blackjack-speed": { value: "7", step: "1" },
+  });
+
+  vm.runInContext(readFileSync("blackjack.js", "utf8"), harness.context, {
+    filename: "blackjack.js",
+  });
+
+  const get = (selector) => harness.elements.get(selector);
+  assert.equal(get("#blackjack-map-hard").children.length, 121, "hard-hand map should include labels and 100 states");
+  assert.equal(get("#blackjack-map-soft").children.length, 121, "usable-ace map should include labels and 100 states");
+  assert.equal(get("#blackjack-visited-states").textContent, 0, "rendering the map must not mark unvisited states as sampled");
+  get("#blackjack-step").click();
+  assert.ok(get("#blackjack-trajectory").children.length > 0, "single decision should appear in the trajectory");
+  const episodesAfterStep = Number(get("#blackjack-episodes").textContent);
+  get("#blackjack-episode").click();
+  assert.equal(get("#blackjack-episodes").textContent, episodesAfterStep + 1, "complete hand should produce one additional Monte Carlo episode");
+  assert.notEqual(get("#blackjack-equation").textContent, "", "completed hand should expose a return update");
+  get("#blackjack-batch").click();
+  assert.equal(get("#blackjack-episodes").textContent, episodesAfterStep + 501, "Blackjack batch should train 500 additional episodes");
+
+  get("#blackjack-algorithm").value = "offpolicy";
+  get("#blackjack-algorithm").dispatch("change");
+  assert.equal(get("#blackjack-visited-states").textContent, 0, "control-policy map rendering must not create artificial visits");
+  get("#blackjack-episode").click();
+  assert.notEqual(get("#blackjack-update-weight").textContent, "—", "off-policy MC should expose an importance weight");
+  get("#blackjack-rules").value = "soft17";
+  get("#blackjack-rules").dispatch("change");
+  assert.ok(get("#context-environment-name").textContent.includes("soft 17"), "rule change should update environment context");
+
+  harness.document.documentElement.lang = "zh-CN";
+  harness.window.dispatch("mindforge:language");
+  assert.equal(get("#blackjack-status").textContent, "Monte Carlo 估计已重置。", "Blackjack status should switch language");
+  assert.ok(get("#context-algorithm-copy").textContent.includes("重要性采样"), "Blackjack algorithm context should switch language");
+}
+
+function runCartPoleSmokeTest() {
+  const harness = createHarness({
+    "#cartpole-environment": { value: "standard" },
+    "#cartpole-algorithm": { value: "qlearning" },
+    "#cartpole-resolution": { value: "medium" },
+    "#cartpole-alpha": { value: "0.22", step: "0.01" },
+    "#cartpole-gamma": { value: "0.99", step: "0.01" },
+    "#cartpole-epsilon": { value: "0.10", step: "0.01" },
+    "#cartpole-speed": { value: "7", step: "1" },
+  });
+
+  vm.runInContext(readFileSync("cartpole.js", "utf8"), harness.context, {
+    filename: "cartpole.js",
+  });
+
+  const get = (selector) => harness.elements.get(selector);
+  assert.equal(get("#cartpole-q-map").children.length, 100, "medium CartPole slice should contain 10 x 10 states");
+  get("#cartpole-step").click();
+  assert.equal(get("#cartpole-steps").textContent, 1, "single control step should advance CartPole dynamics");
+  assert.notEqual(get("#cartpole-equation").textContent, "", "CartPole should expose its TD update");
+  get("#cartpole-episode").click();
+  assert.equal(get("#cartpole-episodes").textContent, 1, "complete CartPole episode should reach failure or 500 steps");
+  get("#cartpole-batch").click();
+  assert.equal(get("#cartpole-episodes").textContent, 51, "CartPole batch should train 50 episodes");
+  assert.ok(get("#cartpole-history-line").getAttribute("points"), "CartPole should produce an episode-length curve");
+
+  get("#cartpole-resolution").value = "coarse";
+  get("#cartpole-resolution").dispatch("change");
+  assert.equal(get("#cartpole-q-map").children.length, 64, "coarse CartPole slice should contain 8 x 8 states");
+  get("#cartpole-algorithm").value = "double";
+  get("#cartpole-algorithm").dispatch("change");
+  get("#cartpole-step").click();
+  assert.ok(["Qᴬ", "Qᴮ"].includes(get("#cartpole-update-kind").textContent), "Double Q-learning should expose the updated estimator");
+  get("#cartpole-environment").value = "gravity";
+  get("#cartpole-environment").dispatch("change");
+  assert.equal(get("#context-environment-name").textContent, "Strong-gravity CartPole", "environment switch should update context");
+
+  harness.document.documentElement.lang = "zh-CN";
+  harness.window.dispatch("mindforge:language");
+  assert.equal(get("#cartpole-status").textContent, "控制价值已重置。", "CartPole status should switch language");
+  assert.ok(get("#context-environment-copy").textContent.includes("重力"), "CartPole environment context should switch language");
+}
+
 runGridworldSmokeTest();
 runBanditSmokeTest();
 runPredictionSmokeTest();
 runMountainCarSmokeTest();
-console.log("RL lab smoke tests passed: four labs, batch learning, detail views, charts, presets, and bilingual labels.");
+runBlackjackSmokeTest();
+runCartPoleSmokeTest();
+console.log("RL lab smoke tests passed: six labs, batch learning, detail views, charts, presets, dynamic context, and bilingual labels.");

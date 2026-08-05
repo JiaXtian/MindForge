@@ -31,7 +31,8 @@
         <a href="bandit.html" data-i18n="navBandit">Bandits</a>
         <a href="prediction.html" data-i18n="navPrediction">Prediction</a>
         <a href="mountain-car.html" data-i18n="navMountainCar">Mountain Car</a>
-        <a href="#watch" data-i18n="whatToWatch">What to watch</a>
+        <a href="blackjack.html" data-i18n="navBlackjack">Blackjack</a>
+        <a href="cartpole.html" data-i18n="navCartPole">CartPole</a>
       </nav>
       <div class="header-actions">
         <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme">
@@ -56,6 +57,31 @@
       </header>
 
       <section class="lab-shell">
+        <section class="lab-context" aria-live="polite">
+          <div class="lab-context-item lab-context-selector">
+            <label for="experiment-switcher" data-i18n="currentExperiment">Experiment type</label>
+            <select id="experiment-switcher">
+              <option value="gridworld.html" data-i18n="gridTitle" selected>Gridworld Control Lab</option>
+              <option value="bandit.html" data-i18n="banditTitle">Multi-Armed Bandit Lab</option>
+              <option value="prediction.html" data-i18n="predictionTitle">Random Walk Prediction Lab</option>
+              <option value="mountain-car.html" data-i18n="mountainTitle">Mountain Car Control Lab</option>
+              <option value="blackjack.html" data-i18n="blackjackTitle">Blackjack Monte Carlo Lab</option>
+              <option value="cartpole.html" data-i18n="cartpoleTitle">CartPole Control Lab</option>
+            </select>
+            <p id="context-experiment-copy"></p>
+          </div>
+          <article class="lab-context-item">
+            <span data-i18n="currentEnvironment">Current environment</span>
+            <strong id="context-environment-name">—</strong>
+            <p id="context-environment-copy"></p>
+          </article>
+          <article class="lab-context-item">
+            <span data-i18n="currentAlgorithm">Current algorithm</span>
+            <strong id="context-algorithm-name">—</strong>
+            <p id="context-algorithm-copy"></p>
+          </article>
+        </section>
+
         <div class="lab-toolbar" aria-label="Gridworld controls">
           <div class="control-group">
             <label for="environment-select" data-i18n="environment">Environment</label>
@@ -265,14 +291,6 @@
           </div>
         </section>
 
-        <div id="watch">
-          <ol class="watch-list">
-            <li><strong>01 / MODEL</strong><span data-i18n="gridWatchOne">Planning algorithms update the full value table each step; TD algorithms use one real transition.</span></li>
-            <li><strong>02 / TARGET</strong><span data-i18n="gridWatchTwo">Q-learning uses the largest next-state Q value; SARSA uses the action actually selected by its behavior policy.</span></li>
-            <li><strong>03 / MODEL</strong><span data-i18n="gridWatchThree">Dyna-Q replays a learned model after each real step; compare its sample efficiency with ordinary Q-learning.</span></li>
-            <li><strong>04 / BIAS</strong><span data-i18n="gridWatchFour">Double Q-learning separates action selection from evaluation to reduce maximization bias.</span></li>
-          </ol>
-        </div>
       </section>
     </main>
 

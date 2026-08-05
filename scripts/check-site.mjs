@@ -7,6 +7,8 @@ const pages = [
   "bandit.html",
   "prediction.html",
   "mountain-car.html",
+  "blackjack.html",
+  "cartpole.html",
   "404.html",
 ];
 
@@ -109,14 +111,38 @@ for (const algorithm of ["qlearning", "sarsa", "expected", "lambda"]) {
   }
 }
 
+const blackjack = readFileSync("blackjack.html", "utf8");
+for (const algorithm of ["prediction", "onpolicy", "offpolicy"]) {
+  if (!blackjack.includes('value="' + algorithm + '"')) {
+    errors.push("Blackjack is missing algorithm: " + algorithm);
+  }
+}
+for (const rules of ["standard", "soft17"]) {
+  if (!blackjack.includes('value="' + rules + '"')) {
+    errors.push("Blackjack is missing rule set: " + rules);
+  }
+}
+
+const cartpole = readFileSync("cartpole.html", "utf8");
+for (const algorithm of ["qlearning", "sarsa", "expected", "double"]) {
+  if (!cartpole.includes('value="' + algorithm + '"')) {
+    errors.push("CartPole is missing algorithm: " + algorithm);
+  }
+}
+for (const environment of ["standard", "gravity", "weak"]) {
+  if (!cartpole.includes('value="' + environment + '"')) {
+    errors.push("CartPole is missing environment: " + environment);
+  }
+}
+
 const home = readFileSync("index.html", "utf8");
 const homeLabCards = (
-  home.match(/<a class="module-card[^\"]*" href="(?:gridworld|bandit|prediction|mountain-car)\.html">/g) || []
+  home.match(/<a class="module-card[^\"]*" href="(?:gridworld|bandit|prediction|mountain-car|blackjack|cartpole)\.html">/g) || []
 ).length;
-if (homeLabCards !== 4) {
-  errors.push("Home page must expose exactly four laboratory cards; found " + homeLabCards);
+if (homeLabCards !== 6) {
+  errors.push("Home page must expose exactly six laboratory cards; found " + homeLabCards);
 }
-for (const lab of ["gridworld", "bandit", "prediction", "mountain-car"]) {
+for (const lab of ["gridworld", "bandit", "prediction", "mountain-car", "blackjack", "cartpole"]) {
   if (!home.includes('href="' + lab + '.html"')) {
     errors.push("Home page is missing direct access to " + lab + ".html");
   }
@@ -130,12 +156,36 @@ for (const [name, html] of [
   ["bandit.html", bandit],
   ["prediction.html", prediction],
   ["mountain-car.html", mountainCar],
+  ["blackjack.html", blackjack],
+  ["cartpole.html", cartpole],
 ]) {
-  if (html.includes("guided-experiments") || html.includes("guidedExperimentsTitle")) {
-    errors.push(name + " still contains the guided experiments section");
+  for (const required of ["experiment-switcher", "context-environment-name", "context-algorithm-name"]) {
+    if (!html.includes('id="' + required + '"')) errors.push(name + " is missing dynamic context: " + required);
   }
-  if (/data-i18n="(?:grid|bandit|prediction|mountain)Hero(?:Title|Deck)"/.test(html)) {
-    errors.push(name + " still contains the removed promotional hero copy");
+  if (html.includes("watch-list") || html.includes('id="watch"') || html.includes("whatToWatch")) {
+    errors.push(name + " still contains the removed observation focus section");
+  }
+  for (const destination of ["gridworld", "bandit", "prediction", "mountain-car", "blackjack", "cartpole"]) {
+    if (!html.includes('value="' + destination + '.html"')) {
+      errors.push(name + " experiment switcher is missing " + destination + ".html");
+    }
+  }
+}
+
+for (const [htmlFile, scriptFile] of [
+  ["gridworld.html", "gridworld.js"],
+  ["bandit.html", "bandit.js"],
+  ["prediction.html", "prediction.js"],
+  ["mountain-car.html", "mountain-car.js"],
+  ["blackjack.html", "blackjack.js"],
+  ["cartpole.html", "cartpole.js"],
+]) {
+  const html = readFileSync(htmlFile, "utf8");
+  const script = readFileSync(scriptFile, "utf8");
+  for (const match of script.matchAll(/document\.querySelector\("#([A-Za-z0-9_-]+)"\)/g)) {
+    if (!html.includes('id="' + match[1] + '"')) {
+      errors.push(scriptFile + " queries missing element #" + match[1] + " in " + htmlFile);
+    }
   }
 }
 
@@ -151,7 +201,11 @@ const publicFiles = [
   "bandit.html",
   "prediction.html",
   "mountain-car.html",
+  "blackjack.html",
+  "cartpole.html",
   "app.js",
+  "blackjack.js",
+  "cartpole.js",
   "README.md",
   "README.zh-CN.md",
   "NOTE_TEMPLATE.md",
@@ -195,8 +249,8 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    "MindForge validation passed: 6 bilingual pages, 4 interactive labs, " +
+    "MindForge validation passed: 8 bilingual pages, 6 interactive labs, " +
       "7 Gridworld algorithms, 6 environments, 5 bandit strategies, 4 prediction methods, " +
-      "4 Mountain Car controllers, and no legacy chapters.",
+      "4 Mountain Car controllers, 3 Blackjack methods, 4 CartPole controllers, and no observation focus panels.",
   );
 }

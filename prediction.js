@@ -1,23 +1,27 @@
 const predictionDetails = {
   mc: {
+    name: { en: "Every-visit Monte Carlo", zh: "Every-visit Monte Carlo" },
     badge: "EVERY-VISIT MONTE CARLO",
     formula: "V(Sₜ) ← V(Sₜ) + α[Gₜ − V(Sₜ)]",
     en: "No value changes before termination. Once the outcome is known, the sampled return is reconstructed backward and every visited state is updated.",
     zh: "终止之前价值不会改变；结果出现后，算法从后向前重建采样回报，并更新轨迹中每次访问的状态。",
   },
   td0: {
+    name: { en: "TD(0)", zh: "TD(0)" },
     badge: "TD(0) / ONE-STEP",
     formula: "V(Sₜ) ← V(Sₜ) + α[Rₜ₊₁ + γV(Sₜ₊₁) − V(Sₜ)]",
     en: "TD(0) learns after every transition. Its target contains one observed reward and one estimated continuation value, so learning begins before the final outcome is known.",
     zh: "TD(0) 在每次转移后立即学习。目标由一个已观察奖励和一个后继状态估计组成，因此无需等待最终结果。",
   },
   nstep: {
+    name: { en: "n-step TD", zh: "n-step TD" },
     badge: "N-STEP TD",
     formula: "Gₜ:ₜ₊ₙ = Σᵢ₌₀ⁿ⁻¹ γⁱRₜ₊ᵢ₊₁ + γⁿV(Sₜ₊ₙ)",
     en: "The update waits for n rewards, then bootstraps if the episode is still alive. Increasing n trades lower bootstrap bias for higher sampling variance and delay.",
     zh: "更新等待 n 个奖励；若回合尚未终止，再从第 n 个后继状态自举。增大 n 会用更高采样方差与延迟换取更少自举偏差。",
   },
   lambda: {
+    name: { en: "TD(λ)", zh: "TD(λ)" },
     badge: "TD(λ) / ELIGIBILITY TRACES",
     formula: "δₜ = Rₜ₊₁ + γV(Sₜ₊₁) − V(Sₜ);  V ← V + αδₜeₜ",
     en: "Each transition creates a one-step TD error, but the error updates every state with a nonzero eligibility trace. Gamma lambda controls how quickly recent credit fades.",
@@ -48,6 +52,11 @@ const predictionText = {
   error: { en: "error", zh: "误差" },
   inactiveTrace: { en: "Traces are active only for TD lambda.", zh: "资格迹仅在 TD(λ) 中启用。" },
   lastCompleted: { en: "last completed", zh: "最近完成" },
+};
+
+const predictionContext = {
+  experiment: { en: "On-policy state-value prediction estimates the return from each state without changing the random-walk policy.", zh: "同策略状态价值预测在不改变随机游走策略的前提下，估计从每个状态出发的回报。" },
+  environment: { en: "A symmetric episodic Markov reward process starts in the center, moves left or right with equal probability, and pays 1 only at the right terminal.", zh: "一个对称的回合型 Markov 奖励过程：从中心出发，以相同概率左右移动，只有抵达右侧终点时获得奖励 1。" },
 };
 
 const chainSelect = document.querySelector("#chain-select");
@@ -326,6 +335,17 @@ function renderAlgorithm() {
   document.querySelector("#prediction-explanation").textContent = detail[language()];
 }
 
+function renderContext() {
+  const lang = language();
+  const detail = predictionDetails[algorithmSelect.value];
+  const count = Number(chainSelect.value);
+  document.querySelector("#context-experiment-copy").textContent = predictionContext.experiment[lang];
+  document.querySelector("#context-environment-name").textContent = lang === "zh" ? count + " 状态对称随机游走" : count + "-state symmetric random walk";
+  document.querySelector("#context-environment-copy").textContent = predictionContext.environment[lang];
+  document.querySelector("#context-algorithm-name").textContent = detail.name[lang];
+  document.querySelector("#context-algorithm-copy").textContent = detail[lang];
+}
+
 function renderTrack() {
   const track = document.querySelector("#random-walk-track");
   track.replaceChildren();
@@ -480,6 +500,7 @@ function renderPath() {
 }
 
 function render() {
+  renderContext();
   renderAlgorithm();
   updateControls();
   updateRunButton();
